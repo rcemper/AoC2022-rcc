@@ -1,7 +1,5 @@
-## intersystems-objectscript-template
-This is a template for InterSystems ObjectScript Github repository.
-The template goes also with a few files which let you immedietly compile your ObjecScript files in InterSystems IRIS Community Edition in a docker container
-
+## aoc2020-template
+This is a template for Advent of Code ObjectScript contest.
 ## Prerequisites
 Make sure you have [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and [Docker desktop](https://www.docker.com/products/docker-desktop) installed.
 
@@ -31,7 +29,7 @@ Open IRIS terminal:
 
 ```
 $ docker-compose exec iris iris session iris
-USER>write ##class(dc.PackageSample.ObjectScript).Test()
+USER>w ##class(dc.aoc2020.Day1).Run()
 ```
 ## How to start coding
 This repository is ready to code in VSCode with ObjectScript plugin.
@@ -53,6 +51,9 @@ The script in Installer.cls will import everything you place under /src into IRI
 The simplest dockerfile which starts IRIS and imports code from /src folder into it.
 Use the related docker-compose.yml to easily setup additional parametes like port number and where you map keys and host folders.
 
+### iris.script
+
+Setup Objectscript code which is being executed during docker build phase
 
 ### .vscode/settings.json
 

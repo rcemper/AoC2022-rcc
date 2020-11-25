@@ -18,6 +18,14 @@ docker-compose up -d
 docker-compose exec iris iris session iris -U IRISAPP
 ```
 
+## load code from source folder to docker 
+it loads and compiles all the objectscript from /src folder
+```
+do $System.OBJ.LoadDir("/opt/irisapp/src","ck",,1)
+
+```
+
+
 ## install docker-compose
 ```
 sudo curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
