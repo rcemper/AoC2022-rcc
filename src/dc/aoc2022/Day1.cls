@@ -1,9 +1,9 @@
-Class dc.aoc2020.Day1 Extends dc.aoc2020.Base
+Class dc.aoc2022.Day1 Extends dc.aoc2022.Base
 {
 
 Parameter InputFile = "input1.txt";
 
-// w ##class(dc.aoc2020.Day1).Run()
+// w ##class(dc.aoc2022.Day1).Run()
 
 ClassMethod Run(verbose = 0) As %Integer
 {
@@ -20,7 +20,7 @@ ClassMethod Run(verbose = 0) As %Integer
 
 ClassMethod Run2(verbose = 0) As %Integer
 {
-        
+    
     set stream=..GetInput(..#InputFile)
     set sum=0
 	while 'stream.AtEnd {

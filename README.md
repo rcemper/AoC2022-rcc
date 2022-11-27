@@ -8,7 +8,7 @@ Make sure you have [git](https://git-scm.com/book/en/v2/Getting-Started-Installi
 Clone/git pull the repo into any local directory
 
 ```
-$ git clone https://github.com/intersystems-community/objectscript-docker-template.git
+$ git clone git@github.com:intersystems-community/aoc-objectscript-template.git
 ```
 
 Open the terminal in this directory and run:
@@ -29,7 +29,7 @@ Open IRIS terminal:
 
 ```
 $ docker-compose exec iris iris session iris
-USER>w ##class(dc.aoc2020.Day1).Run()
+USER>w ##class(dc.aoc2022.Day1).Run()
 ```
 ## How to start coding
 This repository is ready to code in VSCode with ObjectScript plugin.
