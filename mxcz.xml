@@ -1,0 +1,3935 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2018.1.7 (Build 721U)" ts="2022-12-27 14:31:35">
+<Class name="dc.aoc">
+<TimeChanged>66470,45094.549607</TimeChanged>
+<TimeCreated>66467,83356.442976</TimeCreated>
+
+<Method name="run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>day=1,set="1"</FormalSpec>
+<Implementation><![CDATA[
+  set ^zTEST=set
+  set dir="C:\GitHub\set"_set_"\"_day_"\"
+  set file=dir_$s(set=1:"data",1:"input")_".txt"
+  set res=dir_"result.txt"
+  set cls="dc.AoC2022.Day"_day
+  do ..res(res)
+  set sc=$classmethod(cls,"Run",file)
+  if 'sc b  do $system.OBJ.DisplayError(sc) zw  b
+]]></Implementation>
+</Method>
+
+<Method name="all">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>start=1,stop=25,set=1</FormalSpec>
+<Implementation><![CDATA[
+  for %d=start:1:stop {
+    set ^zTEST=set,%res=0
+#;    do ##class(dc.aoc).run(%d,1)  
+    do $classmethod("dc.aoc2022.Day"_%d,"Run")  
+    read !?5,"OK ????",y
+    quit:y]""
+  }
+]]></Implementation>
+</Method>
+
+<Method name="res">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>dir</FormalSpec>
+<Implementation><![CDATA[
+  if $g(%res) quit $$$OK
+  set res=dir_"result.txt"
+  w "****************** ",dir,!
+  open res:"R":0 else  zw  b
+  for l=1,2  use res read line use 0 write ?15,line,!
+ups  
+  close res
+  set $ZT="",%res=1
+  ; read !,"OK",ok,!
+  ; quit (ok="")
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Base">
+<Super>%RegisteredObject</Super>
+<TimeChanged>66470,44657.113519</TimeChanged>
+<TimeCreated>66470,40291.443166</TimeCreated>
+
+<Parameter name="Folder">
+<Default>D:\work\_competitions\adventofcode\2022-intersystems\data\</Default>
+</Parameter>
+
+<UDLText name="T">
+<Content><![CDATA[
+// Parameter Folder = "/usr/irissys/mgr/user/";
+
+]]></Content>
+</UDLText>
+
+<Method name="GetInput">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fn</FormalSpec>
+<ReturnType>%Stream</ReturnType>
+<Implementation><![CDATA[
+ #;   set fn=..#Folder_fn
+  set day=+$p(fn,"Day",2)
+  set set=^zTEST
+  set dir="C:\GitHub\set"_set_"\"_day_"\"
+  set fn=dir_$s(set=1:"data",1:"input")_".txt"
+  do ##class(dc.aoc).res(dir)
+    
+    set stream = ##Class(%Stream.FileCharacter).%New()
+    set sc=stream.LinkToFile(fn)
+    return stream
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day1">
+<Super>dc.aoc2022.Base</Super>
+<TimeChanged>66470,40291.513634</TimeChanged>
+<TimeCreated>66470,40291.513634</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>Day1.txt</Default>
+</Parameter>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set part1 = ..Part1()
+	set part2 = ..Part2()
+
+    write part1,!
+    write part2,!
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+
+    set sum = 0
+    set max = -9999999
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		set sum = sum + line
+		set:(sum>max) max = sum
+		set:(line="") sum = 0
+    }
+    return max
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+
+    set sum = 0
+    set (a,b,c) = -9999999
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		set sum = sum + line
+		if line = "" || stream.AtEnd{
+			if sum >= a {
+				set c = b
+				set b = a
+				set a = sum
+			} else {
+				if sum >= b {
+					set c = b
+					set b = sum
+				} else {
+					set:(sum>=c) c = sum
+				}
+			}
+			set sum = 0
+		}
+    }
+    set result = a + b + c
+    return result
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day10">
+<Super>dc.aoc2022.Base</Super>
+<TimeChanged>66470,40292.317861</TimeChanged>
+<TimeCreated>66470,40292.317861</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>Day10.txt</Default>
+</Parameter>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set part1 = ..Part1()
+
+    write part1,!
+]]></Implementation>
+</Method>
+
+<Method name="Check">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&accumulator,x:%Integer,cycle:%Integer]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	if (cycle=20) || (cycle=60) || (cycle=100) || (cycle=140) || (cycle=180) || (cycle=220) {
+		set accumulator = accumulator + (x * cycle)
+	}
+	return 1
+]]></Implementation>
+</Method>
+
+<Method name="Print">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&buffer,cycle:%Integer,x:%Integer,width:%Integer,height:%Integer]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set col = (cycle - 1) # width
+	set row = (cycle - 1) \ width
+	if row < height {
+		if $zabs(col - x) <= 1 {
+			set buffer(row,col) = "#"
+		}
+	}
+	return 1
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+
+	set x = 1
+	set cycle = 1
+	set result = 0
+	
+	kill buffer
+	set width = 40
+	set height = 6
+	for i=0:1:height-1 {
+		for j=0:1:width-1 {
+			set buffer(i,j) = " "
+		}
+	}
+
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		
+		set op = $piece(line, " ", 1)
+		
+		if op = "noop" {
+			set cycle = cycle + 1
+			set t = ..Check(.result, x, cycle)
+			set t = ..Print(.buffer, cycle, x, width, height)
+		} else {
+			set arg = $piece(line, " ", 2)
+			
+			set cycle = cycle + 1
+			set t = ..Check(.result, x, cycle)
+			set t = ..Print(.buffer, cycle, x, width, height)
+
+			set x = x + arg
+			set cycle = cycle + 1
+			set t = ..Check(.result, x, cycle)
+			set t = ..Print(.buffer, cycle, x, width, height)
+		}
+	}
+	
+	for i=0:1:height-1 {
+		for j=0:1:width-1 {
+			write buffer(i,j)
+		}
+		write !
+	}
+	
+	return result
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day11">
+<Super>dc.aoc2022.Base</Super>
+<TimeChanged>66470,40292.41493</TimeChanged>
+<TimeCreated>66470,40292.41493</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>Day11.txt</Default>
+</Parameter>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set part1 = ..Part1()
+	set part2 = ..Part2()
+
+    write part1,!
+    write part2,!
+]]></Implementation>
+</Method>
+
+<Method name="GetMonkeys">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&monkeys]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+    
+    set mi = 0
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		if $find(line, "Starting items") {
+			set lst = $piece(line, ": ", 2)
+			set monkeys(mi, "itemCount") = $length(lst,",")
+			for i = 1:1:monkeys(mi, "itemCount") {
+				set monkeys(mi, "items", i) = $piece(lst, ", ", i)
+			}
+		}
+		if $find(line, "Operation") {
+			set monkeys(mi, "operation") = $piece(line, ": new = ", 2)
+		}
+		if $find(line, "Test:") {
+			set monkeys(mi, "test") = $piece(line, "divisible by ", 2)
+		}
+		if $find(line, "If true") {
+			set monkeys(mi, "ifTrue") = $piece(line, "throw to monkey ", 2)
+		}
+		if $find(line, "If false") {
+			set monkeys(mi, "ifFalse") = $piece(line, "throw to monkey ", 2)
+		}
+		if (line = "") || stream.AtEnd {
+			set monkeys(mi, "inspected") = 0
+			set mi = mi + 1
+		}
+	}
+
+	return mi
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    kill monkeys
+	set monkeyCount = ..GetMonkeys(.monkeys)
+	
+	for i = 1:1:20 {
+		for j = 0:1:monkeyCount-1 {
+			for k = 1:1:monkeys(j, "itemCount") {
+				set old = monkeys(j, "items", k)
+				set a = $piece(monkeys(j, "operation"), " ", 1)
+				set op = $piece(monkeys(j, "operation"), " ", 2)
+				set b = $piece(monkeys(j, "operation"), " ", 3)
+				set:(a="old") a = old
+				set:(b="old") b = old
+				set:(op="+") n = (a + b) \ 3
+				set:(op="*") n = (a * b) \ 3
+				if (n # monkeys(j, "test"))=0 {
+					set index = monkeys(j, "ifTrue")
+				} else {
+					set index = monkeys(j, "ifFalse")
+				}
+				set monkeys(index, "itemCount") = monkeys(index, "itemCount") + 1
+				set monkeys(index, "items", monkeys(index, "itemCount")) = n
+			}
+			set monkeys(j, "inspected") = monkeys(j, "inspected") + monkeys(j, "itemCount")
+			set monkeys(j, "itemCount") = 0
+		}
+	}
+	
+	set a = 0
+	set b = 0
+	for j = 0:1:monkeyCount-1 {
+		if monkeys(j, "inspected") >= a {
+			set b = a
+			set a = monkeys(j, "inspected")
+		} elseif monkeys(j, "inspected") >= b {
+			set b = monkeys(j, "inspected")
+		}
+	}
+	
+	return a * b
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    kill monkeys
+	set monkeyCount = ..GetMonkeys(.monkeys)
+	
+	set d = 1
+	for j = 0:1:monkeyCount-1 {
+		set d = d * monkeys(j, "test")
+	}
+	
+	for i = 1:1:10000 {
+		for j = 0:1:monkeyCount-1 {
+			for k = 1:1:monkeys(j, "itemCount") {
+				set old = monkeys(j, "items", k)
+				set a = $piece(monkeys(j, "operation"), " ", 1)
+				set op = $piece(monkeys(j, "operation"), " ", 2)
+				set b = $piece(monkeys(j, "operation"), " ", 3)
+				set:(a="old") a = old
+				set:(b="old") b = old
+				set:(op="+") n = (a + b) # d
+				set:(op="*") n = (a * b) # d
+				if (n # monkeys(j, "test"))=0 {
+					set index = monkeys(j, "ifTrue")
+				} else {
+					set index = monkeys(j, "ifFalse")
+				}
+				set monkeys(index, "itemCount") = monkeys(index, "itemCount") + 1
+				set monkeys(index, "items", monkeys(index, "itemCount")) = n
+			}
+			set monkeys(j, "inspected") = monkeys(j, "inspected") + monkeys(j, "itemCount")
+			set monkeys(j, "itemCount") = 0
+		}
+	}
+	
+	set a = 0
+	set b = 0
+	for j = 0:1:monkeyCount-1 {
+		if monkeys(j, "inspected") >= a {
+			set b = a
+			set a = monkeys(j, "inspected")
+		} elseif monkeys(j, "inspected") >= b {
+			set b = monkeys(j, "inspected")
+		}
+	}
+	
+	return a * b
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day12">
+<Super>dc.aoc2022.Base</Super>
+<TimeChanged>66470,40292.508837</TimeChanged>
+<TimeCreated>66470,40292.508837</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>Day12.txt</Default>
+</Parameter>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set part1 = ..Part1()
+	set part2 = ..Part2()
+
+    write part1,!
+    write part2,!
+]]></Implementation>
+</Method>
+
+<Method name="Solve">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>allStarts:%Integer</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+    set li = 0
+    
+    kill elevation
+    kill pathLength
+    kill q
+    kill queued
+    set qCount = 0
+    
+    set di(1) = -1
+    set di(2) = 1
+    set di(3) = 0
+    set di(4) = 0
+    set dj(1) = 0
+    set dj(2) = 0
+    set dj(3) = -1
+    set dj(4) = 1
+    
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		set width = $length(line)
+		for j = 0:1:width - 1 {
+			set c = $extract(line, j + 1)
+			set elevation(li, j) = $ascii(c)
+			set pathLength(li, j) = 99999999
+			set queued(li, j) = 0
+			
+			if c = "E" {
+				set elevation(li, j) = $ascii("z")
+				set target(0) = li
+				set target(1) = j
+			}
+			
+			if (c = "S") || (allStarts && (c = "a")){
+				set elevation(li, j) = $ascii("a")
+				set pathLength(li, j) = 0
+				set queued(li, j) = 1
+				set qCount = qCount + 1
+				set q(qCount, 0) = li
+				set q(qCount, 1) = j
+			}
+		}
+		set li = li + 1
+	}
+	set height = li
+	
+	set qi = 0
+	while qi<qCount {
+		set qi = qi + 1
+		set ci = q(qi, 0)
+		set cj = q(qi, 1)
+
+		for j = 1:1:4 {
+			set ni = ci + di(j)
+			set nj = cj + dj(j)
+			if (ni >= 0) && (nj >=0) && (ni < height) && (nj < width) {
+				if (elevation(ni, nj) - 1) <= elevation(ci, cj) {
+					if pathLength(ni, nj) >= (pathLength(ci, cj) + 1) {
+						set pathLength(ni, nj) = pathLength(ci, cj) + 1
+					}
+					if 'queued(ni, nj) {
+						set queued(ni, nj) = 1
+						set qCount = qCount + 1
+						set q(qCount, 0) = ni
+						set q(qCount, 1) = nj
+					}
+				}
+			}
+		}
+	}
+
+	return pathLength(target(0), target(1))
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set result = ..Solve(0)
+	return result
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set result = ..Solve(1)
+	return result
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day13">
+<Super>dc.aoc2022.Base</Super>
+<TimeChanged>66470,52257.335314</TimeChanged>
+<TimeCreated>66470,40292.60276</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>Day13.txt</Default>
+</Parameter>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+  set part1 = ..Part1()
+  set part2 = ..Part2()
+
+    write part1,!
+    write part2,!
+]]></Implementation>
+</Method>
+
+<Method name="Compare">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>left,right</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+  set arrayLeft = $find($classname(left), "DynamicArray")
+  set arrayRight = $find($classname(right), "DynamicArray")
+  
+  if (arrayLeft) && (arrayRight) {
+    set leftCount = 0
+    set iterLeft = left.%GetIterator()
+#;    while iterLeft.%GetNext(.key, .value, .type ) {
+    while iterLeft.%GetNext(.key, .value  ) {
+      set leftCount = leftCount + 1
+      set leftValues(leftCount) = value
+      set leftTypes(leftCount) = "" ;type
+    } 
+
+    set rightCount = 0
+    set iterRight = right.%GetIterator()
+#;    while iterRight.%GetNext(.key, .value, .type ) {
+    while iterRight.%GetNext(.key, .value ) {
+      set rightCount = rightCount + 1
+      set rightValues(rightCount) = value
+      set rightTypes(rightCount) = "" ;type
+    }
+    
+    set count = leftCount
+    set:(rightCount<leftCount) count = rightCount
+
+    for i = 1:1:count {
+      set result = ..Compare(leftValues(i), rightValues(i))
+      if (result < 0) return -1
+      if (result > 0) return 1
+    }
+    return leftCount - rightCount
+  } elseif (arrayRight) {
+    set nextLeft = [].%Push(left)
+    return ..Compare(nextLeft, right)
+  } elseif (arrayLeft) {
+    set nextRight = [].%Push(right)
+    return ..Compare(left, nextRight)
+  } else {
+    return left - right
+  }
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+    set li = 0
+    set i = 0
+    set sum = 0
+  while 'stream.AtEnd {
+    set line = $zstrip(stream.ReadLine(), "*C")
+#;    zw line b 
+    if line'="" {
+      if (li # 2) {
+        set right = [].%FromJSON(line)
+      } else {
+        set left = [].%FromJSON(line)
+      }
+      set li = li + 1
+      if '(li # 2) {
+        set c = ..Compare(left, right)
+        set i = i + 1
+        if c < 0 {
+          set sum = sum + i
+        }
+      }
+    }
+  }
+
+  return sum
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+
+  kill data
+  set data(1) = [].%FromJSON("[[2]]")
+  set data(2) = [].%FromJSON("[[6]]")
+  set li = 2
+  while 'stream.AtEnd {
+    set line = $zstrip(stream.ReadLine(), "*C")
+    if line'="" {
+      set li = li + 1
+      set data(li) = [].%FromJSON(line)
+    }
+  }
+  
+  // Bubble sort :)
+  for i = 1:1:li {
+    for j = 1:1:li-i {
+      set cmp = ..Compare(data(j), data(j + 1))
+      if cmp > 0 {
+        set t = data(j)
+        set data(j) = data(j + 1)
+        set data(j + 1) = t
+      }
+    }
+  }
+  
+  for i = 1:1:li {
+    set str = data(i).%ToJSON()
+    set:(str = "[[2]]") n1 = i
+    set:(str = "[[6]]") n2 = i
+  }
+
+  return n1 * n2
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day14">
+<Super>dc.aoc2022.Base</Super>
+<TimeChanged>66470,40292.695571</TimeChanged>
+<TimeCreated>66470,40292.695571</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>Day14.txt</Default>
+</Parameter>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set part1 = ..Part1()
+	set part2 = ..Part2()
+
+    write part1,!
+    write part2,!
+]]></Implementation>
+</Method>
+
+<Method name="BuildCave">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&cave,&height]]></FormalSpec>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+
+	set height = 0
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		set n = $length(line, " -> ")
+		set lineStart = $piece(line, " -> ", 1)
+		for i = 2:1:n {
+			set lineEnd = $piece(line, " -> ", i)
+			set si = $piece(lineStart, ",", 1)
+			set sj = $piece(lineStart, ",", 2)
+			set ei = $piece(lineEnd, ",", 1)
+			set ej = $piece(lineEnd, ",", 2)
+			
+			set:(sj>height) height = sj
+			set:(ej>height) height = ej
+			
+			set cave(sj,si) = 1
+			
+			while (si'=ei) || (sj'=ej) {
+				if (si'=ei) {
+					set si = si + ((ei - si) / $zabs(ei - si))
+				}
+				if (sj'=ej) {
+					set sj = sj + ((ej - sj) / $zabs(ej - sj))
+				}
+				set cave(sj,si) = 1
+			}
+
+			set lineStart = lineEnd
+		}
+	}
+	set height = height + 1
+
+	return 0
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set t = ..BuildCave(.cave, .height)
+
+	set count = 0
+	set hasSettled = 1
+	while hasSettled {
+		set si = 500
+		set sj = 0
+		set count = count + 1
+		set hasSettled = 0
+		
+		while ('hasSettled) && (sj < height) {
+			if '$data(cave(sj + 1, si)) {
+				set sj = sj + 1
+			} else {
+				if '$data(cave(sj + 1, si - 1)) {
+					set sj = sj + 1
+					set si = si - 1
+				} elseif '$data(cave(sj + 1, si + 1)) {
+					set sj = sj + 1
+					set si = si + 1
+				} else {
+					set cave(sj, si) = 1
+					set hasSettled = 1
+				}
+			}
+		}
+	}
+
+	return count - 1
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set t = ..BuildCave(.cave, .height)
+
+	set height = height + 2
+	for i = 1:1:1000 {
+		set cave(height - 1, i) = 1
+	}
+
+	set count = 0
+	set si = 0
+	set sj = 0
+	while (si '= 500)|| (sj '= 0) {
+		set si = 500
+		set sj = 0
+		set count = count + 1
+		set hasSettled = 0
+		
+		while ('hasSettled) && (sj < height) {
+			if '$data(cave(sj + 1, si)) {
+				set sj = sj + 1
+			} else {
+				if '$data(cave(sj + 1, si - 1)) {
+					set sj = sj + 1
+					set si = si - 1
+				} elseif '$data(cave(sj + 1, si + 1)) {
+					set sj = sj + 1
+					set si = si + 1
+				} else {
+					set cave(sj, si) = 1
+					set hasSettled = 1
+				}
+			}
+		}
+	}
+
+	return count
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day15">
+<Super>dc.aoc2022.Base</Super>
+<TimeChanged>66470,40292.79102</TimeChanged>
+<TimeCreated>66470,40292.79102</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>Day15.txt</Default>
+</Parameter>
+
+<Parameter name="MaxCoord">
+<Default>4000000</Default>
+</Parameter>
+
+<Parameter name="MinChunkSize">
+<Default>4</Default>
+</Parameter>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set part1 = ..Part1()
+	set part2 = ..Part2()
+
+    write part1,!
+    write part2,!
+]]></Implementation>
+</Method>
+
+<Method name="GetDistance">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>a:%Integer,b:%Integer,c:%Integer,d:%Integer</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[	return $zabs(a - c) + $zabs(b - d)
+]]></Implementation>
+</Method>
+
+<Method name="Intersects">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>a1:%Integer,a2:%Integer,b1:%Integer,b2:%Integer</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[	return (a1 >= b1) && (a1 <= b2) || (b1 >= a1) && (b1 <= a2)
+]]></Implementation>
+</Method>
+
+<Method name="GetBeacons">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&beacons,&beaconCount]]></FormalSpec>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+    set m = ##class(%Regex.Matcher).%New("Sensor at x=(-?\d+), y=(-?\d+): closest beacon is at x=(-?\d+), y=(-?\d+)")
+
+	set beaconCount = 0
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		if m.Match(line) {
+			set beaconCount = beaconCount + 1
+			set beacons(beaconCount, "sx") = m.Group(1)
+			set beacons(beaconCount, "sy") = m.Group(2)
+			set beacons(beaconCount, "bx") = m.Group(3)
+			set beacons(beaconCount, "by") = m.Group(4)
+		}
+	}
+
+	return 0
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set t = ..GetBeacons(.beacons, .beaconCount)
+	
+	set targetY = 2000000
+	set xBeaconCount = 0
+	for i = 1:1:beaconCount {
+		if beacons(i, "by") = targetY {
+			set isUnique = 1
+			for j = 1:1:i-1 {
+				if (beacons(j, "by") = targetY) && (beacons(i, "bx") = beacons(j, "bx")) {
+					set isUnique = 0
+				}
+			}
+			if isUnique {
+				set xBeaconCount = xBeaconCount + 1
+			}
+		}
+	}
+	
+	set xTargetsCount = 0
+	for i = 1:1:beaconCount {
+		set d = ..GetDistance(beacons(i, "sx"), beacons(i, "sy"), beacons(i, "bx"), beacons(i, "by"))
+		set dy = ..GetDistance(0, targetY, 0, beacons(i, "sy"))
+		set xInt = $zabs(d - dy)
+		if dy < d {
+			set xTargetsCount = xTargetsCount + 1
+			set xTargets(xTargetsCount, "from") = beacons(i, "sx") - xInt
+			set xTargets(xTargetsCount, "to") = beacons(i, "sx") + xInt
+		}
+	}
+	
+	set change = 1
+	while change {
+		set nextCount = 0
+		set change = 0
+		kill next
+		
+		for i = 1:1:xTargetsCount {
+			for j = 1:1:i - 1 {
+				if 'change {
+					set intersects = ..Intersects(xTargets(i, "from"), xTargets(i, "to"), xTargets(j, "from"), xTargets(j, "to"))
+					if intersects {
+						set change = 1
+						for k = 1:1:xTargetsCount {
+							if (k'=i) && (k'=j) {
+								set nextCount = nextCount + 1
+								set next(nextCount, "from") = xTargets(k, "from")
+								set next(nextCount, "to") = xTargets(k, "to")
+							}
+						}
+						set nfrom = xTargets(i, "from")
+						set:(xTargets(j, "from") < nfrom) nfrom = xTargets(j, "from")
+						set nto = xTargets(i, "to")
+						set:(xTargets(j, "to") > nto) nto = xTargets(j, "to")
+						set nextCount = nextCount + 1
+						set next(nextCount, "from") = nfrom
+						set next(nextCount, "to") = nto
+					}
+				}
+			}
+		}
+		
+		if change {
+			set xTargetsCount = nextCount
+			for i = 1:1:nextCount {
+				set xTargets(i, "from") = next(i, "from")
+				set xTargets(i, "to") = next(i, "to")
+			}
+		}
+	}
+	
+	set totalLength = 0
+	for i = 1:1:xTargetsCount {
+		set totalLength = totalLength + xTargets(i, "to") - xTargets(i, "from") + 1
+	}
+
+	return totalLength - xBeaconCount
+]]></Implementation>
+</Method>
+
+<Method name="IsCoveredByOne">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[x:%Integer,y:%Integer,chunkSize:%Integer,&beacons,beaconCount:%Integer]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	for i=1:1:beaconCount {
+		set sx = beacons(i, "sx")
+		set sy = beacons(i, "sy")
+		set d = ..GetDistance(sx, sy, beacons(i, "bx"), beacons(i, "by"))
+		set d1 = ..GetDistance(x, y, sx, sy)
+		if d1 <= d {
+			set m1 = x + chunkSize
+			set:(m1>..#MaxCoord) m1 = ..#MaxCoord
+			set d2 = ..GetDistance(m1, y, sx, sy)
+			if d2 <= d {
+				set m2 = y + chunkSize
+				set:(m2>..#MaxCoord) m2 = ..#MaxCoord
+				set d3 = ..GetDistance(x, m2, sx, sy)
+				if d3 <= d {
+					set d4 = ..GetDistance(m1, m2, sx, sy)
+					if d4 <= d {
+						return 1
+					}
+				}
+			}
+		}
+	}
+	return 0
+]]></Implementation>
+</Method>
+
+<Method name="Find">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[x:%Integer,y:%Integer,chunkSize:%Integer,&beacons,beaconCount:%Integer,&notCovered,&notCoveredCount]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set covered = ..IsCoveredByOne(x, y, chunkSize, .beacons, beaconCount)
+	if 'covered {
+		if chunkSize <= ..#MinChunkSize {
+			set notCoveredCount = notCoveredCount + 1
+			set notCovered(notCoveredCount, "x") = x
+			set notCovered(notCoveredCount, "y") = y
+			set notCovered(notCoveredCount, "chunkSize") = chunkSize
+		} else {
+			set rup = chunkSize \ 2
+			set ds = (chunkSize / 2)
+			set:(ds'=rup) ds = rup + 1
+			set t = ..Find(x, y, ds, .beacons, beaconCount, .notCovered, .notCoveredCount)
+			set t = ..Find(x + ds, y, ds, .beacons, beaconCount, .notCovered, .notCoveredCount)
+			set t = ..Find(x, y + ds, ds, .beacons, beaconCount, .notCovered, .notCoveredCount)
+			set t = ..Find(x + ds, y + ds, ds, .beacons, beaconCount, .notCovered, .notCoveredCount)
+		}
+	}
+	return 1
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set t = ..GetBeacons(.beacons, .beaconCount)
+    set notCoveredCount = 0
+    
+	set t = ..Find(0, 0, ..#MaxCoord, .beacons, beaconCount, .notCovered, .notCoveredCount)
+	write "[DEBUG] Non Covered Regions: ",notCoveredCount,!
+	for k = 1:1:notCoveredCount {
+		set x = notCovered(k, "x")
+		set y = notCovered(k, "y")
+		set chunkSize = notCovered(k, "chunkSize")
+		for i = x:1:x+chunkSize {
+			for j = y:1:y+chunkSize {
+				set covered = ..IsCoveredByOne(i, j, 0, .beacons, beaconCount)
+				if 'covered {
+					set frequency = i * 4000000 + j
+					return frequency
+				}
+			}
+		}
+	}
+	
+	return 0
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day16">
+<Super>dc.aoc2022.Base</Super>
+<TimeChanged>66470,40292.887237</TimeChanged>
+<TimeCreated>66470,40292.887237</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>Day16.txt</Default>
+</Parameter>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set part1 = ..Part1()
+	set part2 = ..Part2()
+
+    write part1,!
+    write part2,!
+]]></Implementation>
+</Method>
+
+<Method name="GetDistance">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&graph,nodeFrom:%String,nodeTo:%String]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	if nodeFrom = nodeTo {
+		return 0
+	}
+
+	set qLength = 1
+	set q(1, "node") = nodeFrom
+	set q(1, "length") = 0
+	set visited(nodeFrom) = 1
+
+	set qi = 0
+    while (qi < qLength) {
+	    set qi = qi + 1
+	    set node = q(qi, "node")
+	    set length = q(qi, "length")
+	    
+	    for i = 1:1:graph(node, "count") {
+		    set neighbor = graph(node, i)
+		    if '$data(visited(neighbor)) {
+			    if neighbor = nodeTo {
+				    return length + 1
+			    }
+			    set visited(neighbor) = 1
+			    set qLength = qLength + 1
+				set q(qLength, "node") = neighbor
+				set q(qLength, "length") = length + 1
+
+		    }
+        }
+    }
+    return -1
+]]></Implementation>
+</Method>
+
+<Method name="PrepareInput">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&graph,&rates,&distances,&valves,&valvesCount,&nonZeroValves,&nonZeroCount]]></FormalSpec>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+    set m = ##class(%Regex.Matcher).%New("Valve (..) has flow rate=(\d+); tunnels? leads? to valves? (.+)")
+
+    set valvesCount = 0
+    set nonZeroCount = 0
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		if m.Match(line) {
+			set valve = m.Group(1)
+			set rate = m.Group(2)
+			set nodes = m.Group(3)
+			set nodeCount = $length(nodes, ", ")
+
+			set valvesCount = valvesCount + 1
+			set valves(valvesCount) = valve
+
+			set rates(valve) = rate
+			if rate '= 0 {
+				set nonZeroCount = nonZeroCount + 1
+				set nonZeroValves(nonZeroCount) = valve
+			}
+
+			set graph(valve, "count") = nodeCount
+			for i = 1:1:nodeCount {
+				set graph(valve, i) = $piece(nodes, ", ", i)
+			}
+		}
+	}
+	
+	for i = 1:1:valvesCount {
+		for j = 1:1:valvesCount {
+			set distances(valves(i), valves(j)) = ..GetDistance(.graph, valves(i), valves(j))
+		}
+	}
+
+	return 1
+]]></Implementation>
+</Method>
+
+<Method name="GetKey">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&nodes,count:%Integer]]></FormalSpec>
+<Implementation><![CDATA[
+	for i = 1:1:count{
+		set key(i) = nodes(i, "valve")
+	}
+	for i = 1:1:count {
+		for j = 1:1:count - 1 {
+			set c1 = ($ascii($extract(key(j),1)) * 300) + $ascii($extract(key(j),2))
+			set c2 = ($ascii($extract(key(j + 1),1)) * 300) + $ascii($extract(key(j + 1),2))
+			if (c1 > c2) {
+				set t = key(j)
+				set key(j) = key(j + 1)
+				set key(j + 1) = t
+			}
+		}
+	}
+	set result = key(1)
+	for i = 2:1:count{
+		set result = result _ "," _ key(i)
+	}
+	return result
+]]></Implementation>
+</Method>
+
+<Method name="GetRates">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&distances,&rates,valve:%String,minutes:%Integer,&left,leftCount:%Integer,&opened,openedCount:%Integer]]></FormalSpec>
+<Implementation><![CDATA[
+	set sum = 0
+	for i=1:1:openedCount {
+		set valve = opened(i, "valve")
+		set minutes = opened(i, "minutes")
+		set sum = sum + (rates(valve) * minutes)
+	}
+	if sum > 0 {
+		set ^allRatesCount = ^allRatesCount + 1
+		set ^allRates(^allRatesCount, "total") = sum
+		set ^allRates(^allRatesCount, "key") = ..GetKey(.opened, openedCount)
+		set ^allRates(^allRatesCount, "keyLength") = openedCount
+	}
+	
+	for i=1:1:leftCount {
+		set other = left(i)
+		set newMinutes = minutes - distances(valve,other) - 1
+		if newMinutes >= 1 {
+			for j = 1:1:openedCount {
+				set newOpened(j,"valve") = opened(j, "valve")
+				set newOpened(j,"minutes") = opened(j, "minutes")
+			}
+			set newOpenedCount = openedCount + 1
+			set newOpened(newOpenedCount, "valve") = other
+			set newOpened(newOpenedCount, "minutes") = newMinutes
+			
+			set newLeftCount = 0
+			for j = 1:1:leftCount {
+				if j '= i {
+					set newLeftCount = newLeftCount + 1
+					set newLeft(newLeftCount) = left(j)
+				}
+			}
+
+			set t = ..GetRates(.distances, .rates, other, newMinutes, .newLeft, newLeftCount, .newOpened, newOpenedCount)
+		}
+	}
+	return 1
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set t = ..PrepareInput(.graph, .rates, .distances, .valves, .valvesCount, .nonZeroValves, .nonZeroCount)
+
+	kill ^allRates
+	set ^allRatesCount = 0
+	set t = ..GetRates(.distances, .rates, "AA", 30, .nonZeroValves, nonZeroCount, .opened, 0)
+	
+	set bestRate = 0
+	for i = 1:1:^allRatesCount {
+		set:(^allRates(i, "total") > bestRate) bestRate = ^allRates(i, "total")
+	}
+
+	return bestRate
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set t = ..PrepareInput(.graph, .rates, .distances, .valves, .valvesCount, .nonZeroValves, .nonZeroCount)
+
+	kill ^allRates
+	set ^allRatesCount = 0
+	set t = ..GetRates(.distances, .rates, "AA", 26, .nonZeroValves, nonZeroCount, .opened, 0)
+	
+	set keyCount = 0
+	for i = 1:1:^allRatesCount {
+		set key = ^allRates(i, "key")
+		set keyLength = ^allRates(i, "keyLength")
+		set total = ^allRates(i, "total")
+		
+		if '$data(maxTotals(key)) {
+			set maxTotals(key) = 0
+			set keyCount = keyCount + 1
+			set keys(keyCount) = key
+			set keyLength(keyCount) = keyLength
+		}
+		set:(total>maxTotals(key)) maxTotals(key) = total
+	}
+	
+	set bestRate = 0
+	for pi = 1:1:keyCount {
+		for ei = 1:1:keyCount {
+			kill visitedValves
+			set visitedValvesCount = 0
+		
+			for i = 1:1:keyLength(pi){
+				set key = $piece(keys(pi),",",i)
+				if '$data(visitedValves(key)) {
+					set visitedValves(key) = 1
+					set visitedValvesCount = visitedValvesCount + 1
+				}
+			}
+		
+			for i = 1:1:keyLength(ei){
+				set key = $piece(keys(ei),",",i)
+				if '$data(visitedValves(key)) {
+					set visitedValves(key) = 1
+					set visitedValvesCount = visitedValvesCount + 1
+				}
+			}
+
+			if visitedValvesCount = (keyLength(pi) + keyLength(ei)) {
+				set score = maxTotals(keys(pi)) + maxTotals(keys(ei))
+				set:(score > bestRate) bestRate = score
+			}
+		}
+
+	}
+
+	return bestRate
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day17">
+<Super>dc.aoc2022.Base</Super>
+<TimeChanged>66470,40292.981646</TimeChanged>
+<TimeCreated>66470,40292.981646</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>Day17.txt</Default>
+</Parameter>
+
+<Method name="Signature">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&cave,highest:%Integer]]></FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	set width = 7
+	set result = ""
+	set lim = highest - 30
+	set:(lim < 0) lim = 0
+	for i = (highest-1):-1:lim {
+		for j = 0:1:width-1 {
+			set result = result _ cave(i, j)
+		}
+	}
+	return result
+]]></Implementation>
+</Method>
+
+<Method name="PrintCave">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&cave,h:%Integer]]></FormalSpec>
+<Implementation><![CDATA[
+	set width = 7
+	for i = h-1:-1:0 {
+		write "|"
+		for j = 0:1:width - 1{
+			write cave(i, j)
+		}
+		write "|",!
+	}
+	write "|||||||||",!!
+	return 0
+]]></Implementation>
+</Method>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+    set data = $zstrip(stream.ReadLine(), "*C")
+
+	set part1 = 0
+	set part2 = 0
+	
+	set height = 20000
+	set width = 7
+	for i = 0:1:height-1 {
+		for j = 0:1:width-1 {
+			set cave(i, j) = "."
+		}
+	}
+	
+	set rocks(0, "length") = 1
+	set rocks(0, "width") = 4
+	set rocks(0, 0) = "####"
+	
+	set rocks(1, "length") = 3
+	set rocks(1, "width") = 3
+	set rocks(1, 0) = " # "
+	set rocks(1, 1) = "###"
+	set rocks(1, 2) = " # "
+
+	set rocks(2, "length") = 3
+	set rocks(2, "width") = 3
+	set rocks(2, 0) = "  #"
+	set rocks(2, 1) = "  #"
+	set rocks(2, 2) = "###"
+
+	set rocks(3, "length") = 4
+	set rocks(3, "width") = 1
+	set rocks(3, 0) = "#"
+	set rocks(3, 1) = "#"
+	set rocks(3, 2) = "#"
+	set rocks(3, 3) = "#"
+
+	set rocks(4, "length") = 2
+	set rocks(4, "width") = 2
+	set rocks(4, 0) = "##"
+	set rocks(4, 1) = "##"
+
+	kill seen
+	set L = 1000000000000
+	set wind = 0
+	set highest = 0
+	set added = 0
+	set rock = 0
+
+	while (rock < L){
+		// set t = ..PrintCave(.cave, highest)
+		set ri = rock # 5
+		set bottomLine = highest + 3
+		set rockOffset = 2
+
+		set done = 0
+		while (bottomLine >= 0) && ('done) {
+			set wi = wind # $length(data)
+			set wind = wind + 1
+			if ($extract(data, wi + 1) = "<") && (rockOffset > 0) {
+				set canMove = 1
+				if (ri = 0) || (ri = 3) || (ri = 4) {
+					for i = 0:1:rocks(ri, "length")-1 {
+						if cave(bottomLine + i, rockOffset - 1) = "#" {
+							set canMove = 0
+						}
+					}
+				}
+				if (ri = 1) {
+					if (cave(bottomLine, rockOffset) = "#") || (cave(bottomLine+1,rockOffset-1) = "#") || (cave(bottomLine+2, rockOffset) = "#") {
+						set canMove = 0
+					}
+				}
+				if (ri = 2) {
+					if (cave(bottomLine, rockOffset-1) = "#") {
+						set canMove = 0
+					}
+				}
+				
+        		if (canMove) {
+	        		set rockOffset = rockOffset - 1
+        		}
+			}
+
+			if ($extract(data, wi + 1) = ">") && (rockOffset < (width - rocks(ri, "width"))) {
+				set canMove = 1
+
+				if (ri = 0) || (ri = 2) || (ri = 3) || (ri = 4) {
+					for i = 0:1:rocks(ri, "length")-1 {
+						if cave(bottomLine + i, rockOffset + rocks(ri, "width")) = "#" {
+							set canMove = 0
+						}
+					}
+				}
+				if (ri = 1) {
+					if (cave(bottomLine, rockOffset + 2) = "#") || (cave(bottomLine+1, rockOffset + 3) = "#") || (cave(bottomLine+2, rockOffset + 2) = "#") {
+						set canMove = 0
+					}
+
+				}
+
+        		if (canMove) {
+	        		set rockOffset = rockOffset + 1
+        		}
+			}
+			
+			if bottomLine = 0 {
+				set done = 1
+			} else {
+				set done = 0
+				for i = 0:1:rocks(ri, "width")-1 {
+					set c1 = $extract(rocks(ri, rocks(ri, "length") - 1), i + 1)
+					set c2 = cave(bottomLine-1, i+rockOffset)
+					if (c1 = "#") && (c2 = "#") {
+						set done = 1
+					}
+				}
+				if ri = 1 {
+					if (cave(bottomLine, rockOffset) = "#") || (cave(bottomLine, rockOffset + 2) = "#") {
+						set done = 1
+					}
+				}
+
+				if 'done {
+					set bottomLine = bottomLine - 1
+				}
+			}
+		}
+
+		set t = bottomLine + rocks(ri, "length")
+		set:(t>highest) highest = t
+		for i=0:1:(rocks(ri,"length")-1) {
+			for j=0:1:(rocks(ri,"width")-1) {
+				if ($extract(rocks(ri,i), j + 1) = "#") {
+					set cave(bottomLine + rocks(ri, "length") - 1 - i, rockOffset + j) = "#"
+				}
+			}
+		}
+
+		set sig = ..Signature(.cave, highest)
+		if (rock > 2022) && $data(seen(wind#$length(data), rock#5, sig, "present")) {
+			set oldt = seen(wind#$length(data), rock#5, sig, "oldt")
+			set oldy = seen(wind#$length(data), rock#5, sig, "oldy")
+			set dy = highest - oldy
+			set dt = rock - oldt
+			set amt = (L - rock) \ dt
+			set added = added + (amt * dy)
+			set rock = rock + (amt * dt)
+		}
+		set seen(wind#$length(data), rock#5, sig, "present") = 1
+		set seen(wind#$length(data), rock#5, sig, "oldt") = rock
+		set seen(wind#$length(data), rock#5, sig, "oldy") = highest
+
+		if rock=2021 {
+			set part1 = highest
+		}
+		set rock = rock + 1
+	}
+
+	set part2 = highest + added
+
+	write part1,!
+	write part2,!
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day18">
+<Super>dc.aoc2022.Base</Super>
+<TimeChanged>66470,40293.075244</TimeChanged>
+<TimeCreated>66470,40293.075244</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>Day18.txt</Default>
+</Parameter>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set part1 = ..Part1()
+	set part2 = ..Part2()
+
+    write part1,!
+    write part2,!
+]]></Implementation>
+</Method>
+
+<Method name="ReadCubes">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&cubes,&cubeCount,&d,&map]]></FormalSpec>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+
+	set d = 0
+	set cubeCount = 0
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		set x = $piece(line, ",", 1) + 1
+		set y = $piece(line, ",", 2) + 1
+		set z = $piece(line, ",", 3) + 1
+		
+		set cubes(x, y, z) = 1
+		set cubeCount = cubeCount + 1
+		
+		set:(x>d) d = x
+		set:(y>d) d = y
+		set:(z>d) d = z
+	}
+	set d = d + 2
+	
+	set map(1, "x") = 0
+	set map(1, "y") = 0
+	set map(1, "z") = -1
+	set map(2, "x") = 0
+	set map(2, "y") = 0
+	set map(2, "z") = 1
+	set map(3, "x") = 0
+	set map(3, "y") = -1
+	set map(3, "z") = 0
+	set map(4, "x") = 0
+	set map(4, "y") = 1
+	set map(4, "z") = 0
+	set map(5, "x") = -1
+	set map(5, "y") = 0
+	set map(5, "z") = 0
+	set map(6, "x") = 1
+	set map(6, "y") = 0
+	set map(6, "z") = 0
+	
+	return 0
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set t = ..ReadCubes(.cubes, .cubeCount, .d, .map)
+	
+	set neighbors = 0
+	for i = 0:1:d {
+		for j = 0:1:d {
+			for k = 0:1:d {
+				if $data(cubes(i, j, k)) {
+					set n = 0
+					for l = 1:1:6 {
+						set ni = map(l, "x")
+						set nj = map(l, "y")
+						set nk = map(l, "z")
+						if $data(cubes(i + ni, j + nj, k + nk)) {
+							set n = n + 1
+						}
+					}
+					set neighbors = neighbors + n
+				}
+			}
+		}
+	}
+
+	return (cubeCount * 6) - neighbors
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set t = ..ReadCubes(.cubes, .cubeCount, .d, .map)
+	
+	set visited(0, 0, 0) = 1
+	
+	set qLength = 1
+	set q(1, "x") = 0
+	set q(1, "y") = 0
+	set q(1, "z") = 0
+	set outsideArea = 0
+	set qi = 0
+	
+	while qi < qLength {
+		set qi = qi + 1
+		set i = q(qi, "x")
+		set j = q(qi, "y")
+		set k = q(qi, "z")
+		
+		
+		for l = 1:1:6 {
+			set ni = map(l, "x")
+			set nj = map(l, "y")
+			set nk = map(l, "z")
+			if '$data(visited(i + ni, j + nj, k + nk)) {
+				if (i + ni >= 0) && (j + nj >= 0) && (k + nk >= 0) && (i + ni < d) && (j + nj < d) && (k + nk < d) {
+					if $data(cubes(i + ni, j + nj, k + nk)) {
+						set outsideArea = outsideArea + 1
+					} else {
+						set visited(i + ni, j + nj, k + nk) = 1
+						set qLength = qLength + 1
+						set q(qLength, "x") = i + ni
+						set q(qLength, "y") = j + nj
+						set q(qLength, "z") = k + nk
+					}
+				}
+			}
+		}
+
+	}
+
+	return outsideArea
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day19">
+<Super>dc.aoc2022.Base</Super>
+<TimeChanged>66470,40293.174129</TimeChanged>
+<TimeCreated>66470,40293.174129</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>Day19.txt</Default>
+</Parameter>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set part1 = ..Part1()
+	set part2 = ..Part2()
+
+    write part1,!
+    write part2,!
+]]></Implementation>
+</Method>
+
+<Method name="ReadBlueprints">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&blueprints,&blueprintCount]]></FormalSpec>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+    set m = ##class(%Regex.Matcher).%New("Blueprint (\d+): Each ore robot costs (\d+) ore\. Each clay robot costs (\d+) ore\. Each obsidian robot costs (\d+) ore and (\d+) clay\. Each geode robot costs (\d+) ore and (\d+) obsidian\.")
+
+	set blueprintCount = 0
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		if m.Match(line) {
+			set blueprintCount = blueprintCount + 1
+			set blueprints(blueprintCount, "id") = m.Group(1)
+			set blueprints(blueprintCount, "oreOre") = m.Group(2)
+			set blueprints(blueprintCount, "clayOre") = m.Group(3)
+			set blueprints(blueprintCount, "obsOre") = m.Group(4)
+			set blueprints(blueprintCount, "obsClay") = m.Group(5)
+			set blueprints(blueprintCount, "geoOre") = m.Group(6)
+			set blueprints(blueprintCount, "geoObs") = m.Group(7)
+		}
+
+	}
+	
+	return 1
+]]></Implementation>
+</Method>
+
+<Method name="CanBuildBot">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&q,qi:%Integer,botType:%String]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	if botType = "ore" {
+		return (q(qi, "botsOre") > 0)
+	}
+	if botType = "clay" {
+		return (q(qi, "botsOre") > 0)
+	}
+	if botType = "obs" {
+		return (q(qi, "botsOre") > 0) && (q(qi, "botsClay") > 0)
+	}
+	if botType = "geo" {
+		return (q(qi, "botsOre") > 0) && (q(qi, "botsObs") > 0)
+	}
+]]></Implementation>
+</Method>
+
+<Method name="BuildBot">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&blueprints,bi:%Integer,&q,qi:%Integer,botType:%String]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	if botType = "ore" {
+		set q(qi, "resOre") = q(qi, "resOre") - blueprints(bi, "oreOre")
+	}
+	if botType = "clay" {
+		set q(qi, "resOre") = q(qi, "resOre") - blueprints(bi, "clayOre")
+	}
+	if botType = "obs" {
+		set q(qi, "resOre") = q(qi, "resOre") - blueprints(bi, "obsOre")
+		set q(qi, "resClay") = q(qi, "resClay") - blueprints(bi, "obsClay")
+	}
+	if botType = "geo" {
+		set q(qi, "resOre") = q(qi, "resOre") - blueprints(bi, "geoOre")
+		set q(qi, "resObs") = q(qi, "resObs") - blueprints(bi, "geoObs")
+	}
+	return 1
+]]></Implementation>
+</Method>
+
+<Method name="PushQ">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&q,qi:%Integer,&qLength]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set qLength = qLength + 1
+	set q(qLength, "botsOre") = q(qi, "botsOre")
+	set q(qLength, "botsClay") = q(qi, "botsClay")
+	set q(qLength, "botsObs") = q(qi, "botsObs")
+	set q(qLength, "botsGeo") = q(qi, "botsGeo")
+	set q(qLength, "timeLeft") = q(qi, "timeLeft")
+	set q(qLength, "resOre") = q(qi, "resOre")
+	set q(qLength, "resClay") = q(qi, "resClay")
+	set q(qLength, "resObs") = q(qi, "resObs")
+	set q(qLength, "resGeo") = q(qi, "resGeo")
+	return 1
+]]></Implementation>
+</Method>
+
+<Method name="AdvanceResources">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&q,qi:%Integer,time:%Integer]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set q(qi, "resOre") = q(qi, "resOre") + (q(qi, "botsOre") * time)
+	set q(qi, "resClay") = q(qi, "resClay") + (q(qi, "botsClay") * time)
+	set q(qi, "resObs") = q(qi, "resObs") + (q(qi, "botsObs") * time)
+	set q(qi, "resGeo") = q(qi, "resGeo") + (q(qi, "botsGeo") * time)
+	return 1
+]]></Implementation>
+</Method>
+
+<Method name="Schedule">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&blueprints,bi:%Integer,&q,qi:%Integer,&qLength,botType:%String,minTime:%Integer]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set t = ..CanBuildBot(.q, qi, botType)
+	if 't {
+		return 0
+	}
+	
+	set t = 0
+	if botType = "ore" {
+		set u = (blueprints(bi, "oreOre") - q(qi, "resOre")) / q(qi, "botsOre")
+		if u > 0 {
+			set ud = u \ 1
+			set:(ud'=u) u = ud + 1
+			set:(u>t) t = u
+		}
+	}
+	if botType = "clay" {
+		set u = (blueprints(bi, "clayOre") - q(qi, "resOre")) / q(qi, "botsOre")
+		if u > 0 {
+			set ud = u \ 1
+			set:(ud'=u) u = ud + 1
+			set:(u>t) t = u
+		}
+	}
+	if botType = "obs" {
+		set u = (blueprints(bi, "obsOre") - q(qi, "resOre")) / q(qi, "botsOre")
+		if u > 0 {
+			set ud = u \ 1
+			set:(ud'=u) u = ud + 1
+			set:(u>t) t = u
+		}
+		
+		set v = (blueprints(bi, "obsClay") - q(qi, "resClay")) / q(qi, "botsClay")
+		if v > 0 {
+			set vd = v \ 1
+			set:(vd'=v) v = vd + 1
+			set:(v>t) t = v
+		}
+	}
+	if botType = "geo" {
+		set u = (blueprints(bi, "geoOre") - q(qi, "resOre")) / q(qi, "botsOre")
+		if u > 0 {
+			set ud = u \ 1
+			set:(ud'=u) u = ud + 1
+			set:(u>t) t = u
+		}
+		
+		set v = (blueprints(bi, "geoObs") - q(qi, "resObs")) / q(qi, "botsObs")
+		if v > 0 {
+			set vd = v \ 1
+			set:(vd'=v) v = vd + 1
+			set:(v>t) t = v
+		}
+	}
+	
+
+	if (q(qi, "timeLeft") - t) < minTime {
+		return 0
+	}
+	
+	set x = ..PushQ(.q, qi, .qLength)
+	set q(qLength, "timeLeft") = q(qi, "timeLeft") - t - 1
+	set x = ..AdvanceResources(.q, qLength, t + 1)
+	set x = ..BuildBot(.blueprints, bi, .q, qLength, botType)
+	if botType = "ore" { set q(qLength, "botsOre") = q(qLength, "botsOre") + 1 }
+	if botType = "clay" { set q(qLength, "botsClay") = q(qLength, "botsClay") + 1 }
+	if botType = "obs" { set q(qLength, "botsObs") = q(qLength, "botsObs") + 1 }
+	if botType = "geo" { set q(qLength, "botsGeo") = q(qLength, "botsGeo") + 1 }
+	return 1
+]]></Implementation>
+</Method>
+
+<Method name="Solve">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&blueprints,bi:%Integer,timeLeft:%Integer]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set qLength = 1
+	set bestResult = 0
+	set earliestGeo = 0
+	set q(qLength, "botsOre") = 1
+	set q(qLength, "botsClay") = 0
+	set q(qLength, "botsObs") = 0
+	set q(qLength, "botsGeo") = 0
+	set q(qLength, "timeLeft") = timeLeft
+	set q(qLength, "resOre") = 0
+	set q(qLength, "resClay") = 0
+	set q(qLength, "resObs") = 0
+	set q(qLength, "resGeo") = 0
+
+	while qLength > 0 {
+		set qi = -1
+		set x = ..PushQ(.q, qLength, .qi)
+		set qi = 0
+		set qLength = qLength - 1
+		
+		if (q(qi, "resGeo") > 0) && (q(qi, "timeLeft") > earliestGeo) {
+			set earliestGeo = q(qi, "timeLeft")
+		}
+		
+		if (q(qi, "timeLeft") < earliestGeo) && (q(qi, "resGeo") = 0) {
+		} else {
+			if q(qi, "timeLeft") <= 0 {
+				set:(q(qi, "resGeo")>bestResult) bestResult = q(qi, "resGeo")
+			} else {
+				set newPaths = 0
+
+				set t = ..Schedule(.blueprints, bi, .q, qi, .qLength, "geo", 1)
+				set:(t'=0) newPaths = 1
+				
+				set t = ..Schedule(.blueprints, bi, .q, qi, .qLength, "obs", 4)
+				set:(t'=0) newPaths = 1
+				
+				if q(qi, "botsClay") < (blueprints(bi, "obsClay") - 1) {
+					set t = ..Schedule(.blueprints, bi, .q, qi, .qLength, "clay", 7)
+					set:(t'=0) newPaths = 1
+				}
+				
+				if q(qi, "botsOre") < 4 {
+					set t = ..Schedule(.blueprints, bi, .q, qi, .qLength, "ore", 16)
+					set:(t'=0) newPaths = 1
+				}
+				
+				if newPaths=0 {
+					set t = ..PushQ(.q, qi, .qLength)
+					set t = ..AdvanceResources(.q, qLength, q(qi, "timeLeft"))
+					set q(qLength, "timeLeft") = 0
+				}
+			}
+		}
+	}
+	
+	return bestResult
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set t = ..ReadBlueprints(.blueprints, .blueprintCount)
+
+	set sum = 0
+	for i = 1:1:blueprintCount {
+		set s = ..Solve(.blueprints, i, 24)
+		set sum = sum + (s * blueprints(i, "id"))
+	}
+
+	return sum
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set t = ..ReadBlueprints(.blueprints, .blueprintCount)
+
+	set mul = 1
+	for i = 1:1:3 {
+		set s = ..Solve(.blueprints, i, 32)
+		set mul = mul * s
+	}
+
+	return mul
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day2">
+<Super>dc.aoc2022.Base</Super>
+<TimeChanged>66470,40291.588034</TimeChanged>
+<TimeCreated>66470,40291.588034</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>Day2.txt</Default>
+</Parameter>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set part1 = ..Part1()
+	set part2 = ..Part2()
+
+    write part1,!
+    write part2,!
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+
+	kill scoreMap
+	set scoreMap("A", "X") = 4
+	set scoreMap("A", "Y") = 8
+	set scoreMap("A", "Z") = 3
+	set scoreMap("B", "X") = 1
+	set scoreMap("B", "Y") = 5
+	set scoreMap("B", "Z") = 9
+	set scoreMap("C", "X") = 7
+	set scoreMap("C", "Y") = 2
+	set scoreMap("C", "Z") = 6
+
+    set sum = 0
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		if line '= "" {
+			set i = $PIECE(line," ",1)
+			set j = $PIECE(line," ",2)
+			set sum = sum + scoreMap(i, j)
+		}
+    }
+
+	return sum
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+
+	kill scoreMap
+	set scoreMap("A", "X") = 3
+	set scoreMap("A", "Y") = 4
+	set scoreMap("A", "Z") = 8
+	set scoreMap("B", "X") = 1
+	set scoreMap("B", "Y") = 5
+	set scoreMap("B", "Z") = 9
+	set scoreMap("C", "X") = 2
+	set scoreMap("C", "Y") = 6
+	set scoreMap("C", "Z") = 7
+
+    set sum = 0
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		if line '= "" {
+			set i = $PIECE(line," ",1)
+			set j = $PIECE(line," ",2)
+			set sum = sum + scoreMap(i, j)
+		}
+    }
+
+	return sum
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day20">
+<Super>dc.aoc2022.Base</Super>
+<TimeChanged>66470,40293.266502</TimeChanged>
+<TimeCreated>66470,40293.266502</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>Day20.txt</Default>
+</Parameter>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set part1 = ..Part1()
+	set part2 = ..Part2()
+
+    write part1,!
+    write part2,!
+]]></Implementation>
+</Method>
+
+<Method name="Solve">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>repeat:%Integer,k:%Integer</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+    
+    kill xs
+    kill indices
+    
+    set count = 0
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		set xs(count) = line * k
+		set indices(count) = count
+		set count = count + 1
+	}
+	
+	for i = 1:1:repeat {
+		for xi = 0:1:count-1 {
+			set x = xs(xi)
+			for tj = 0:1:count-1 {
+				if indices(tj) = xi {
+					set j = tj
+				}
+			}
+			set insert = (j + x) # (count - 1)
+			for tj = j+1:1:count-1 {
+				set indices(tj-1) = indices(tj)
+			}
+			if insert = 0 {
+				set indices(count - 1) = xi
+			} else {
+				for tj = count-1:-1:insert+1 {
+					set indices(tj) = indices(tj-1)
+				}
+				set indices(insert) = xi
+			}
+		}
+	}
+	
+	for i = 0:1:count - 1 {
+		if xs(i) = 0 {
+			set xi = i
+		}
+	}
+	for i = 0:1:count - 1 {
+		if indices(i) = xi {
+			set zero = i
+		}
+	}
+	set a = xs(indices((zero + 1000) # count))
+	set b = xs(indices((zero + 2000) # count))
+	set c = xs(indices((zero + 3000) # count))
+	
+	return a+b+c
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[	return ..Solve(1, 1)
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    return ..Solve(10, 811589153)
+    return 0
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day21">
+<Super>dc.aoc2022.Base</Super>
+<TimeChanged>66470,40293.358839</TimeChanged>
+<TimeCreated>66470,40293.358839</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>Day21.txt</Default>
+</Parameter>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set part1 = ..Part1()
+	set part2 = ..Part2()
+
+    write part1,!
+    write part2,!
+]]></Implementation>
+</Method>
+
+<Method name="GetMonkeys">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&monkeys]]></FormalSpec>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		set name = $piece(line, ": ", 1)
+		set rest = $piece(line, ": ", 2)
+		if $length(rest) <= 8 {
+			set monkeys(name, "type") = "number"
+			set monkeys(name, "value") = rest
+		} else {
+			set a = $piece(rest, " ", 1)
+			set op = $piece(rest, " ", 2)
+			set b = $piece(rest, " ", 3)
+			set monkeys(name, "type") = "op"
+			set monkeys(name, "a") = a
+			set monkeys(name, "b") = b
+			set monkeys(name, "op") = op
+		}
+	}
+
+	return 0
+]]></Implementation>
+</Method>
+
+<Method name="Solve">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&monkeys,name:%String]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	if monkeys(name, "type") = "number" {
+		return monkeys(name, "value")
+	} else {
+		set a = ..Solve(.monkeys, monkeys(name, "a"))
+		set b = ..Solve(.monkeys, monkeys(name, "b"))
+		set op = monkeys(name, "op")
+		if op = "+" {
+			return a + b
+		} elseif op = "-" {
+			return a - b
+		} elseif op = "*" {
+			return a * b
+		} elseif op = "/" {
+			return a / b
+		}
+	}
+]]></Implementation>
+</Method>
+
+<Method name="HasHumn">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&monkeys,name:%String]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	if name = "humn" {
+		return 1
+	}
+	if monkeys(name, "type") = "number" {
+		return 0
+	}
+	set a = ..HasHumn(.monkeys, monkeys(name, "a"))
+	set b = ..HasHumn(.monkeys, monkeys(name, "b"))
+	if a || b {
+		return 1
+	}
+	return 0
+]]></Implementation>
+</Method>
+
+<Method name="SolvePart2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&monkeys,name:%String,want:%Integer]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	if name = "humn" {
+		set ^p2Result = want
+		return want
+	}
+	if monkeys(name, "type") = "number" {
+		return monkeys(name, "value")
+	}
+	set ord = ..HasHumn(.monkeys, monkeys(name, "a"))
+	if ord {
+		set left = monkeys(name, "b")
+		set right = monkeys(name, "a")
+	} else {
+		set left = monkeys(name, "a")
+		set right = monkeys(name, "b")
+	}
+	set a = ..Solve(.monkeys, left)
+	set op = monkeys(name, "op")
+	
+	if op = "+" {
+		set val = want - a
+	} elseif op = "*" {
+		set val = want / a
+	} elseif op = "-" {
+		set:ord val = want + a
+		set:('ord) val = a - want
+	} elseif op = "/" {
+		set:ord val = want * a
+		set:('ord) val = a / want
+	}
+
+	set b = ..SolvePart2(.monkeys, right, val)
+	if op = "+" {
+		return a + b
+	} elseif op = "*" {
+		return a * b
+	} elseif op = "-" {
+		if ord {
+			return b - a
+		} 
+		return a - b
+	} elseif op = "/" {
+		if ord {
+			return b / a
+		} 
+		return a / b
+
+	}
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set t = ..GetMonkeys(.monkeys)	
+	return ..Solve(.monkeys, "root")
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set t = ..GetMonkeys(.monkeys)	
+	
+	if ..HasHumn(.monkeys, monkeys("root", "a")) {
+		set val = ..Solve(.monkeys, monkeys("root", "b"))
+		set result = ..SolvePart2(.monkeys, monkeys("root", "a"), val)
+	} else {
+		set val = ..Solve(.monkeys, monkeys("root", "a"))
+		set result = ..SolvePart2(.monkeys, monkeys("root", "b"), val)
+	}
+	
+	return ^p2Result
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day22">
+<Super>dc.aoc2022.Base</Super>
+<TimeChanged>66470,45456.987737</TimeChanged>
+<TimeCreated>66470,40293.358839</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>Day22.txt</Default>
+</Parameter>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+  set part1 = ..Part1()
+  set part2 = ..Part2()
+
+    write part1,!
+    write part2,!
+]]></Implementation>
+</Method>
+
+<Method name="ReadData">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&map,&height,&width,&jStart,&path,&pathLength]]></FormalSpec>
+<Implementation><![CDATA[
+  set stream = ..GetInput(..#InputFile)
+    set m = ##class(%Regex.Matcher).%New("(\d+|R|L)")
+
+  set height = 0
+  set width = 0
+  set pathLength = 0
+  set jStart = -1
+  while 'stream.AtEnd {
+    set line = $zstrip(stream.ReadLine(), "*C")
+    
+    if $length(line) {
+      set:($length(line)>width) width = $length(line)
+      for j = 1:1:$length(line) {
+        set c = $extract(line, j)
+        set map(height, j - 1) = c
+        if (c=".") && (height=0) && (jStart=-1) {
+          set jStart = j - 1
+        }
+      }
+      set height = height + 1
+    } else {
+      set pathStr = $zstrip(stream.ReadLine(), "*C")
+      set m.Text = pathStr
+      while m.Locate() {
+        set pathLength = pathLength + 1
+        set path(pathLength) = m.Group(1)
+      }
+    }
+  }
+  
+  for i = 0:1:height-1 {
+    for j = 0:1:width-1 {
+      if '$data(map(i, j)) {
+        set map(i, j) = " "
+      }
+    }
+  }
+
+  set ^stepDirs(0, 0) = 1
+  set ^stepDirs(0, 1) = 0
+  set ^stepDirs(1, 0) = 0
+  set ^stepDirs(1, 1) = 1
+  set ^stepDirs(2, 0) = -1
+  set ^stepDirs(2, 1) = 0
+  set ^stepDirs(3, 0) = 0
+  set ^stepDirs(3, 1) = -1
+
+  return 0
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set t = ..ReadData(.map, .height, .width, .jStart, .path, .pathLength)
+
+  set x = jStart
+  set y = 0
+  set dir = 0
+
+  for pi = 1:1:pathLength {
+    set p = path(pi)
+    if p="R" {
+      set dir = (dir + 1) # 4
+    } elseif p="L" {
+      set dir = (dir + 4 - 1) # 4
+    } else {
+      set steps = p
+      for i = 1:1:steps {
+        if dir=0 {
+          if map(y, (x + 1) # width) = "." {
+            set x = (x + 1) # width
+          } elseif map(y, (x + 1) # width) = " " {
+            set j = 1
+            while map(y, (x + j) # width) = " " {
+              set j = j + 1
+            }
+            if map(y, (x + j) # width) '= "#" {
+              set x = (x + j) # width
+            }
+          }
+        } elseif dir=1 {
+          if map((y + 1) # height, x) = "." {
+            set y = (y + 1) # height
+          } elseif map((y + 1) # height, x) = " " {
+            set j = 1
+            while map((y + j) # height, x) = " " {
+              set j = j + 1
+            }
+            if map((y + j) # height, x) '= "#" {
+              set y = (y + j) # height
+            }
+          }
+        } elseif dir=2 {
+          if map(y, (x + width - 1) # width) = "." {
+            set x = (x + width - 1) # width
+          } elseif map(y, (x + width - 1) # width) = " " {
+            set j = 1
+            while map(y, (x + width - j) # width) = " " {
+              set j = j + 1
+            }
+            if map(y, (x + width - j) # width) '= "#" {
+              set x = (x + width - j) # width
+            }
+          }
+        } elseif dir=3 {
+          if map((y + height - 1) # height, x) = "." {
+            set y = (y + height - 1) # height
+          } elseif map((y + height - 1) # height, x) = " " {
+            set j = 1
+            while map((y + height - j) # height, x) = " " {
+              set j = j + 1
+            }
+            if map((y + height - j) # height, x) '= "#" {
+              set y = (y + height - j) # height
+            }
+          }
+        }
+      }
+    }
+  }
+
+  set result = ((y + 1) * 1000) + ((x + 1) * 4) + dir
+
+  return result
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set t = ..ReadData(.map, .height, .width, .jStart, .path, .pathLength)
+    
+    set t = ..ReadData(.map, .height, .width, .jStart, .path, .pathLength)
+
+  set x = jStart
+  set y = 0
+  set dir = 0
+  set cubeSize = 50
+
+  for pi = 1:1:pathLength {
+    set p = path(pi)
+    if p="R" {
+      set dir = (dir + 1) # 4
+    } elseif p="L" {
+      set dir = (dir + 4 - 1) # 4
+    } else {
+      set steps = p
+      for i = 1:1:steps {
+        set faceNow = ((y \ cubeSize) * 4) + (x \ cubeSize)
+        set xNext = x + ^stepDirs(dir, 0)
+        set yNext = y + ^stepDirs(dir, 1)
+        set dirNext = dir
+        set faceNext = ((yNext \ cubeSize) * 4) + (xNext \ cubeSize)
+
+        if (faceNow '= faceNext) || (xNext < 0) || (yNext < 0) {
+          if faceNow = 1 {
+            if dir = 2 {
+              set dirNext = 0
+              set xNext = 0
+              set yNext = 149 - y
+            } elseif dir = 3 {
+              set dirNext = 0
+              set xNext = 0
+              set yNext = 100 + x
+            }
+          } elseif faceNow = 2 {
+            if dir = 0 {
+              set dirNext = 2
+              set xNext = 99
+              set yNext = 149 - y
+            } elseif dir = 1 {
+              set dirNext = 2
+              set xNext = 99
+              set yNext = x - 50
+            } elseif dir = 3 {
+              set dirNext = 3
+              set xNext = x - 100
+              set yNext = 199
+            }
+          } elseif faceNow = 5 {
+            if dir = 0 {
+              set dirNext = 3
+              set xNext = 50 + y
+              set yNext = 49
+            } elseif dir = 2 {
+              set dirNext = 1
+              set xNext = y - 50
+              set yNext = 100
+            }
+          } elseif faceNow = 8 {
+            if dir = 2 {
+              set dirNext = 0
+              set xNext = 50
+              set yNext = 149 - y
+            } elseif dir = 3 {
+              set dirNext = 0
+              set xNext = 50
+              set yNext = 50 + x
+            }
+          } elseif faceNow = 9 {
+            if dir = 0 {
+              set dirNext = 2
+              set xNext = 149
+              set yNext = 149 - y
+            } elseif dir = 1 {
+              set dirNext = 2
+              set xNext = 49
+              set yNext = x + 100
+            }
+          } elseif faceNow = 12 {
+            if dir = 0 {
+              set dirNext = 3
+              set xNext = y - 100
+              set yNext = 149
+            } elseif dir = 1 {
+              set dirNext = 1
+              set xNext = 100 + x
+              set yNext = 0
+            } elseif dir = 2 {
+              set dirNext = 1
+              set xNext = y - 100
+              set yNext = 0
+            }
+          }
+        }
+
+        if map(yNext,xNext) = "." {
+          set x = xNext
+          set y = yNext
+          set dir = dirNext
+        }
+      }
+    }
+  }
+
+  set result = ((y + 1) * 1000) + ((x + 1) * 4) + dir
+
+  return result
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day23">
+<Super>dc.aoc2022.Base</Super>
+<TimeChanged>66470,40293.453295</TimeChanged>
+<TimeCreated>66470,40293.453295</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>Day23.txt</Default>
+</Parameter>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set part1 = ..Part1()
+	set part2 = ..Part2()
+
+    write part1,!
+    write part2,!
+]]></Implementation>
+</Method>
+
+<Method name="ReadElves">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&elves,&elvesCount]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+
+	set elvesCount = 0
+	set li = 0
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		set l = $length(line)
+		for i=1:1:l {
+			set c = $extract(line, i)
+			if c = "#" {
+				set elvesCount = elvesCount + 1
+				set elves(elvesCount, "x") = i - 1
+				set elves(elvesCount, "y") = li
+			}
+		}
+		set li = li + 1
+	}
+	return 0
+]]></Implementation>
+</Method>
+
+<Method name="Step">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&elves,elvesCount:%Integer,step:%Integer]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	kill occupied
+	for i = 1:1:elvesCount {
+		set x = elves(i, "x")
+		set y = elves(i, "y")
+		set occupied(x, y) = 1
+		set elves(i, "targetX") = x
+		set elves(i, "targetY") = y
+	}
+
+	for i = 1:1:elvesCount {
+		set x = elves(i, "x")
+		set y = elves(i, "y")
+		set hasNeighbor = 0
+		
+		for dx = -1:1:1 {
+			for dy = -1:1:1 {
+				if (dx'=0) || (dy'=0) {
+					if $data(occupied(x+dx, y+dy)) {
+						set hasNeighbor = 1
+					}
+				}
+			}
+		}
+		if hasNeighbor {
+			set hasTarget = 0
+			for j = 0:1:3 {
+				set d = (j + step) # 4
+				if ('hasTarget) && (d=0) && ('$data(occupied(x-1, y-1))) && ('$data(occupied(x, y-1))) && ('$data(occupied(x+1, y-1))) {
+					set elves(i, "targetX") = x
+					set elves(i, "targetY") = y - 1
+					set hasTarget = 1
+				}
+				if ('hasTarget) && (d=1) && ('$data(occupied(x-1, y+1))) && ('$data(occupied(x, y+1))) && ('$data(occupied(x+1, y+1))) {
+					set elves(i, "targetX") = x
+					set elves(i, "targetY") = y + 1
+					set hasTarget = 1
+				}
+				if ('hasTarget) && (d=2) && ('$data(occupied(x-1, y-1))) && ('$data(occupied(x-1, y))) && ('$data(occupied(x-1, y+1))) {
+					set elves(i, "targetX") = x - 1
+					set elves(i, "targetY") = y
+					set hasTarget = 1
+				}
+				if ('hasTarget) && (d=3) && ('$data(occupied(x+1, y-1))) && ('$data(occupied(x+1, y))) && ('$data(occupied(x+1, y+1))) {
+					set elves(i, "targetX") = x + 1
+					set elves(i, "targetY") = y
+					set hasTarget = 1
+				}
+			}
+		}
+	}
+	
+	kill targets
+	for i = 1:1:elvesCount {
+		set tx = elves(i, "targetX")
+		set ty = elves(i, "targetY")
+		if $data(targets(tx, ty)) {
+			set targets(tx, ty) = targets(tx, ty) + 1
+		} else {
+			set targets(tx, ty) = 1
+		}
+	}
+
+	set changed = 0
+	for i = 1:1:elvesCount {
+		set tx = elves(i, "targetX")
+		set ty = elves(i, "targetY")
+		if targets(tx, ty) = 1 {
+			if (tx '= elves(i, "x")) || (ty '= elves(i, "y")) {
+				set changed = 1
+			}
+			set elves(i, "x") = tx
+			set elves(i, "y") = ty
+		}
+	}
+	return changed
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set t = ..ReadElves(.elves, .elvesCount)
+
+	for i = 0:1:10-1 {
+		set t = ..Step(.elves, elvesCount, i)
+	}
+	
+	set xMin = elves(1, "x")
+	set xMax = elves(1, "x")
+	set yMin = elves(1, "y")
+	set yMax = elves(1, "y")
+	for i=1:1:elvesCount {
+		set x = elves(i, "x")
+		set y = elves(i, "y")
+		set:(x<xMin) xMin = x
+		set:(x>xMax) xMax = x
+		set:(y<yMin) yMin = y
+		set:(y>yMax) yMax = y
+	}
+	set w = xMax - xMin + 1
+	set h = yMax - yMin + 1
+	set result = (w * h) - elvesCount
+
+	return result
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set t = ..ReadElves(.elves, .elvesCount)
+
+	set round = 0
+	while 1 {
+		set changed = ..Step(.elves, elvesCount, round)
+		set round = round + 1
+		if 'changed {
+			return round
+		}
+	}
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day24">
+<Super>dc.aoc2022.Base</Super>
+<TimeChanged>66470,40293.54932</TimeChanged>
+<TimeCreated>66470,40293.54932</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>Day24.txt</Default>
+</Parameter>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set part1 = ..Part1()
+	set part2 = ..Part2()
+
+    write part1,!
+    write part2,!
+]]></Implementation>
+</Method>
+
+<Method name="ReadData">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&data,&height,&width,&jFrom,&jTo]]></FormalSpec>
+<Implementation><![CDATA[
+	set stream = ..GetInput(..#InputFile)
+
+	set height = 0
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		set width = $length(line)
+		set c2 = $extract(line, 2)
+		set c3 = $extract(line, 3)
+		for j = 1:1:width {
+			set c = $extract(line, j)
+			if c = "#" {
+				set data(height, j - 1, "type") = "wall"
+			} else {
+				set data(height, j - 1, "type") = "field"
+				set data(height, j - 1, ">") = 0
+				set data(height, j - 1, "<") = 0
+				set data(height, j - 1, "^") = 0
+				set data(height, j - 1, "v") = 0
+				if c '= "." {
+					set data(height, j - 1, c) = 1
+				}
+				if height = 0 {
+					set jFrom = j - 1
+				}
+				if (c2 = "#") || (c3 = "#") {
+					set jTo = j - 1
+				}
+			}
+		}
+		set height = height + 1
+	}
+	
+	set ^dirs(".", "i") = 0
+	set ^dirs(".", "j") = 0
+	set ^dirs(">", "i") = 0
+	set ^dirs(">", "j") = 1
+	set ^dirs("<", "i") = 0
+	set ^dirs("<", "j") = -1
+	set ^dirs("v", "i") = 1
+	set ^dirs("v", "j") = 0
+	set ^dirs("^", "i") = -1
+	set ^dirs("^", "j") = 0
+	set ^moves(1) = "."
+	set ^moves(2) = ">"
+	set ^moves(3) = "<"
+	set ^moves(4) = "v"
+	set ^moves(5) = "^"
+
+	return 0
+]]></Implementation>
+</Method>
+
+<Method name="Simulate">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&data,height:%Integer,width:%Integer]]></FormalSpec>
+<Implementation><![CDATA[
+	for i = 0:1:height-1 {
+		for j = 0:1:width-1 {
+			set next(i, j, "type") = data(i, j, "type")
+			if data(i, j, "type") = "field" {
+				set next(i, j, ">") = 0
+				set next(i, j, "<") = 0
+				set next(i, j, "^") = 0
+				set next(i, j, "v") = 0
+			}
+		}
+	}
+
+	for i = 1:1:height-2 {
+		for j = 1:1:width-2 {
+			if data(i, j, "type") = "field" {
+				for mi = 2:1:5 {
+					set c = ^moves(mi)
+					set ni = i
+					set nj = j
+					if (c = ">") {
+						if next(ni, nj + 1, "type") = "field" {
+							set nj = nj + 1
+						} else {
+							set nj = 1
+						}
+					} elseif (c = "<") {
+						if next(ni, nj - 1, "type") = "field" {
+							set nj = nj - 1
+						} else {
+							set nj = width - 2
+						}
+					} elseif (c = "v") {
+						if next(ni + 1, nj, "type") = "field" {
+							set ni = ni + 1
+						} else {
+							set ni = 1
+						}
+					} elseif (c = "^") {
+						if next(ni - 1, nj, "type") = "field" {
+							set ni = ni - 1
+						} else {
+							set ni = height - 2
+						}
+					}
+					set next(ni, nj, c) = next(ni, nj, c) + data(i, j, c)
+				}
+			}
+		}
+	}
+	
+	for i = 0:1:height-1 {
+		for j = 0:1:width-1 {
+			set data(i, j, "type") = next(i, j, "type")
+			if data(i, j, "type") = "field" {
+				set data(i, j, ">") = next(i, j, ">")
+				set data(i, j, "<") = next(i, j, "<")
+				set data(i, j, "^") = next(i, j, "^")
+				set data(i, j, "v") = next(i, j, "v")
+			}
+		}
+	}
+
+	return 0
+]]></Implementation>
+</Method>
+
+<Method name="PathLength">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&data,height:%Integer,width:%Integer,iFrom:%Integer,jFrom:%Integer,iTo:%Integer,jTo:%Integer]]></FormalSpec>
+<Implementation><![CDATA[
+	set possibleLength = 1
+	set possible(0, "i") = iFrom
+	set possible(0, "j") = jFrom
+	set step = 1
+	
+	while 1 {
+		set t = ..Simulate(.data, height, width)
+		set nextPossibleLength = 0
+		for pi = 0:1:possibleLength-1 {
+			for mi = 1:1:5 {
+				set ni = possible(pi, "i") + ^dirs(^moves(mi), "i")
+				set nj = possible(pi, "j") + ^dirs(^moves(mi), "j")
+				if (ni >= 0) && (nj >= 0) && (ni < height) && (nj < width) {
+					if data(ni, nj, "type") = "field" {
+						set isFull = data(ni, nj, ">") + data(ni, nj, "<") + data(ni, nj, "v") + data(ni, nj, "^")
+						if 'isFull {
+							set alreadyPossible = 0
+							for k = 0:1:nextPossibleLength-1 {
+								if (nextPossible(k, "i") = ni) && (nextPossible(k, "j") = nj) {
+									set alreadyPossible = 1
+								}
+							}
+							if ('alreadyPossible) {
+								set nextPossible(nextPossibleLength, "i") = ni
+								set nextPossible(nextPossibleLength, "j") = nj
+								set nextPossibleLength = nextPossibleLength + 1
+							}
+						}
+					}
+				}
+			}
+		}
+		set possibleLength = nextPossibleLength
+		// write step
+		for k = 0:1:possibleLength-1 {
+			set possible(k, "i") = nextPossible(k, "i")
+			set possible(k, "j") = nextPossible(k, "j")
+			// write " [",nextPossible(k, "i")," ",nextPossible(k, "j"),"]"
+			if (nextPossible(k, "i") = iTo) && (nextPossible(k, "j") = jTo) {
+				return step
+			}
+		}
+		// write !
+		if step > 500 {
+			return 0
+		}
+		set step = step + 1
+	}
+]]></Implementation>
+</Method>
+
+<Method name="Print">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&data,height:%Integer,width:%Integer]]></FormalSpec>
+<Implementation><![CDATA[
+	for i = 0:1:height-1 {
+		for j = 0:1:width-1 {
+			if data(i, j, "type") = "field" {
+				set c = data(i, j, ">") + data(i, j, "<") + data(i, j, "^") + data(i, j, "v")
+				if c = 0 {
+					write "."
+				} elseif c = 1 {
+					for mi=2:1:5 {
+						set m = ^moves(mi)
+						if data(i, j, m){
+							write m
+						}
+					}
+				} else {
+					write c
+				}
+			} else {
+				write "#"
+			}
+		}
+		write !
+	}
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set t = ..ReadData(.data, .height, .width, .jFrom, .jTo)
+    
+    set a = ..PathLength(.data, height, width, 0, jFrom, height - 1, jTo)
+
+	return a
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set t = ..ReadData(.data, .height, .width, .jFrom, .jTo)
+    
+    set a = ..PathLength(.data, height, width, 0, jFrom, height - 1, jTo)
+    set b = ..PathLength(.data, height, width, height - 1, jTo, 0, jFrom)
+    set c = ..PathLength(.data, height, width, 0, jFrom, height - 1, jTo)
+
+	return a + b + c
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day25">
+<Super>dc.aoc2022.Base</Super>
+<TimeChanged>66470,40293.640736</TimeChanged>
+<TimeCreated>66470,40293.640736</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>Day25.txt</Default>
+</Parameter>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set part1 = ..Part1()
+
+    write part1,!
+]]></Implementation>
+</Method>
+
+<Method name="FromSnafu">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>n:%String</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set l = $length(n)
+	set e = 1
+	set result = 0
+	for i = l:-1:1 {
+		set d = $extract(n, i)
+		set:(d="-") d = -1
+		set:(d="=") d = -2
+		
+		set result = result + (e * d)
+		set e = e * 5
+	}
+	return result
+]]></Implementation>
+</Method>
+
+<Method name="ToSnafu">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>n:%Integer</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	if n = 0 {
+		return ""
+	}
+	set m = n # 5
+	if m < 3 {
+		set str = ..ToSnafu(n \ 5)
+		return str _ m
+	}
+	if m = 3 {
+		set str = ..ToSnafu((n + 2) \ 5)
+		return str _ "="
+	}
+	if m = 4 {
+		set str = ..ToSnafu((n + 1) \ 5)
+		return str _ "-"
+	}
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+
+	set sum = 0
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		set d = ..FromSnafu(line)
+		set sum = sum + d
+	}
+	
+	set str = ..ToSnafu(sum)
+	
+	return str
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day3">
+<Super>dc.aoc2022.Base</Super>
+<TimeChanged>66470,40291.665697</TimeChanged>
+<TimeCreated>66470,40291.665697</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>Day3.txt</Default>
+</Parameter>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set part1 = ..Part1()
+	set part2 = ..Part2()
+
+    write part1,!
+    write part2,!
+]]></Implementation>
+</Method>
+
+<Method name="Priority">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>c:%String</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set code = $ascii(c)
+	if (code >= 97) && (code <= 122) {
+		return code - 96
+	} else {
+		return code - 38
+	}
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+
+	set total = 0
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		set hl = $length(line)/2
+		set strLeft = $EXTRACT(line, 1, hl)
+		set strRight = $EXTRACT(line, hl+1, $length(line))
+		set br = 0
+		for i = 1:1:hl {
+			set c = $extract(strLeft,i)
+			if $find(strRight, c) {
+				set p = ..Priority(c)
+				set:'br total = total + p
+				set br = 1
+			}
+		}
+	}
+
+	return total
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+
+	set total = 0
+	while 'stream.AtEnd {
+		set line1 = $zstrip(stream.ReadLine(), "*C")
+		set line2 = $zstrip(stream.ReadLine(), "*C")
+		set line3 = $zstrip(stream.ReadLine(), "*C")
+		set br = 0
+		for i = 1:1:$length(line1) {
+			set c = $extract(line1,i)
+			if $find(line2, c) && $find(line3, c) {
+				set p = ..Priority(c)
+				set:'br total = total + p
+				set br = 1
+			}
+		}
+	}
+
+	return total
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day4">
+<Super>dc.aoc2022.Base</Super>
+<TimeChanged>66470,40291.752606</TimeChanged>
+<TimeCreated>66470,40291.752606</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>Day4.txt</Default>
+</Parameter>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set part1 = ..Part1()
+	set part2 = ..Part2()
+
+    write part1,!
+    write part2,!
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+
+	set count = 0
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		set intLeft = $piece(line, ",", 1)
+		set a = $piece(intLeft, "-", 1)
+		set b = $piece(intLeft, "-", 2)
+		set intRight = $piece(line, ",", 2)
+		set c = $piece(intRight, "-", 1)
+		set d = $piece(intRight, "-", 2)
+		
+		if ((a <= c) && (b >= d)) || ((c <= a) && (d >= b)) {
+			set count = count + 1
+		}
+	}
+
+	return count
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+
+	set count = 0
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		set intLeft = $piece(line, ",", 1)
+		set a = $piece(intLeft, "-", 1)
+		set b = $piece(intLeft, "-", 2)
+		set intRight = $piece(line, ",", 2)
+		set c = $piece(intRight, "-", 1)
+		set d = $piece(intRight, "-", 2)
+		
+		if ((a >= c) && (a <= d)) || ((c >= a) && (c <= b)) {
+			set count = count + 1
+		}
+	}
+
+	return count
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day5">
+<Super>dc.aoc2022.Base</Super>
+<TimeChanged>66470,40291.844301</TimeChanged>
+<TimeCreated>66470,40291.844301</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>Day5.txt</Default>
+</Parameter>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set part1 = ..Part1()
+	set part2 = ..Part2()
+
+    write part1,!
+    write part2,!
+]]></Implementation>
+</Method>
+
+<Method name="GetCrates">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&lines,lineCount:%Integer,&crates,&crateCounts]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	for i = lineCount-1:-1:1 {
+		for j = 1:1:9 {
+			set nj = 4 * j - 2
+			set c = $extract(lines(i), nj)
+			if c '= " " {
+				set crates(j, crateCounts(j) + 1) = c
+				set crateCounts(j) = crateCounts(j) + 1
+			}
+		}
+	}
+	return 1
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+    
+    kill lines
+    kill crates
+    kill crateCounts
+    set li = 1
+    set crateLines = 0
+    
+    for i = 1:1:9 {
+	    set crateCounts(i) = 0
+    }
+    
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		if $extract(line, 2) = 1 {
+			set t = ..GetCrates(.lines, li, .crates, .crateCounts)
+			set crateLines = li
+		}
+		if $extract(line, 1) = "m" {
+			set n = $piece(line, " ", 2)
+			set f = $piece(line, " ", 4) + 0
+			set t = $piece(line, " ", 6) + 0
+			for i = 1:1:n {
+				set crates(t, crateCounts(t) + 1) = crates(f, crateCounts(f))
+				set crateCounts(t) = crateCounts(t) + 1
+				set crateCounts(f) = crateCounts(f) - 1
+			}
+		}
+		set lines(li) = line
+		set li = li + 1
+	}
+	
+	set result = ""
+	for i = 1:1:9 {
+		set result = result _ crates(i, crateCounts(i))
+	}
+	return result
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+
+	kill lines
+    kill crates
+    kill crateCounts
+    set li = 1
+    set crateLines = 0
+    
+    for i = 1:1:9 {
+	    set crateCounts(i) = 0
+    }
+    
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		if $extract(line, 2) = 1 {
+			set t = ..GetCrates(.lines, li, .crates, .crateCounts)
+			set crateLines = li
+		}
+		if $extract(line, 1) = "m" {
+			set n = $piece(line, " ", 2)
+			set f = $piece(line, " ", 4) + 0
+			set t = $piece(line, " ", 6) + 0
+			for i = 1:1:n {
+				set crates(t, crateCounts(t) + n - i + 1) = crates(f, crateCounts(f))
+				set crateCounts(f) = crateCounts(f) - 1
+			}
+			set crateCounts(t) = crateCounts(t) + n
+		}
+		set lines(li) = line
+		set li = li + 1
+	}
+	
+	set result = ""
+	for i = 1:1:9 {
+		set result = result _ crates(i, crateCounts(i))
+	}
+	return result
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day6">
+<Super>dc.aoc2022.Base</Super>
+<TimeChanged>66470,40291.936988</TimeChanged>
+<TimeCreated>66470,40291.936988</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>Day6.txt</Default>
+</Parameter>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set part1 = ..Part1()
+	set part2 = ..Part2()
+
+    write part1,!
+    write part2,!
+]]></Implementation>
+</Method>
+
+<Method name="Detect">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&line,n:%Integer]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set s = $length(line) - n + 1
+	for i = 1:1:s {
+		set isOk = 1
+		for j = 1:1:n-1 {
+			set c = $extract(line, i + j - 1)
+			set slice = $extract(line, i + j, i + n - 1)
+			if $find(slice, c) {
+				set isOk = 0
+			}
+		}
+		if isOk{
+			return i + n - 1
+		}
+	}
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+    set line = $zstrip(stream.ReadLine(), "*C")
+    
+    set result = ..Detect(.line, 4)
+
+	return result
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+    set line = $zstrip(stream.ReadLine(), "*C")
+
+    set result = ..Detect(.line, 14)
+
+	return result
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day7">
+<Super>dc.aoc2022.Base</Super>
+<TimeChanged>66470,40292.03301</TimeChanged>
+<TimeCreated>66470,40292.03301</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>Day7.txt</Default>
+</Parameter>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set part1 = ..Part1()
+	set part2 = ..Part2()
+
+    write part1,!
+    write part2,!
+]]></Implementation>
+</Method>
+
+<Method name="BuildTree">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&tree]]></FormalSpec>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+    set current = "/"
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		if $extract(line, 1) = "$" {
+			if $extract(line, 3, 4) = "cd" {
+				set folder = $extract(line, 6, $length(line))
+				if folder = "/" {
+					set current = "/"
+				} elseif folder = ".." {
+					set current = tree(current, "parent")
+				} else {
+					set k = current _ folder _ "/"
+					set tree(k, "parent") = current
+					set current = k
+				}
+			}
+		} else {
+			if $extract(line, 1, 3) = "dir" {
+				set folder = $extract(line, 5, $length(line))
+				if $data(tree(current, "childrenCount")) {
+					set tree(current, "children", tree(current, "childrenCount") + 1) = folder
+					set tree(current, "childrenCount") = tree(current, "childrenCount") + 1
+				} else {
+					set tree(current, "children", 1) = folder
+					set tree(current, "childrenCount") = 1
+				}
+				set k = current _ folder _ "/"
+				set tree(k, "parent") = current
+			} else {
+				set size = $piece(line, " ", 1)
+				set fileName = $piece(line, " ", 2)
+				if $data(tree(current, "childrenCount")) {
+					set tree(current, "children", tree(current, "childrenCount") + 1) = fileName
+					set tree(current, "childrenCount") = tree(current, "childrenCount") + 1
+				} else {
+					set tree(current, "children", 1) = fileName
+					set tree(current, "childrenCount") = 1
+				}
+				set k = current _ fileName _ "/"
+				set tree(k, "size") = size
+			}
+		}
+	}
+
+    return 1
+]]></Implementation>
+</Method>
+
+<Method name="Walk1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&tree,node:%String,&sum]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	if '$data(tree(node, "size")) {
+		set size = 0
+		if $data(tree(node, "childrenCount")) {
+			for i = 1:1:tree(node, "childrenCount") {
+				set k = node _ tree(node, "children", i) _ "/"
+				set size = size + ..Walk1(.tree, k, .sum)
+			}
+		}
+		set tree(node, "size") = size
+	}
+	if $data(tree(node, "childrenCount")) && (tree(node, "size") <= 100000) {
+		set sum = sum + tree(node, "size")
+	}
+	return tree(node, "size")
+]]></Implementation>
+</Method>
+
+<Method name="Walk2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&tree,node:%String,&best,target:%Integer]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+  if $data(tree(node, "childrenCount")) {
+	set s = tree(node, "size")
+	if (s >= target) && (s < best) {
+	  set best = s
+	}
+	for i = 1:1:tree(node, "childrenCount") {
+	  set k = node _ tree(node, "children", i) _ "/"
+	  set t = ..Walk2(.tree, k, .best, target)
+	}
+  }
+  return 1
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	kill tree
+	set t = ..BuildTree(.tree)
+	
+	set sum = 0
+    set result = ..Walk1(.tree, "/", .sum)
+
+	return sum
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	kill tree
+	set t = ..BuildTree(.tree)
+	
+	set sum = 0
+	set tmp = ..Walk1(.tree, "/", .sum)
+	
+    set best = 9999999999
+    set target = 30000000 - (70000000 - tree("/", "size"))
+    set t = ..Walk2(.tree, "/", .best, target)
+
+	return best
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day8">
+<Super>dc.aoc2022.Base</Super>
+<TimeChanged>66470,40292.12725</TimeChanged>
+<TimeCreated>66470,40292.12725</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>Day8.txt</Default>
+</Parameter>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set part1 = ..Part1()
+	set part2 = ..Part2()
+
+    write part1,!
+    write part2,!
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+    
+    kill data
+    kill vis
+    set li = 0
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		set w = $length(line)
+		for j = 0:1:w-1 {
+			set data(li,j) = $extract(line, j+1) + 0
+			set vis(li,j) = 0
+			set:(li=0) vis(li,j) = 1
+			set:(j=0) vis(li,j) = 1
+			set:(j=(w-1)) vis(li,j) = 1
+		}
+		set li = li + 1
+	}
+	set h = li
+	for j = 0:1:w-1 {
+		set vis(h-1, j) = 1
+	}
+	
+	for i = 1:1:h-2 {
+		set mh = data(i, 0)
+		for j = 1:1:w-2 {
+			if data(i,j) > mh {
+				set vis(i,j) = 1
+				set mh = data(i,j)
+			}
+		}
+		
+		set mh = data(i, w-1)
+		for j = w-2:-1:1 {
+			if data(i,j) > mh {
+				set vis(i,j) = 1
+				set mh = data(i,j)
+			}
+		}
+	}
+
+	for j = 1:1:w-2 {
+		set mh = data(0, j)
+		for i = 1:1:h-2 {
+			if data(i,j) > mh {
+				set vis(i,j) = 1
+				set mh = data(i,j)
+			}
+		}
+		
+		set mh = data(h-1, j)
+		for i = h-2:-1:1 {
+			if data(i,j) > mh {
+				set vis(i,j) = 1
+				set mh = data(i,j)
+			}
+		}
+	}
+
+	set total = 0
+	for i = 0:1:h-1 {
+		for j = 0:1:w-1 {
+			set:vis(i,j) total = total + 1
+		}
+	}
+	
+	return total
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+    
+    kill data
+    set li = 0
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		set w = $length(line)
+		for j = 0:1:w-1 {
+			set data(li,j) = $extract(line, j+1) + 0
+		}
+		set li = li + 1
+	}
+
+	set h = li
+	set bestDistance = 1
+	
+	for x = 1:1:w-1 {
+		for y = 1:1:h-1 {
+			set distance = 1
+			
+			set s = 1
+			set br = 0
+			for i = x-1:-1:1 {
+				if 'br && (data(i,y) < data(x,y)) {
+					set s = s + 1
+				} else {
+					set br = 1
+				}
+			}
+			
+			set t = 1
+			set br = 0
+			for i = x+1:1:w-2 {
+				if 'br && (data(i,y) < data(x,y)) {
+					set t = t + 1
+				} else {
+					set br = 1
+				}
+			}
+
+			set u = 1
+			set br = 0
+			for j = y+1:1:h-2 {
+				if 'br && (data(x,j) < data(x,y)) {
+					set u = u + 1
+				} else {
+					set br = 1
+				}
+			}
+			
+			set v = 1
+			set br = 0
+			for j = y-1:-1:1 {
+				if 'br && (data(x,j) < data(x,y)) {
+					set v = v + 1
+				} else {
+					set br = 1
+				}
+			}
+
+			set distance = distance * s * t * u * v
+			set:(distance > bestDistance) bestDistance = distance
+		}
+	}
+
+	return bestDistance
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day9">
+<Super>dc.aoc2022.Base</Super>
+<TimeChanged>66470,40292.222412</TimeChanged>
+<TimeCreated>66470,40292.222412</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>Day9.txt</Default>
+</Parameter>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set part1 = ..Part1()
+	set part2 = ..Part2()
+
+    write part1,!
+    write part2,!
+]]></Implementation>
+</Method>
+
+<Method name="Follow">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[hx:%Integer,hy:%Integer,&tx,&ty]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	if (hx'=tx) || (hy'=ty) {
+		if hx=tx {
+			if hy > ty { set ty = hy - 1 }
+			else { set ty = hy + 1 }
+		} elseif hy=ty {
+			if hx > tx { set tx = hx - 1 }
+			else { set tx = hx + 1 }
+		} else {
+			set ax = $zabs(hx - tx)
+			set ay = $zabs(hy - ty)
+			if (ax + ay) > 2 {
+				set tx = tx + ((hx - tx) / ax)
+				set ty = ty + ((hy - ty) / ay)
+			}
+		}
+	}
+	return 1
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+
+	set (hx, hy) = 0
+	set (tx, ty) = 0
+	set visited(tx,ty) = 1
+	set visitedCount = 1
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		set direction = $extract(line, 1)
+		set distance = $piece(line, " ", 2)
+		
+		set dx = 0
+		set:direction="R" dx = 1
+		set:direction="L" dx = -1
+		set dy = 0
+		set:direction="U" dy = 1
+		set:direction="D" dy = -1
+
+		for i=1:1:distance {
+			set hx = hx + dx
+			set hy = hy + dy
+			set f = ..Follow(hx, hy, .tx, .ty)
+		
+			if '$data(visited(tx, ty)) {
+				set visited(tx,ty) = 1
+				set visitedCount = visitedCount + 1
+			}
+		}
+	}
+
+	return visitedCount
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    set stream = ..GetInput(..#InputFile)
+
+	set (hx, hy) = 0
+	for i = 1:1:9 {
+		set tx(i) = 0
+		set ty(i) = 0
+	}
+	set visited(0,0) = 1
+	set visitedCount = 1
+	while 'stream.AtEnd {
+		set line = $zstrip(stream.ReadLine(), "*C")
+		set direction = $extract(line, 1)
+		set distance = $piece(line, " ", 2)
+		
+		set dx = 0
+		set:direction="R" dx = 1
+		set:direction="L" dx = -1
+		set dy = 0
+		set:direction="U" dy = 1
+		set:direction="D" dy = -1
+
+		for i=1:1:distance {
+			set hx = hx + dx
+			set hy = hy + dy
+			
+			set chx = hx
+			set chy = hy
+			for j=1:1:9 {
+				set ctx = tx(j)
+				set cty = ty(j)
+				set f = ..Follow(chx, chy, .ctx, .cty)
+				set (chx, tx(j)) = ctx
+				set (chy, ty(j)) = cty
+			}
+			
+		
+			if '$data(visited(tx(9), ty(9))) {
+				set visited(tx(9), ty(9)) = 1
+				set visitedCount = visitedCount + 1
+			}
+		}
+	}
+
+	return visitedCount
+]]></Implementation>
+</Method>
+</Class>
+
+
+
+
+<Project name="mxcz" LastModified="2022-12-27 14:31:16.777966">
+  <Items>
+    <ProjectItem name="dc.aoc" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022" type="PKG"></ProjectItem>
+  </Items>
+</Project>
+</Export>

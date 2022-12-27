@@ -1,0 +1,4900 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2018.1.7 (Build 721U)" ts="2022-12-25 18:30:57">
+<Project name="aoc1" LastModified="2022-12-25 10:41:16.734338">
+  <Items>
+    <ProjectItem name="dc.aoc" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Base" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Day1" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Day10" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Day11" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Day12" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Day13" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Day14" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Day15" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Day16" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Day17" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Day18" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Day19" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Day2" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Day20" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Day21" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Day22" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Day23" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Day24" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Day25" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Day3" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Day4" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Day5" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Day6" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Day7" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Day8" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.aoc2022.Day9" type="CLS"></ProjectItem>
+  </Items>
+</Project>
+
+
+<Class name="dc.aoc">
+<TimeChanged>66468,37269.214123</TimeChanged>
+<TimeCreated>66467,83356.442976</TimeCreated>
+
+<Method name="run">
+<Description><![CDATA[
+>f %d=1:1:24 k (%d)  do ##class(dc.aoc).run(%d,1)  r !?5,"????",y]]></Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>day=1,set="1"</FormalSpec>
+<Implementation><![CDATA[
+  set dir="C:\GitHub\set"_set_"\"_day_"\"
+  set file=dir_$s(set=1:"data",1:"input")_".txt"
+  set res=dir_"result.txt"
+  set cls="dc.aoc2022.Day"_day
+  set $ZT="ups"
+  open res:"R":0 else  zw  b
+  for l=1,2  use res read line use 0 write ?15,line,!
+ups  
+  close res
+  set $ZT="" w "****************** day ",day," *** set ",set,!
+  set sc=$classmethod(cls,"Run",file)
+  if 'sc b  do $system.OBJ.DisplayError(sc) zw  b
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Base">
+<TimeChanged>66468,53.645225</TimeChanged>
+<TimeCreated>66467,82283.191846</TimeCreated>
+
+<Parameter name="Folder">
+<Default>/irisdev/app/data/</Default>
+</Parameter>
+
+<Parameter name="MAXINT">
+<Type>INTEGER</Type>
+<Default>9999999</Default>
+</Parameter>
+
+<Method name="GetInputStream">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String,*sc:%Status</FormalSpec>
+<ReturnType>%Stream.Object</ReturnType>
+<Implementation><![CDATA[
+    #Dim ex as %Exception.AbstractException
+    #Dim stream as %Stream.Object
+    #Dim filePath as %String
+    
+    Set sc = $$$OK
+    Try {
+ #;     Set filePath = ##class(%File).NormalizeFilename(fileName,..#Folder)
+  set filePath=fileName    
+      Set stream = ##Class(%Stream.FileCharacter).%New()
+      $$$TOE(sc,stream.LinkToFile(filePath))
+    }
+    Catch (ex) {
+      Set sc = ex.AsStatus()
+    }
+    Return stream
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day1">
+<Super>Base</Super>
+<TimeChanged>66467,82283.177918</TimeChanged>
+<TimeCreated>66467,82283.177918</TimeCreated>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String="input1.txt"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+
+    #Dim inputStream as %Stream.Object
+    
+    set sc = $$$OK
+    try {
+        set inputStream = ..GetInputStream(fileName,.sc)
+        $$$TOE(sc,sc)
+        $$$TOE(sc,..Part1(inputStream))
+        $$$TOE(sc,inputStream.Rewind())
+        $$$TOE(sc,..Part2(inputStream))
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+
+    #Dim stars,curStars,maxStars as %Integer
+    
+    set sc = $$$OK
+    try {
+
+        set maxStars = 0
+        set curStars = 0
+        for {
+            set:'inputStream.AtEnd stars = $zstrip(inputStream.ReadLine(,.sc),"<>C")
+            $$$TOE(sc,sc)
+            if stars="" {
+                set:(curStars>maxStars) maxStars = curStars
+                set curStars = 0
+            } else {
+                set curStars = curStars + stars
+            }
+            quit:inputStream.AtEnd
+        }
+        write !,"Part 1 answer : ",maxStars,!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+
+
+    #Dim stars,curStars,totalStars as %Integer
+    #Dim maxStars as %Boolean
+    
+    set sc = $$$OK
+    try {
+        set curStars = 0
+        set stars = ""
+        while 'inputStream.AtEnd
+        {
+            s line = inputStream.ReadLine(,.sc)
+            $$$TOE(sc,sc)
+            s line = $zstrip(line,"<>C")
+            if line="" {
+                s maxStars(curStars) = 1
+                s curStars = 0                
+            } else {
+                s curStars = curStars+line+0                
+            }
+        }
+        s maxStars(curStars) = 1        
+        set stars=""
+        set stars =$order(maxStars(stars),-1)
+        set totalStars = 0
+        set cnt=0
+        while (stars '= "") && (cnt < 3) {
+          set totalStars = totalStars + stars
+          set cnt=cnt+1
+          set stars = $order(maxStars(stars),-1)
+        }
+        write "Part 2 answer : ",totalStars,!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day10">
+<Super>Base</Super>
+<TimeChanged>66467,82283.178873</TimeChanged>
+<TimeCreated>66467,82283.178873</TimeCreated>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String="input10.txt"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+
+    #Dim inputStream as %Stream.Object
+    
+    set sc = $$$OK
+    try {
+        set inputStream = ..GetInputStream(fileName,.sc)
+        $$$TOE(sc,sc)
+        $$$TOE(sc,..Part1And2(inputStream))
+      }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="Part1And2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+    
+    #Dim line as %String
+
+    #Dim total as %Integer
+    #Dim X as %Integer
+    #Dim clk,dur as %Integer
+    #Dim opcode as %String
+    #Dim arg as %Integer
+   
+    set sc = $$$OK
+    try {
+        set total = 0
+        set X = 1
+        set clk = 1
+        while 'inputStream.AtEnd {
+
+            set line = inputStream.ReadLine(,.sc)
+            set line = $zstrip(line,"<>C")
+
+            set opcode = $piece(line," ",1)
+            set arg = $piece(line, " ",2)
+            set dur = $case(opcode,"noop":1,"addx":2,:0)
+
+            while dur > 0 {
+
+              set pos = (clk-1) # 40              
+              set px = $select((pos>=(X-1))&&(pos<=(X+1)):"#",1:".")
+              write px
+              write:(pos=39) !
+
+              set:((clk-20)#40)=0 total = total + (clk*X)
+              
+              set clk = clk+1
+              set dur = dur-1               
+            }            
+            if opcode="addx" {
+              set X = X+arg
+            }
+        }
+        write "Part 1 answer : ",total,!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day11">
+<Super>Base</Super>
+<TimeChanged>66467,82283.177165</TimeChanged>
+<TimeCreated>66467,82283.177165</TimeCreated>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String="input11.txt"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex 
+    #Dim inputStream as %Stream.Object
+    
+    set sc = $$$OK
+    try {
+        set inputStream = ..GetInputStream(fileName,.sc)
+        $$$TOE(sc,sc)
+        $$$TOE(sc,..Part1(inputStream))
+        $$$TOE(sc,inputStream.Rewind())
+        $$$TOE(sc,..Part2(inputStream))
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+   
+    set sc = $$$OK
+
+
+    try {        
+        set monkeys = ""
+        set monkeyCnt = 0
+
+        while 'inputStream.AtEnd {
+
+          set line = inputStream.ReadLine(,.sc)
+          set line = $zstrip(line,"<>C")    
+
+          if line '= "" {
+          set monkeyIdx = $replace($piece(line," ",2),":","")+0         
+
+          set line = inputStream.ReadLine(,.sc)
+          set line = $zstrip(line,"<>C")    
+          set monkeys(monkeyIdx,"items") = $listfromstring($replace($piece(line,":",2)," ",""))
+         
+          set line = inputStream.ReadLine(,.sc)
+          set line = $zstrip(line,"<>C")    
+          set monkeys(monkeyIdx,"fct") = $replace($piece(line,":",2)," ","")
+
+
+          set line = inputStream.ReadLine(,.sc)
+          set line = $zstrip(line,"<>C")    
+          set monkeys(monkeyIdx,"div") = $replace($piece(line,"by",2)," ","")+0
+
+        
+          set line = inputStream.ReadLine(,.sc)
+          set line = $zstrip(line,"<>C")    
+          set monkeys(monkeyIdx,"true") = $replace($piece(line,"monkey",2)," ","")+0
+
+          set line = inputStream.ReadLine(,.sc)
+          set line = $zstrip(line,"<>C")    
+          set monkeys(monkeyIdx,"false") = $replace($piece(line,"monkey",2)," ","")+0
+
+          set monkeys(monkeyIdx,"isp") = 0
+
+          set monkeyCnt = monkeyCnt+1
+          }
+        } 
+
+        set round=1
+        while (round <= 20) {
+          set mky = 0
+          while (mky < monkeyCnt) {            
+            set items = monkeys(mky,"items")
+            for it=1:1:$listlength(items) {
+
+              set old = $listget(items,it)
+              set new = old              
+              xecute ("(old,new) set "_monkeys(mky,"fct"), old, .new)              
+              set new = new \ 3              
+              if (new # monkeys(mky,"div"))=0 {
+                set dest = monkeys(mky,"true")
+              } else {
+                set dest = monkeys(mky,"false")
+              }              
+
+              set $list(monkeys(dest,"items"),*+1) = new
+
+              set monkeys(mky,"isp") = monkeys(mky,"isp") + 1
+            }
+            set monkeys(mky,"items")=""
+            
+            set mky = mky + 1
+          }
+          set round = round+1
+        }
+
+        set top1 = 0
+        set top2 = 0
+
+        for i = 0:1:monkeyCnt-1 {
+          if monkeys(i,"isp") > top2 {
+            if monkeys(i,"isp") > top1 {
+              set top2 = top1 
+              set top1 = monkeys(i,"isp")
+            } else {
+              set top2 = monkeys(i,"isp")
+            }
+          }
+        }        
+
+        write "Part 1 answer : ",top1*top2,!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+   
+    set sc = $$$OK
+
+
+    try {        
+        set monkeys = ""
+        set monkeyCnt = 0
+
+        set p2div = 1
+
+        while 'inputStream.AtEnd {
+
+          set line = inputStream.ReadLine(,.sc)
+          set line = $zstrip(line,"<>C")    
+
+          if line '= "" {
+          set monkeyIdx = $replace($piece(line," ",2),":","")+0         
+
+          set line = inputStream.ReadLine(,.sc)
+          set line = $zstrip(line,"<>C")    
+          set monkeys(monkeyIdx,"items") = $listfromstring($replace($piece(line,":",2)," ",""))
+         
+          set line = inputStream.ReadLine(,.sc)
+          set line = $zstrip(line,"<>C")    
+          set monkeys(monkeyIdx,"fct") = $replace($piece(line,":",2)," ","")
+
+
+          set line = inputStream.ReadLine(,.sc)
+          set line = $zstrip(line,"<>C")    
+          set monkeys(monkeyIdx,"div") = $replace($piece(line,"by",2)," ","")+0
+          set p2div = p2div*monkeys(monkeyIdx,"div")
+        
+          set line = inputStream.ReadLine(,.sc)
+          set line = $zstrip(line,"<>C")    
+          set monkeys(monkeyIdx,"true") = $replace($piece(line,"monkey",2)," ","")+0
+
+          set line = inputStream.ReadLine(,.sc)
+          set line = $zstrip(line,"<>C")    
+          set monkeys(monkeyIdx,"false") = $replace($piece(line,"monkey",2)," ","")+0
+
+          set monkeys(monkeyIdx,"isp") = 0
+
+          set monkeyCnt = monkeyCnt+1
+          }
+        } 
+
+        set round=1
+        while (round <= 10000) {
+          set mky = 0
+          while (mky < monkeyCnt) {            
+            set items = monkeys(mky,"items")
+            for it=1:1:$listlength(items) {
+
+              set old = $listget(items,it)
+              set new = old              
+              xecute ("(old,new) set "_monkeys(mky,"fct"), old, .new)              
+
+              set new = new # p2div
+
+              if (new # monkeys(mky,"div"))=0 {
+                set dest = monkeys(mky,"true")
+              } else {
+                set dest = monkeys(mky,"false")
+              }              
+
+              set $list(monkeys(dest,"items"),*+1) = new
+
+              set monkeys(mky,"isp") = monkeys(mky,"isp") + 1
+            }
+            set monkeys(mky,"items")=""
+            
+            set mky = mky + 1
+          }
+          set round = round+1
+        }
+
+        set top1 = 0
+        set top2 = 0
+
+        for i = 0:1:monkeyCnt-1 {
+          if monkeys(i,"isp") > top2 {
+            if monkeys(i,"isp") > top1 {
+              set top2 = top1 
+              set top1 = monkeys(i,"isp")
+            } else {
+              set top2 = monkeys(i,"isp")
+            }
+          }
+        }
+
+        write "Part 2 answer : ",top1*top2,!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day12">
+<Super>Base</Super>
+<TimeChanged>66467,82283.1772</TimeChanged>
+<TimeCreated>66467,82283.1772</TimeCreated>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String="input12.txt"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex 
+    #Dim inputStream as %Stream.Object
+    
+    set sc = $$$OK
+    try {
+        set inputStream = ..GetInputStream(fileName,.sc)
+        $$$TOE(sc,sc)
+        $$$TOE(sc,..Part1And2(inputStream))
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="AddSucc">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&graph,row:%Integer,col:%Integer,tgtRow:%Integer,tgtCol:%Integer,rowCnt:%Integer,colCnt:%Integer]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  #Dim sc as %Status
+  #Dim ex as %Exception.AbstractException
+
+  #Dim tgtNode,node,diff As %Integer
+  #Dim alt As %String
+  
+  set sc = $$$OK
+  try {
+    set tgtNode = tgtRow*colCnt+tgtCol
+    set node = row*colCnt+col
+    if (tgtNode >= 0) && (tgtNode < (rowCnt*colCnt)) && (node >= 0) && (node < (rowCnt*colCnt)) {
+      set alt = graph(node,"alt")
+      set tgtAlt = graph(tgtNode,"alt")           
+      set diff = $ascii(tgtAlt)-$ascii(alt)
+      if (diff <= 1) {                
+           set $list(graph(node,"succ"),*+1) = tgtNode
+      }           
+    }
+  } catch (ex) {
+    set sc = ex.AsStatus()
+  }
+  quit sc
+]]></Implementation>
+</Method>
+
+<Method name="ShortestPath">
+<Description>
+An overkill to use Dijkstra alg. (graph shortest path) to solve this puzzle :) 
+I started with this directly for Part 1 as I expected something more complex for Part 2 ^^</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&graph,startNode:%Integer,endNode:%Integer,rowCnt:%Integer,colCnt:%Integer,&seq:%List]]></FormalSpec>
+<Implementation><![CDATA[
+  #Dim sc as %Status
+  #Dim ex as %Exception.AbstractException
+
+  #Dim thisNode,lastNode,neighbour as %Integer 
+  #Dim queue,neighbours as %List
+  #Dim dist,prev as %Integer
+  #Dim i,nodeIdx,vidx,da as %Integer
+  #Dim minDist as %Integer
+  #Dim ptr as %Integer
+
+
+  
+  set sc = $$$OK
+  try {
+
+      set lastNode = (colCnt*rowCnt)-1
+      for nodeIdx=0:1:lastNode {
+        set dist(nodeIdx) = 9999999
+        set prev(nodeIdx) = ""        
+        set $list(queue,*+1) = nodeIdx
+      }
+
+      set dist(startNode) = 0   
+
+      while $listlength(queue) > 0 {         
+
+       kill minDist
+       set i=0
+       set ptr=0
+       while $listnext(queue,ptr,thisNode) {
+        set i = i+1
+        if $data(minDist) {
+          if dist(thisNode) < minDist {
+            set minDist = dist(thisNode)
+            set node = thisNode
+            set nodeIdx = i
+          }
+        } else {
+          set minDist = dist(thisNode)        
+          set node = thisNode
+          set nodeIdx = i
+        }        
+       }
+
+       quit:node=endNode
+
+       set queue = $list(queue,1,nodeIdx-1)_$list(queue,nodeIdx+1,*)                    
+       set neighbours = graph(node,"succ")          
+
+       set ptr=0
+       while $listnext(neighbours,ptr,neighbour) {
+         set vidx = $listfind(queue,neighbour)
+         if vidx > 0 {
+           set da = dist(node)+1
+           if da < dist(neighbour) {
+             set dist(neighbour) = da
+             set prev(neighbour) = node
+           }
+         }
+       }       
+      }          
+      set seq = ""
+      set node = endNode
+      if (prev(node) '= "") || (node = startNode) {
+        while node '= "" {
+          set $list(seq,*+1) = node
+          set node = prev(node)
+        }
+      }
+    
+  } catch (ex) {
+    set sc = ex.AsStatus()
+  }
+  quit sc
+]]></Implementation>
+</Method>
+
+<Method name="Part1And2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+    
+    #Dim graph as %Integer
+
+    #Dim line as %String
+    #Dim rowCnt,colCnt as %Integer
+    #Dim i as %Integer
+    #Dim startNode,endNode,node as %Integer
+
+    #Dim steps,minSteps as %Integer
+    #Dim seq as %List
+
+
+   
+    set sc = $$$OK
+    try {   
+
+      set rowCnt = 0
+
+      while ('inputStream.AtEnd) {
+        set line = inputStream.ReadLine(,.sc)
+        set line = $zstrip(line,"<>C")
+        set colCnt = $length(line)
+        set rowCnt = rowCnt + 1
+        for i = 1:1:colCnt {          
+          set alt = $extract(line,i,i)
+          set node = (rowCnt-1)*colCnt+(i-1)
+          if alt="S" {
+            set graph(node,"alt") = "a"
+            set startNode = node
+          } elseif alt="E" {
+            set graph(node,"alt") = "z"
+            set endNode = node
+          } else {
+            set graph(node,"alt") = alt
+          }
+          set graph(node,"succ") = ""
+        }
+      }
+
+      for row=0:1:rowCnt-1 {
+        for col=0:1:colCnt-1 {
+          do ..AddSucc(.graph,row,col,row-1,col,rowCnt,colCnt)
+          do ..AddSucc(.graph,row,col,row+1,col,rowCnt,colCnt)
+          do ..AddSucc(.graph,row,col,row,col-1,rowCnt,colCnt)
+          do ..AddSucc(.graph,row,col,row,col+1,rowCnt,colCnt)
+        }
+      }
+
+
+      do ..ShortestPath(.graph,startNode,endNode,rowCnt,colCnt,.seq)
+      write "Part 1 answer : ",$listlength(seq)-1,!
+
+      set minSteps = 999999
+      for i=0:1:(rowCnt*colCnt)-1 {
+        if graph(i,"alt") = "a" {
+          kill seq
+          do ..ShortestPath(.graph,i,endNode,rowCnt,colCnt,.seq)
+          if seq'="" {
+            set steps = $listlength(seq)-1
+            set:steps<minSteps minSteps = steps          
+          } else {            
+          }
+          write "."
+        }
+      }
+      write !,"Part 2 answer : ",minSteps,!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day13">
+<Super>Base</Super>
+<TimeChanged>66467,82283.178197</TimeChanged>
+<TimeCreated>66467,82283.178197</TimeCreated>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String="input13.txt"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex 
+    #Dim inputStream as %Stream.Object
+    
+    set sc = $$$OK
+    try {
+        set inputStream = ..GetInputStream(fileName,.sc)
+        $$$TOE(sc,sc)
+        $$$TOE(sc,..Part1(inputStream))
+        $$$TOE(sc,inputStream.Rewind())
+        $$$TOE(sc,..Part2(inputStream))
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="Compare">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>left,right</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+  #Dim result as %Integer
+  #Dim minl,i as %Integer
+  
+  if $isobject(left) && $isobject(right) {
+   set minl = left.%Size()
+   if right.%Size() < minl set minl = right.%Size()
+   for i=0:1:minl-1 {
+     set result = ..Compare(left.%Get(i),right.%Get(i))
+     return:(result<0) -1
+     return:(result>0) 1
+   }
+   return left.%Size() - right.%Size()
+  } elseif '$isobject(left) && '$isobject(right) {
+   return left - right
+  } elseif $isobject(left) && '$isobject(right) {
+   return ..Compare(left,[(right)])
+  } else {
+   return ..Compare([(left)],right)
+  }
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+    
+    #Dim line as %String
+
+   
+    set sc = $$$OK
+    set index = 0
+    set total = 0
+    try {        
+      while ('inputStream.AtEnd) {
+
+        set line = inputStream.ReadLine(,.sc)
+        $$$TOE(sc,sc)
+        set line = $zstrip(line,"<>C")
+        set left = [].%FromJSON(line)
+
+        set line = inputStream.ReadLine(,.sc)
+        $$$TOE(sc,sc)
+        set line = $zstrip(line,"<>C")
+        set right = [].%FromJSON(line)
+       
+        set index = index+1
+        set order = ..Compare(left,right)
+        set:order<0 total = total+index
+
+        set line = inputStream.ReadLine(,.sc)       
+
+      }
+      write "Part 1 answer : ",total,!
+    }    
+     
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="PartitionPackets">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&packets,low:%Integer,high:%Integer]]></FormalSpec>
+<Implementation><![CDATA[
+  #Dim pv,z As %DynamicArray
+  #Dim i,j As %Integer
+
+  set pv = packets(high)  
+  set i = low-1
+  for j = low:1:high-1 {
+    if ..Compare(packets(j),pv) <= 0 {
+      set i=i+1
+      set z = packets(j)
+      set packets(j) = packets(i)
+      set packets(i) = z      
+    }
+  }
+  set i=i+1
+  set z = packets(i)
+  set packets(i) = packets(high)
+  set packets(high) = z        
+  return i
+]]></Implementation>
+</Method>
+
+<Method name="SortPackets">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&packets,low:%Integer,high:%Integer]]></FormalSpec>
+<Implementation><![CDATA[
+  #Dim pi As %Integer
+
+  if low < high {
+   set pi = ..PartitionPackets(.packets,low,high)
+   do ..SortPackets(.packets,low,pi-1)
+   do ..SortPackets(.packets,pi+1,high)
+  }
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex 
+
+    #Dim line as %String
+
+    #Dim packets as %DynamicArray
+    #Dim pkt,div1,div2 as %DynamicArray
+    #Dim idx,k,idxdiv2,idxdiv6 as %Integer
+
+
+
+    set sc = $$$OK
+
+    set div1 = [[2]]
+    set div2 = [[6]]
+
+    try {
+        set idx = 0
+        while ('inputStream.AtEnd) {
+         set line = inputStream.ReadLine(,.sc)         
+         set line = $zstrip(line,"<>C")       
+         if line '= "" {
+          set pkt = [].%FromJSON(line)
+          set packets(idx) = pkt
+          set idx = idx + 1 
+         }
+        }
+        set packets(idx) = div1
+        set idx = idx+1
+        set packets(idx) = div2
+        set idx = idx+1
+
+        do ..SortPackets(.packets,0,idx-1)
+
+        set k = $order(packets(""))
+        while k '= "" {
+          set pkt = packets(k)
+          if (pkt.%Size()=1) && (pkt.%Get(0).%Size()=1) && (pkt.%Get(0).%Get(0)=2) { set idxdiv2 = k+1}
+          if (pkt.%Size()=1) && (pkt.%Get(0).%Size()=1) && (pkt.%Get(0).%Get(0)=6) { set idxdiv6 = k+1}
+          set k = $order(packets(k))
+        }
+        write "Part 2 answer : ",idxdiv2*idxdiv6,!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day14">
+<Super>Base</Super>
+<TimeChanged>66467,82283.178161</TimeChanged>
+<TimeCreated>66467,82283.178161</TimeCreated>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String="input14.txt"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex 
+    #Dim inputStream as %Stream.Object
+    
+    set sc = $$$OK
+    try {
+        set inputStream = ..GetInputStream(fileName,.sc)
+        $$$TOE(sc,sc)
+        $$$TOE(sc,..Part1(inputStream))
+        $$$TOE(sc,inputStream.Rewind())
+        $$$TOE(sc,..Part2(inputStream))
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="DrawScan">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&scan]]></FormalSpec>
+<Implementation><![CDATA[
+  #Dim minx,miny,maxx,maxy,x,y As %Integer
+  
+  set minx=..#MAXINT
+  set miny=..#MAXINT
+  set maxx=-..#MAXINT
+  set maxy=-..#MAXINT
+
+  set x=$order(scan(""))
+  while x '= "" {
+    set y=$order(scan(x,""))
+    while y '= "" {
+      set:x<minx minx=x
+      set:x>maxx maxx=x
+      set:y<miny miny=y
+      set:y>maxy maxy=y      
+      set y = $order(scan(x,y))
+    }
+    set x = $order(scan(x))
+  }
+  for y=miny:1:maxy {
+   for x=minx:1:maxx {
+    write $get(scan(x,y),".")
+   }
+   write !
+  }
+]]></Implementation>
+</Method>
+
+<Method name="Scan">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[inputStream:%Stream.Object,&scan,*maxy:%Integer]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  #Dim sc as %Status
+  #Dim ex as %Exception.AbstractException
+
+  #Dim line as %String
+  #Dim points as %List
+  #Dim point as %String
+  #Dim x1,y1,x2,y2 As %Integer
+  #Dim d As %Integer
+  #Dim ptr As %Integer
+  
+  s sc = $$$OK
+  try {
+      while ('inputStream.AtEnd)
+      {
+        set line = inputStream.ReadLine(,.sc)
+        set line = $zstrip(line,"<>C")        
+        set points = $listfromstring(line,"->")        
+        if $listlength(points) > 0 {
+        set ptr = 0
+        set point = $listget(points,1)
+        set x1=$zstrip($piece(point,",",1),"<>W")
+        set y1=$zstrip($piece(point,",",2),"<>W")
+        set maxy=-..#MAXINT
+        s pi = 2
+        while pi <= $listlength(points) {
+         s point = $listget(points,pi) 
+         set x2 = $zstrip($piece(point,",",1),"<>W")
+         set y2 = $zstrip($piece(point,",",2),"<>W")
+         set:y2>maxy maxy = y2
+         if x1=x2 {
+          set d = $select(y1<=y2:1,1:-1)
+          for y=y1:d:y2 {
+            set scan(x1,y) = "#"
+          }
+         }
+         if y1=y2 {
+          set d = $select(x1<=x2:1,1:-1)
+          for x=x1:d:x2 {
+            set scan(x,y1) = "#"
+          }            
+         }
+         set x1=x2
+         set y1=y2
+         set pi = pi +1
+        }
+      }
+     }
+  } catch (ex) {
+    s sc = ex.AsStatus()
+  }
+  q sc
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+    
+    #Dim scan
+    #Dim maxy As %Integer
+    #Dim ox,oy,sx,sy,nx,ny As %Integer
+    #Dim restCnt As %Integer
+    #Dim falling As %Boolean
+
+   
+    set sc = $$$OK
+    try {    
+         
+      $$$TOE(sc,..Scan(inputStream,.scan,.maxy))      
+
+      set ox=500,oy=0
+      set scan(ox,oy) = "+"
+      set sy=oy,sx=ox
+      set restCnt = 0
+      
+      while sy<=maxy {
+       set falling=1
+       while (sy<=maxy) && falling {
+         set scan(sx,sy)="+"         
+         if $get(scan(sx,sy+1)," ")=" " {
+          set nx = sx
+          set ny = sy+1
+         } elseif $get(scan(sx-1,sy+1)," ")=" " {
+          set nx=sx-1,ny=sy+1
+         } elseif $get(scan(sx+1,sy+1)," ")=" " {
+          set nx=sx+1,ny=sy+1
+         } else {
+          set falling=0
+         }
+         if falling {
+          set scan(sx,sy)=" ",sx=nx,sy=ny
+         } else {
+          set scan(sx,sy) = "o"
+          s restCnt = restCnt+1
+          s sx=ox,sy=oy
+          quit
+         }
+       }
+
+      }
+      
+      write "Part 1 answer : ",restCnt,!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+    
+    #Dim scan
+    #Dim maxy As %Integer
+    #Dim ox,oy,sx,sy,nx,ny As %Integer
+    #Dim restCnt As %Integer
+    #Dim falling As %Boolean
+
+   
+    set sc = $$$OK
+    try {    
+
+      $$$TOE(sc,..Scan(inputStream,.scan,.maxy))
+         
+      set ox=500,oy=0
+      set scan(ox,oy) = "+"      
+      set sy=oy,sx=ox
+      set restCnt = 0
+      
+      while $get(scan(ox,oy)) '= "o" {
+       set falling=1
+       while (sy<=(maxy+1)) && falling {
+         set scan(sx,sy)="+"
+         if (sy=(maxy+1)) {
+          set scan(sx,sy)="o"
+          set falling=0
+          set restCnt = restCnt+1
+          set sx=ox,sy=oy
+          quit
+         }
+         if $get(scan(sx,sy+1)," ")=" " {
+          set nx = sx,ny = sy+1
+         } elseif $get(scan(sx-1,sy+1)," ")=" " {
+          set nx=sx-1,ny=sy+1
+         } elseif $get(scan(sx+1,sy+1)," ")=" " {
+          set nx=sx+1,ny=sy+1
+         } else {
+          set falling=0
+         }
+         if falling {
+          set scan(sx,sy)=" "
+          set sx = nx,sy = ny        
+         } else {
+          set scan(sx,sy) = "o"
+          set restCnt = restCnt+1
+          set sx=ox,sy=oy
+          quit
+         }
+       }
+
+      }      
+      write "Part 2 answer : ",restCnt,!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day15">
+<Super>Base</Super>
+<TimeChanged>66467,82283.180306</TimeChanged>
+<TimeCreated>66467,82283.180306</TimeCreated>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String="input15.txt"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex 
+    #Dim inputStream as %Stream.Object
+    
+    set sc = $$$OK
+    try {
+        set inputStream = ..GetInputStream(fileName,.sc)
+        $$$TOE(sc,sc)
+        $$$TOE(sc,..Part1(inputStream))
+        $$$TOE(sc,inputStream.Rewind())
+        $$$TOE(sc,..Part2(inputStream))        
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="Distance">
+<Description>
+manhattan distance</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>x1:%Integer,y1:%Integer,x2:%Integer,y2:%Integer</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[  return $zabs(x1-x2)+$zabs(y1-y2)
+]]></Implementation>
+</Method>
+
+<Method name="DrawCircleLine">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&scan,cx:%Integer,cy:%Integer,r:%Integer,&minx:%Integer,&maxx:%Integer,&miny:%Integer,&maxy:%Integer,targetY:%Integer]]></FormalSpec>
+<Implementation><![CDATA[
+  set fy = cy-r
+  set ty = cy+r
+  if (targetY >= fy) && (targetY <= ty) {
+      set y=targetY
+      set l = r-$zabs((y-cy))
+      set fx = cx-l
+      set tx = cx+l
+      for x=fx:1:tx {
+        set scan(x,y) = "#"
+        set:x<minx minx = x
+        set:x>maxx maxx = x
+        set:y<miny miny = y
+        set:y>maxy maxy = y
+      }
+  }
+]]></Implementation>
+</Method>
+
+<UDLText name="T">
+<Content><![CDATA[
+// hahem, very crude : draw diamonds on a grid, restricted to the line we are looking for (targetY)
+
+]]></Content>
+</UDLText>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+    
+    #Dim line as %String        
+    #Dim matcher as %Regex.Matcher
+
+    #Dim sx,sy,bx,by as %Integer
+    #Dim radius as %Integer
+
+    #Dim minx,miny,maxx,maxy as %Integer
+    #Dim targetY as %Integer
+    #Dim x,pcnt as %Integer
+
+
+    set sc = $$$OK
+    try {        
+
+     set targetY = 2000000
+     set minx = 999999
+     set miny = 999999
+     set maxx = -999999
+     set maxy = -999999
+
+     s matcher = ##class(%Regex.Matcher).%New("Sensor at x=(-?[0-9]+), y=(-?[0-9]+): closest beacon is at x=(-?[0-9]+), y=(-?[0-9]+)")
+
+     while 'inputStream.AtEnd {
+      set line = inputStream.ReadLine(,.sc)
+      $$$TOE(sc,sc)
+      set line = $zstrip(line,"<>C")
+      if matcher.Match(line) {
+        s sx = matcher.Group(1)
+        s sy = matcher.Group(2)
+        s bx = matcher.Group(3)
+        s by = matcher.Group(4)
+      } else {
+        throw ##class(%Exception.General).%New("invalid input")
+      }
+      set radius = ..Distance(sx,sy,bx,by)
+      do ..DrawCircleLine(.scan,sx,sy,radius,.minx,.maxx,.miny,.maxy,targetY)
+      set scan(sx,sy)="S"
+      set scan(bx,by)="B"
+     }
+
+     set pcnt =0
+     for x=minx:1:maxx {
+       set:$get(scan(x,targetY))="#" pcnt = pcnt+1
+     }
+     write "Part 1 answer : ",pcnt,!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="InRange">
+<Description>
+returns true if x,y is in range of any sensor</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&sensors,x:%Integer,y:%Integer,hx:%Integer,hy:%Integer,radius:%Integer]]></FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+    
+  set f=0
+  for i=0:1:sensors-1 {
+    set d = sensors(i,"r")
+    set mx = x+radius
+    set:hx<mx mx = hx
+    set my = y+radius
+    set:hy<my my = hy    
+    set f = f || ((..Distance(x,y,sensors(i,"sx"),sensors(i,"sy")) <= d) &&
+                (..Distance(mx,y,sensors(i,"sx"),sensors(i,"sy")) <= d) &&
+                (..Distance(x,my,sensors(i,"sx"),sensors(i,"sy")) <= d) &&
+                (..Distance(mx,my,sensors(i,"sx"),sensors(i,"sy")) <= d))
+    quit:f 
+  }
+  return f
+]]></Implementation>
+</Method>
+
+<UDLText name="T">
+<Content><![CDATA[
+// search if for dark spots (not covered by any sensor)
+
+]]></Content>
+</UDLText>
+
+<Method name="Search">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&sensors,&dark,x:%Integer,y:%Integer,hx:%Integer,hy:%Integer,radius:%Integer]]></FormalSpec>
+<Implementation><![CDATA[
+  if '..InRange(.sensors,x,y,hx,hy,radius) {
+    if radius <= 1 {
+     set dark = $get(dark,0)
+     set dark(dark,"x") = x
+     set dark(dark,"y") = y
+     set dark(dark,"r") = radius
+     set dark = dark+1
+    } else {
+     set radius = $number(radius / 2,0)
+     do ..Search(.sensors,.dark,x,y,hx,hy,radius)
+     do ..Search(.sensors,.dark,x+radius,y,hx,hy,radius)
+     do ..Search(.sensors,.dark,x,y+radius,hx,hy,radius)
+     do ..Search(.sensors,.dark,x+radius,y+radius,hx,hy,radius)
+    }
+  }
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<Description>
+in part 2, crude approach would take a very long time to compute
+searches for dark spots (areas not covered by any sensor) in the specified range (0,4000000),(0,4000000)</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  #Dim sc as %Status
+  #Dim ex as %Exception.AbstractException
+    
+  #Dim line as %String
+  #Dim matcher as %Regex.Matcher
+
+  #Dim sx,sy,bx,by as %Integer
+  #Dim radius as %Integer
+
+  #Dim sensors as %Integer
+
+  #Dim dark as %Integer
+  #Dim f as %Boolean
+  #Dim z,i,j as %Integer
+  #Dim freq as %Integer
+
+  set sc = $$$OK
+  try {        
+   
+   set sensors = 0
+
+   while 'inputStream.AtEnd {
+    set line = inputStream.ReadLine(,.sc)
+    s matcher = ##class(%Regex.Matcher).%New("Sensor at x=(-?[0-9]+), y=(-?[0-9]+): closest beacon is at x=(-?[0-9]+), y=(-?[0-9]+)")
+
+    $$$TOE(sc,sc)
+    set line = $zstrip(line,"<>C")
+    if matcher.Match(line) {
+      s sx = matcher.Group(1)
+      s sy = matcher.Group(2)
+      s bx = matcher.Group(3)
+      s by = matcher.Group(4)
+    } else {
+      throw ##class(%Exception.General).%New("invalid input")
+    }
+    set radius = ..Distance(sx,sy,bx,by)     
+    set sensors(sensors,"sx") = sx
+    set sensors(sensors,"sy") = sy
+    set sensors(sensors,"bx") = bx
+    set sensors(sensors,"by") = by
+    set sensors(sensors,"r") = radius
+    set sensors = sensors+1
+   }
+
+   set dark=0
+   do ..Search(.sensors,.dark,0,0,4000000,4000000,4000000)
+
+   set f=0
+   for z = 0:1:dark-1 {
+     for i= dark(z,"x"):1:dark(z,"x")+dark(z,"r") {
+       for j=dark(z,"y"):1:dark(z,"y")+dark(z,"r") {
+         if '..InRange(.sensors,i,j,4000000,4000000,0) {
+           set freq = i*4000000+j
+           write "Part 2 answer : ",freq,!
+           set f=1
+           quit
+         }
+       }
+       quit:f
+     }
+     quit:f
+   }
+  }
+  catch (ex) {
+    set sc = ex.AsStatus()
+  }
+  return sc
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day16">
+<Super>Base</Super>
+<TimeChanged>66467,82283.489544</TimeChanged>
+<TimeCreated>66467,82283.489544</TimeCreated>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String="input16.txt"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex 
+    #Dim inputStream as %Stream.Object
+    
+    set sc = $$$OK
+    try {
+        set inputStream = ..GetInputStream(fileName,.sc)
+        $$$TOE(sc,sc)
+        $$$TOE(sc,..Part1And2(inputStream))
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="ParseGraph">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[inputStream:%Stream.Object,&graph]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  #Dim sc as %Status = $$$OK
+  #Dim ex as %Exception.AbstractException
+
+  #Dim line as %String      
+  #Dim matcher as %Regex.Matcher
+  #Dim node As %String
+  #Dim nodePress As %Integer
+  #Dim succs As %String
+  
+  try {
+
+    set sc = $$$OK
+    set matcher = ##class(%Regex.Matcher).%New("Valve ([A-Z]+) has flow rate=([0-9]+); tunnels? leads? to valves? (.*)")  
+     while 'inputStream.AtEnd {
+      set line = inputStream.ReadLine(,.sc)
+      $$$TOE(sc,sc)
+      set line = $zstrip(line,"<>C")
+      if matcher.Match(line) {
+        set node = matcher.Group(1)
+        set nodePress = matcher.Group(2)
+        set succs = $replace(matcher.Group(3)," ","")
+        set graph(node,"p") = nodePress
+        set graph(node,"s") = $listfromstring(succs,",")      
+      } else {
+        throw ##class(%Exception.General).%New("invalid input")
+      }
+    }
+  } catch (ex) {
+    set sc = ex.AsStatus()
+  }
+  quit sc
+]]></Implementation>
+</Method>
+
+<Method name="ShortestPaths">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&graph,&dist,&nodes]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  #Dim sc as %Status
+  #Dim ex as %Exception.AbstractException
+
+  #Dim n as %String
+  #Dim ptr as %Integer
+  #Dim succs as %List
+  #Dim i,j,k as %Integer
+  #Dim ni,nj,nk as %String
+
+  set sc = $$$OK  
+  try {
+    set n=$order(graph(""))
+    while n '= "" {
+      set ptr = 0
+      set succs = graph(n,"s")
+      while $listnext(succs,ptr,succ) {
+        set dist(n,succ)=1        
+      }
+      set dist(n,n) = 0      
+      set $list(nodes,*+1) = n
+      set n = $order(graph(n))
+    }    
+    
+    set i = 0
+    set j = 0
+    set k = 0
+    while $listnext(nodes,k,nk) {
+      while $listnext(nodes,i,ni) {
+         while $listnext(nodes,j,nj) {            
+              if $get(dist(ni,nj),99999) > ($get(dist(ni,nk),999999)+$get(dist(nk,nj),999999)) {
+                set dist(ni,nj) = dist(ni,nk)+dist(nk,nj)
+              }
+        }
+      }
+    }
+  } catch (ex) {
+    set sc = ex.AsStatus()
+  }
+  quit sc
+]]></Implementation>
+</Method>
+
+<Method name="Traverse">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&graph,&dist,nodes:%List,curNode:%String,remTicks:%Integer,state,flow:%Integer,&result]]></FormalSpec>
+<Implementation><![CDATA[
+  #Dim ni,nx As %Integer
+  #Dim node As %String
+  #Dim ticks As %Integer  
+
+  set:(flow > $get(result(state),0)) result(state) = flow
+  set ni = 0
+  set nx = 0
+  while $listnext(nodes,ni,node) {
+    set nx = nx + 1
+    set ticks = remTicks - dist(curNode,node) - 1
+    if '(($bit($factor(state),nx) = 1)||(ticks <= 0)) {
+      do ..Traverse(.graph,.dist,nodes,node,ticks,state+(2**(nx-1)),flow+(ticks*graph(node,"p")),.result)
+    }
+  }
+]]></Implementation>
+</Method>
+
+<Method name="Max">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&result]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+  #Dim max As %Integer
+  #Dim k 
+  
+   set max = 0
+   set k = $order(result("")) 
+   while k'="" {
+    set:result(k)>max max = result(k)
+    set k = $order(result(k)) 
+   }
+   return max
+]]></Implementation>
+</Method>
+
+<Method name="Part1And2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+    
+    #Dim graph
+    #Dim dist
+    #Dim nodes,pressureNodes As %List
+    #Dim result
+    #Dim best,best2,b1,b2,t as %Integer
+    #Dim n1,n2 as %Integer
+    #Dim bn1,bn2
+
+
+
+    set sc = $$$OK
+    try {        
+     $$$TOE(sc,..ParseGraph(inputStream,.graph))
+     $$$TOE(sc,..ShortestPaths(.graph,.dist,.nodes))
+
+     set i = 0
+     set pressureNodes = ""
+     while $listnext(nodes,i,node) {
+       if (graph(node,"p") > 0)  {
+         set $list(pressureNodes,*+1) = node        
+       }
+     }         
+
+     // part 1
+     //
+     // find yield of opening valves in all possible sequences for 30 ticks
+     do ..Traverse(.graph,.dist,.pressureNodes,"AA",30,0,0,.result)
+
+     // find best sequence
+     set best = ..Max(.result)
+     write "Part 1 answer : ",best,!
+
+
+    // part 2
+    // 
+    // find yield of opening valves in all possible sequences for 26 ticks
+    do ..Traverse(.graph,.dist,.pressureNodes,"AA",26,0,0,.result2)
+
+    // find best sequences for human and elephant as max(human sequence yield + elephant sequence yield) for all possible sequences)
+    set best2 = 0
+    set n1 = $order(result2(""))
+    while n1 '= "" {
+      set b1 = result2(n1)
+      set bn1 = $factor(n1)
+      set n2 = $order(result2(""))
+      while n2 '= "" {
+        set bn2 = $factor(n2)        
+        if ($bitcount($bitlogic(bn1&bn2),1)) = 0 {  // TODO: check if there is a faster way
+          set b2 = result2(n2)
+          set t = b1+b2
+          set:best2<t best2 = t        
+        }
+        set n2 = $order(result2(n2))
+      }
+      set n1 = $order(result2(n1))
+    }
+    write "Part 2 answer : ",best2,!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day17">
+<Super>Base</Super>
+<TimeChanged>66467,82283.536495</TimeChanged>
+<TimeCreated>66467,82283.536495</TimeCreated>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String="input17.txt"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex 
+    #Dim inputStream as %Stream.Object
+    
+    set sc = $$$OK
+    try {
+        set inputStream = ..GetInputStream(fileName,.sc)
+        $$$TOE(sc,sc)
+        $$$TOE(sc,..Part1(inputStream))
+        $$$TOE(sc,inputStream.Rewind())
+        $$$TOE(sc,..Part2(inputStream))
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="BuildShapes">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&shapes]]></FormalSpec>
+<Implementation><![CDATA[
+  s shapes = 5
+  // - shape
+  s shapes(0,"w") = 4
+  s shapes(0,"h") = 1
+  s shapes(0,0,0) = "@"
+  s shapes(0,1,0) = "@"
+  s shapes(0,2,0) = "@"
+  s shapes(0,3,0) = "@"
+
+  // + shape
+  s shapes(1,"w") = 3
+  s shapes(1,"h") = 3
+  s shapes(1,0,0) = "."
+  s shapes(1,1,0) = "@"
+  s shapes(1,2,0) = "."
+  s shapes(1,0,1) = "@"
+  s shapes(1,1,1) = "@"
+  s shapes(1,2,1) = "@"
+  s shapes(1,0,2) = "."
+  s shapes(1,1,2) = "@"
+  s shapes(1,2,2) = "."
+
+  // L shape
+  s shapes(2,"w") = 3
+  s shapes(2,"h") = 3
+  s shapes(2,0,0) = "."
+  s shapes(2,1,0) = "."
+  s shapes(2,2,0) = "@"
+  s shapes(2,0,1) = "."
+  s shapes(2,1,1) = "."
+  s shapes(2,2,1) = "@"
+  s shapes(2,0,2) = "@"
+  s shapes(2,1,2) = "@"
+  s shapes(2,2,2) = "@"
+
+  // I shape
+  s shapes(3,"w") = 1
+  s shapes(3,"h") = 4
+  s shapes(3,0,0) = "@"
+  s shapes(3,0,1) = "@"
+  s shapes(3,0,2) = "@"
+  s shapes(3,0,3) = "@"
+
+  // # shape
+  s shapes(4,"w") = 2
+  s shapes(4,"h") = 2  
+  s shapes(4,0,0) = "@"
+  s shapes(4,1,0) = "@"
+  s shapes(4,0,1) = "@"
+  s shapes(4,1,1) = "@"
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+    
+    #Dim line as %String
+
+   
+    set sc = $$$OK
+    try {        
+
+      while ('inputStream.AtEnd)
+      {
+        set line = inputStream.ReadLine(,.sc)
+        set line = $zstrip(line,"<>C")
+        quit        
+      }
+
+
+      d ..BuildShapes(.shapes)
+
+      s grid("jets") = line
+      s grid("jet") = 0
+      s grid("h") = 0
+      s grid("w") = 7
+      s grid("turn") = 0
+      d ..Iterate(.grid,.shapes,2022)
+
+      write "Part 1 answer : ",grid("h"),!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="DrawGrid">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&grid]]></FormalSpec>
+<Implementation><![CDATA[
+  for y=grid("h")-1:-1:0 {
+    for x=0:1:grid("w")-1 {
+      write $get(grid(x,y),".")
+    }
+    write !
+  }
+]]></Implementation>
+</Method>
+
+<Method name="AddShape">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&grid,&shapes,shape:%Integer,x:%Integer,y:%Integer]]></FormalSpec>
+<Implementation><![CDATA[
+  for sx = 0:1:shapes(shape,"w")-1 {
+    for sy = shapes(shape,"h")-1:-1:0 {
+      if shapes(shape,sx,sy)="@" {
+        s grid(x+sx,y-sy) = "#"
+        s:(y-sy)>=grid("h") grid("h")=(y-sy)+1
+      }      
+    }
+  }
+]]></Implementation>
+</Method>
+
+<Method name="IsBlocked">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&grid,&shapes,shape:%Integer,x:%Integer,y:%Integer]]></FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+  s blocked = 0
+  for sx = 0:1:shapes(shape,"w")-1 {
+    for sy = shapes(shape,"h")-1:-1:0 {
+      if shapes(shape,sx,sy)="@" {
+        s blocked = $select((x+sx)<0:1,(x+sx)>(grid("w")-1):1,(y-sy)<0:1,$get(grid(x+sx,y-sy),".")="#":1,1:0)
+        quit:blocked        
+      }      
+     quit:blocked        
+    }
+   quit:blocked        
+  }
+  return blocked
+]]></Implementation>
+</Method>
+
+<Method name="Iterate">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&grid,&shapes,turns:%Integer,stopAtCycle:%Boolean=0]]></FormalSpec>
+<Implementation><![CDATA[
+      s jl=$length(grid("jets"))
+
+    
+      s i=0
+
+      while i < turns {
+
+       quit:(stopAtCycle && (grid("jet")=0) && (i > 0))
+
+        s shape = grid("turn") # shapes
+
+        s shapex = 2
+        s shapey = grid("h")+shapes(shape,"h")+2
+
+        while 1 {
+
+
+         s jetdir = $extract(grid("jets"),grid("jet")+1,grid("jet")+1)
+         s grid("jet") = (grid("jet")+1) # jl
+
+
+
+         if jetdir = ">" {
+          if '..IsBlocked(.grid,.shapes,shape,shapex+1,shapey) {
+            s shapex = shapex + 1
+          }
+         } elseif jetdir = "<" {
+          if '..IsBlocked(.grid,.shapes,shape,shapex-1,shapey) > 0 {
+            s shapex = shapex - 1
+          }
+         }  
+         quit:..IsBlocked(.grid,.shapes,shape,shapex,shapey-1)
+         s shapey=shapey-1
+        }
+        d ..AddShape(.grid,.shapes,shape,shapex,shapey)
+        s grid("turn") = grid("turn") + 1
+        s i = i + 1
+      }
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim line as %String
+
+    set sc = $$$OK
+    try {        
+
+      while ('inputStream.AtEnd)
+      {
+        set line = inputStream.ReadLine(,.sc)
+        set line = $zstrip(line,"<>C")
+        quit        
+      }
+
+
+      d ..BuildShapes(.shapes)
+
+      s grid("jets") = line
+      s grid("jet") = 0
+      s grid("h") = 0
+      s grid("w") = 7
+      s grid("turn") = 0
+
+      s rocks = 1000000000000
+      
+      d ..Iterate(.grid,.shapes,rocks,1)
+      s fh = grid("h")
+      s ft = grid("turn")
+
+      d ..Iterate(.grid,.shapes,rocks,1)
+      s ch = grid("h")
+      s ct = grid("turn")
+
+      s cycleHeight = ch-fh
+
+      s cycleTurns = ct-ft
+      s cycleCount = (rocks-ft) \ cycleTurns
+
+      s rturns = rocks-(cycleCount*cycleTurns)-ft
+
+      d ..Iterate(.grid,.shapes,rturns,0)
+
+      s lh = grid("h")-ch
+
+      s totalHeight = fh+(cycleHeight*cycleCount)+lh
+
+      write "Part 2 answer : ",totalHeight,!
+
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day18">
+<Super>Base</Super>
+<TimeChanged>66467,82283.447874</TimeChanged>
+<TimeCreated>66467,82283.447874</TimeCreated>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String="input18.txt"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex 
+    #Dim inputStream as %Stream.Object
+    
+    set sc = $$$OK
+    try {
+        set inputStream = ..GetInputStream(fileName,.sc)
+        $$$TOE(sc,sc)
+        $$$TOE(sc,..Part1(inputStream))
+        $$$TOE(sc,inputStream.Rewind())
+        $$$TOE(sc,..Part2(inputStream))
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="AddCube">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&lava,x:%Integer,y:%Integer,z:%Integer]]></FormalSpec>
+<Implementation><![CDATA[
+  #Dim sides As %Integer
+    
+  set sides = 6
+  if $data(lava(x+1,y,z)) {    
+    set sides = sides - 1
+    set lava(x+1,y,z) = lava(x+1,y,z) -1
+    set lava = lava - 1
+  }
+  if $data(lava(x-1,y,z)) {        
+    set sides = sides - 1
+    set lava(x-1,y,z) = lava(x-1,y,z) -1
+    set lava = lava - 1
+  }
+  if $data(lava(x,y+1,z)) {    
+    set sides = sides - 1
+    set lava(x,y+1,z) = lava(x,y+1,z) -1
+    set lava = lava - 1
+  }
+  if $data(lava(x,y-1,z)) {    
+    set sides = sides - 1
+    set lava(x,y-1,z) = lava(x,y-1,z) -1
+    set lava = lava - 1
+  }
+  if $data(lava(x,y,z+1)) {    
+    set sides = sides - 1
+    set lava(x,y,z+1) = lava(x,y,z+1) -1
+    set lava = lava - 1
+  }
+  if $data(lava(x,y,z-1)) {    
+    set sides = sides - 1
+    set lava(x,y,z-1) = lava(x,y,z-1) -1
+    set lava = lava - 1
+  }
+  set lava(x,y,z) = sides
+  set lava = lava+sides
+]]></Implementation>
+</Method>
+
+<UDLText name="T">
+<Content><![CDATA[
+// icy (-5°C outside here...), lazy Sunday : pretty straightforward, inefficient solution
+
+]]></Content>
+</UDLText>
+
+<Method name="PerimeterArea">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&lava]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+  #Dim f as %Boolean
+  #Dim x,y,z As %Integer
+  #Dim fx,fy,fz As %Integer
+  #Dim q,n as %List
+  #Dim nx,ny,nz As %Integer
+  #Dim air
+
+  // find air cell to start flood
+  set f=0
+  for x=lava("minx"):1:lava("maxx") {
+    for y=lava("miny"):1:lava("maxy") {
+      for z=lava("minz"):1:lava("maxz") {
+        if '$data(lava(x,y,z)) {
+          set fx = x,fy=y,fz=z
+          set f=1
+          quit
+        }
+      }
+      quit:f
+    }    
+    quit:f
+  }
+
+  // flood air around lava
+  set q = $listbuild($listbuild(fx,fy,fz))
+  set air = 0
+  while $listlength(q) > 0 {
+    set n = $listget(q,1)
+    set q = $list(q,2,*)
+    set nx=$listget(n,1)
+    set ny=$listget(n,2)
+    set nz=$listget(n,3)
+    if '$data(lava(nx,ny,nz)) && '$data(air(nx,ny,nz)) {
+      set air(nx,ny,nz)=1      
+      set:(nx+1)<=lava("maxx") $list(q,*+1) = $listbuild(nx+1,ny,nz)
+      set:(nx-1)>=lava("minx") $list(q,*+1) = $listbuild(nx-1,ny,nz)
+      set:(ny+1)<=lava("maxy") $list(q,*+1) = $listbuild(nx,ny+1,nz)
+      set:(ny-1)>=lava("miny") $list(q,*+1) = $listbuild(nx,ny-1,nz)
+      set:(nz+1)<=lava("maxz") $list(q,*+1) = $listbuild(nx,ny,nz+1)
+      set:(nz-1)>=lava("minz") $list(q,*+1) = $listbuild(nx,ny,nz-1)
+    }
+  }
+
+  // count exposed facets of solid = -air
+  set solid = 0
+  for x=lava("minx"):1:lava("maxx") {
+    for y=lava("miny"):1:lava("maxy") {
+      for z=lava("minz"):1:lava("maxz") {
+        if '$data(air(x,y,z)) {
+          do ..AddCube(.solid,x,y,z)
+        }
+      }
+    }    
+  }
+  return solid
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+    
+    #Dim line as %String
+    #Dim x,y,z as %Integer
+    #Dim lava
+
+   
+    set sc = $$$OK
+    try {       
+      set lava = 0
+      while ('inputStream.AtEnd)
+      {
+        set line = inputStream.ReadLine(,.sc)
+        set line = $zstrip(line,"<>C")
+        set x = $piece(line,",",1)
+        set y = $piece(line,",",2)
+        set z = $piece(line,",",3)
+
+        do ..AddCube(.lava,x,y,z)
+      }
+      write "Part 1 answer : ",lava,!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim line as %String
+
+    set sc = $$$OK
+    try {        
+      set lava = 0
+      while ('inputStream.AtEnd)
+      {
+        set line = inputStream.ReadLine(,.sc)
+        set line = $zstrip(line,"<>C")
+        set x = $piece(line,",",1)
+        set y = $piece(line,",",2)
+        set z = $piece(line,",",3)
+
+        set:x<$get(lava("minx"),..#MAXINT) lava("minx") = x
+        set:x>$get(lava("maxx"),-..#MAXINT) lava("maxx") = x
+
+        set:y<$get(lava("miny"),..#MAXINT) lava("miny") = y
+        set:y>$get(lava("maxy"),-..#MAXINT) lava("maxy") = y
+ 
+        set:z<$get(lava("minz"),..#MAXINT) lava("minz") = z
+        set:z>$get(lava("maxz"),-..#MAXINT) lava("maxz") = z 
+
+        set lava(x,y,z) = 1
+
+      }      
+      write "Part 2 answer : ",..PerimeterArea(.lava),!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day19">
+<Super>Base</Super>
+<TimeChanged>66467,82283.334194</TimeChanged>
+<TimeCreated>66467,82283.334194</TimeCreated>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String="input19.txt"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex 
+    #Dim inputStream as %Stream.Object
+    
+    set sc = $$$OK
+    try {
+        set inputStream = ..GetInputStream(fileName,.sc)
+        $$$TOE(sc,sc)
+        $$$TOE(sc,..Part1And2(inputStream))
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="ParseInput">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[inputStream:%Stream.Object,&blueprints:%DynamicArray]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  #Dim sc as %Status = $$$OK
+  #Dim ex as %Exception.AbstractException
+
+  #Dim matcher As %Regex.Matcher
+  #Dim blueprint as %DynamicAbstractObject
+
+  
+  try {
+      set blueprints = []
+      set matcher = ##class(%Regex.Matcher).%New("Blueprint ([0-9]+): Each ore robot costs ([0-9]+) ore\. Each clay robot costs ([0-9]+) ore\. Each obsidian robot costs ([0-9]+) ore and ([0-9]+) clay\. Each geode robot costs ([0-9]+) ore and ([0-9]+) obsidian\.")            
+      while ('inputStream.AtEnd)
+      {
+        set line = inputStream.ReadLine(,.sc)
+        set line = $zstrip(line,"<>C")
+        if matcher.Match(line) {          
+          set blueprint = {
+            "id" : (matcher.Group(1)+0),
+            "geoOre" : (matcher.Group(6)+0),
+            "geoObs" : (matcher.Group(7)+0),
+            "obsOre" : (matcher.Group(4)+0),
+            "obsCla" : (matcher.Group(5)+0),
+            "oreOre" : (matcher.Group(2)+0),
+            "claOre" : (matcher.Group(3)+0)
+          }
+          do blueprints.%Push(blueprint)          
+        }
+      }
+  } catch (ex) {
+    s sc = ex.AsStatus()
+  }
+  q sc
+]]></Implementation>
+</Method>
+
+<Method name="Part1And2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+    #Dim i,t,p as %Integer    
+   
+    set sc = $$$OK
+
+    try {
+      $$$TOE(sc,..ParseInput(inputStream,.blueprints))
+
+      // part 1
+
+      set t = 0
+      for i=0:1:blueprints.%Size()-1 {
+        write "mining with blueprint id ",blueprints.%Get(i).id,!
+        set t = t + (blueprints.%Get(i).id*..Mine(blueprints.%Get(i),0,0,0,1,0,0,24))
+      }
+      write "Part 1 answer : ",t,!
+ 
+      // part 2
+
+      set p = 1
+      for i=0:1:2 {
+        write "mining with salvaged blueprint id ",blueprints.%Get(i).id,!
+        set p = p *..Mine(blueprints.%Get(i),0,0,0,1,0,0,32)
+      }
+      write "Part 2 answer : ",p,!
+
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="Mine">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>costs:%DynamicAbstractObject,ore:%Integer,cla:%Integer,obs:%Integer,oreRbt:%Integer,claRbt:%Integer,obsRbt:%Integer,clk:%Integer</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+  #Dim result,t as %Integer
+
+  return:clk<=0 0
+
+  // mine geodes
+  return:(costs.geoOre <= ore)&&(costs.geoObs <= obs) (clk-1)+..Mine(costs,ore+oreRbt-costs.geoOre,cla+claRbt,obs+obsRbt-costs.geoObs,oreRbt,claRbt,obsRbt,clk-1)
+
+  // build obsidian mining robot
+  return:(costs.obsOre <= ore)&&(costs.obsCla <= cla) ..Mine(costs,ore+oreRbt-costs.obsOre,cla+claRbt-costs.obsCla,obs+obsRbt,oreRbt,claRbt,obsRbt+1,clk-1)
+
+  set result = 0
+
+  if costs.oreOre <= ore { // build ore mining robot
+    set t = ..Mine(costs,ore+oreRbt-costs.oreOre,cla+claRbt,obs+obsRbt,oreRbt+1,claRbt,obsRbt,clk-1)
+    set:result<t result = t
+  }
+
+  if costs.claOre <= ore { // build clay mining robot
+    set t = ..Mine(costs,ore+oreRbt-costs.claOre,cla+claRbt,obs+obsRbt,oreRbt,claRbt+1,obsRbt,clk-1)
+    set:result<t result = t
+  }
+
+  if ore < 6 {  // just let the robot(s) mine
+    set t = ..Mine(costs,ore+oreRbt,cla+claRbt,obs+obsRbt,oreRbt,claRbt,obsRbt,clk-1)
+    set:result<t result = t
+  }
+  return result
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day2">
+<Super>Base</Super>
+<TimeChanged>66467,82283.517116</TimeChanged>
+<TimeCreated>66467,82283.517116</TimeCreated>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String="input2.txt"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+
+    #Dim inputStream as %Stream.Object
+    
+    set sc = $$$OK
+    try {
+        set inputStream = ..GetInputStream(fileName,.sc)
+        $$$TOE(sc,sc)
+        $$$TOE(sc,..Part1(inputStream))
+        $$$TOE(sc,inputStream.Rewind())
+        $$$TOE(sc,..Part2(inputStream))
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+
+    #Dim opMove,myMove as %String
+    #Dim score,totalScore as %Integer
+   
+    set sc = $$$OK
+    set totalScore = 0
+    set moveScore("X")=1
+    set moveScore("Y")=2
+    set moveScore("Z")=3
+    set matchScore("A","X") = 3
+    set matchScore("B","Y") = 3
+    set matchScore("C","Z") = 3
+    set matchScore("A","Y") = 6
+    set matchScore("B","Z") = 6
+    set matchScore("C","X") = 6
+    try {
+        while 'inputStream.AtEnd {
+            set line = inputStream.ReadLine(,.sc)
+            $$$TOE(sc,sc)
+            $$$TOE(sc,..ParseInputLine(line,.opMove,.myMove))
+            set score = $get(moveScore(myMove),0)+$get(matchScore(opMove,myMove),0)
+            set totalScore = totalScore+score
+        }
+        write "Part 1 answer : ",totalScore,!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+
+    #Dim moves,opMove,myMove as %String
+    #Dim score,totalScore as %Integer
+   
+    set sc = $$$OK
+    set totalScore = 0
+    set moveScore("X")=1
+    set moveScore("Y")=2
+    set moveScore("Z")=3
+    set matchScore("A","X") = 3
+    set matchScore("B","Y") = 3
+    set matchScore("C","Z") = 3
+    set matchScore("A","Y") = 6
+    set matchScore("B","Z") = 6
+    set matchScore("C","X") = 6
+    set moves("A","X") = "Z"
+    set moves("A","Y") = "X"
+    set moves("A","Z") = "Y"
+    set moves("B","X") = "X"
+    set moves("B","Y") = "Y"
+    set moves("B","Z") = "Z"
+    set moves("C","X") = "Y"
+    set moves("C","Y") = "Z"
+    set moves("C","Z") = "X"
+    try {
+        while 'inputStream.AtEnd {
+            set line = inputStream.ReadLine(,.sc)
+            $$$TOE(sc,sc)
+            $$$TOE(sc,..ParseInputLine(line,.opMove,.expEnd))
+            set myMove = moves(opMove,expEnd)
+            set score = $get(moveScore(myMove),0)+$get(matchScore(opMove,myMove),0)
+            set totalScore = totalScore+score
+        }
+        write "Part 2 answer : ",totalScore,!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="ParseInputLine">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[line:%String,&opponentMove:%String(MAXLEN=1),&move:%String(MAXLEN=1)]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+    
+    set sc = $$$OK
+    try {
+      set opponentMove = $zstrip($piece(line," ",1),"<>C")
+      set move = $zstrip($piece(line," ",2),"<>C")
+      if ('("ABC" [ opponentMove)) || ('("XYZ" [ move)) || ($length(opponentMove) '= 1) || ($length(move) '= 1) {
+        throw ##class(%Exception.General).%New("invalid input line : """_line_"""")
+      }
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    quit sc
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day20">
+<Super>Base</Super>
+<TimeChanged>66467,82283.330215</TimeChanged>
+<TimeCreated>66467,82283.330215</TimeCreated>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String="input20.txt"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex 
+    #Dim inputStream as %Stream.Object
+    
+    set sc = $$$OK
+    try {
+        set inputStream = ..GetInputStream(fileName,.sc)
+        $$$TOE(sc,sc)
+        $$$TOE(sc,..Part1And2(inputStream))
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="FindIndex">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>f:%ListOfDataTypes,index:%Integer</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+  #Dim k As %Integer
+  #Dim l As %Integer
+  
+  s l = f.Size
+  for k=1:1:l {    
+   quit:$listget(f.GetAt(k),1)=index
+  }        
+  return k
+]]></Implementation>
+</Method>
+
+<Method name="FindValue">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>f:%ListOfDataTypes,value:%Integer</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+  #Dim k As %Integer
+  #Dim l As %Integer
+  
+  s l = f.Size
+  for k=1:1:l {    
+   quit:$listget(f.GetAt(k),2)=value
+  }        
+  return k
+]]></Implementation>
+</Method>
+
+<Method name="Decrypt">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>f:%ListOfDataTypes,iter:%Integer=1</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  #Dim sc as %Status
+  #Dim ex as %Exception.AbstractException
+
+  #Dim it as %Integer
+  #Dim l as %Integer
+  #Dim i,k As %Integer
+  #Dim v,np As %Integer
+    
+  s sc = $$$OK
+  try {
+    for it=1:1:iter {
+      s l = f.Size
+      for i=0:1:l-1 {
+        s k = ..FindIndex(f,i)-1       
+        s v = $listget(f.GetAt(k+1),2)        
+        s np = (k+v+l-1) # (l-1)        
+        d f.RemoveAt(k+1)    
+        $$$TOE(sc,f.InsertAt($listbuild(i,v),np+1))
+      }            
+    }
+  } catch (ex) {
+    s sc = ex.AsStatus()
+  }
+  q sc
+]]></Implementation>
+</Method>
+
+<Method name="Total">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>f:%ListOfDataTypes</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+  #Dim k,l as %Integer
+  #Dim v1,v2,v3 as %Integer
+
+  s k = ..FindValue(f,0)-1      
+  s l = f.Size
+  s v1 = $listget(f.GetAt(((k+1000)#l)+1),2)
+  s v2 = $listget(f.GetAt(((k+2000)#l)+1),2)
+  s v3 = $listget(f.GetAt(((k+3000)#l)+1),2)
+
+  return v1+v2+v3
+]]></Implementation>
+</Method>
+
+<Method name="Part1And2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+    
+    
+    #Dim m1,m2 as %ListOfDataTypes
+    #Dim i as %Integer
+    #Dim line as %String
+  
+    set sc = $$$OK
+    try {        
+
+      s m1 = ##class(%ListOfDataTypes).%New()
+      s m2 = ##class(%ListOfDataTypes).%New()
+
+      s i=0
+      while ('inputStream.AtEnd)
+      {
+        set line = inputStream.ReadLine(,.sc)
+        set line = $zstrip(line,"<>C")
+        $$$TOE(sc,m1.Insert($listbuild(i,line+0)))
+        $$$TOE(sc,m2.Insert($listbuild(i,line*811589153)))
+        s i = i + 1
+      }      
+
+      $$$TOE(sc,..Decrypt(m1))      
+      write "Part 1 answer : ",..Total(m1),!      
+
+      $$$TOE(sc,..Decrypt(m2,10))
+      write "Part 2 answer : ",..Total(m2),!      
+      
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day21">
+<Super>Base</Super>
+<TimeChanged>66467,82283.471063</TimeChanged>
+<TimeCreated>66467,82283.471063</TimeCreated>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String="input21.txt"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex 
+    #Dim inputStream as %Stream.Object
+    
+    set sc = $$$OK
+    try {
+        set inputStream = ..GetInputStream(fileName,.sc)
+        $$$TOE(sc,sc)
+        $$$TOE(sc,..Part1And2(inputStream))
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="Node">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&t,node:%String,child:%String]]></FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+  return:node=child 1
+  return:$data(t(node,"left"))&&..Node(.t,t(node,"left"),child) 1
+  return:$data(t(node,"right"))&&..Node(.t,t(node,"right"),child) 1
+  return 0
+]]></Implementation>
+</Method>
+
+<Method name="Operator">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>left:%Integer,op:%String,right:%Integer</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[  return $case(op,"+":left+right,"-":left-right,"*":left*right,"/":left\right,:0)
+]]></Implementation>
+</Method>
+
+<Method name="Evaluate">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&t,node:%String]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+  return:'$data(t(node,"op")) t(node,"value")
+  return ..Operator(..Evaluate(.t,t(node,"left")),t(node,"op"),..Evaluate(.t,t(node,"right")))
+]]></Implementation>
+</Method>
+
+<Method name="Solve">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&t,node:%String,target:%Integer]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+  #Dim humanLeft As %Boolean
+  #Dim humnSide,monkSide As %String
+  #Dim monkValue As %Integer
+
+  return:node="humn" target  
+
+  s humanLeft = ..Node(.t,t(node,"left"),"humn")
+
+  if humanLeft {
+    s humnSide = t(node,"left")
+    s monkSide = t(node,"right")
+  } else {
+    s humnSide = t(node,"right")
+    s monkSide = t(node,"left")
+  }  
+
+  s monkValue = ..Evaluate(.t,monkSide)
+
+  if t(node,"op")="+" {
+    s target = target - monkValue
+  } elseif t(node,"op")="-" {
+    if humanLeft {
+     s target = target+monkValue
+    } else {
+     s target = monkValue-target
+    }
+  } elseif t(node,"op")="*" {
+    s target = target \ monkValue
+  } elseif t(node,"op")="/" {
+    if humanLeft {
+      s target = target * monkValue
+    } else {
+      s target = monkValue \ target
+    } 
+  }
+
+  return ..Solve(.t,humnSide,target)
+]]></Implementation>
+</Method>
+
+<Method name="ParseInput">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[inputStream:%Stream.Object,&t]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  #Dim sc as %Status = $$$OK
+  #Dim ex as %Exception.AbstractException
+
+  #Dim matcher as %Regex.Matcher
+  #Dim line as %String
+  #Dim node,left,op,right As %String
+
+
+  s sc = $$$OK  
+  try {
+      s matcher = ##class(%Regex.Matcher).%New("([a-z]+)\:\s+([0-9,a-z]+)\s?([\+\-\*\/]?)\s?([a-z,0-9]*)")
+      while ('inputStream.AtEnd)
+      {
+        set line = inputStream.ReadLine(,.sc)
+        set line = $zstrip(line,"<>C")
+        if matcher.Match(line) {
+          s node = matcher.Group(1)
+          s left = matcher.Group(2)
+          s op = matcher.Group(3)
+          s right = matcher.Group(4)
+                 
+          if right="" {
+            s t(node,"value") = left+0
+          } else {
+           s t(node,"op") = op
+           s t(node,"left") = left
+           s t(node,"right") = right
+          }                    
+        } else {
+          throw ##class(%Exception.General).%New("invalid input")
+        }
+      }
+  } catch (ex) {
+    s sc = ex.AsStatus()
+  }
+  q sc
+]]></Implementation>
+</Method>
+
+<Method name="Part1And2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+    
+
+    #Dim t
+    #Dim humn,monk As %String
+    #Dim expected As %Integer
+    #Dim x As %Integer
+    #Dim human As %Integer
+
+    set sc = $$$OK
+    try {        
+      $$$TOE(sc,..ParseInput(inputStream,.t))
+      write "Part 1 answer : ",..Evaluate(.t,"root"),!
+
+      if ..Node(.t,t("root","left"),"humn") {
+        s humn = t("root","left")
+        s monk = t("root","right")
+      } else {
+        s humn = t("root","right")
+        s monk = t("root","left")
+      }
+      s expected = ..Evaluate(.t,monk)
+      s t(humn,"value") = expected
+      s x = ..Solve(.t,humn,expected)
+      write "Part 2 answer : ",x,!
+
+      s t("humn","value") = x
+      s human = ..Evaluate(.t,humn)
+      if expected '= human {
+        write "!! root monkey is angry : human side value ",human," not matching value expected by root monkey ",expected,!
+      }      
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day22">
+<Super>Base</Super>
+<TimeChanged>66467,82283.534245</TimeChanged>
+<TimeCreated>66467,82283.534245</TimeCreated>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String="input22.txt"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex 
+    #Dim inputStream as %Stream.Object
+    
+    set sc = $$$OK
+    try {
+        set inputStream = ..GetInputStream(fileName,.sc)
+        $$$TOE(sc,sc)
+        $$$TOE(sc,..Part1(inputStream))
+        $$$TOE(sc,inputStream.Rewind())
+        $$$TOE(sc,..Part2(inputStream))
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="ParseInput">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[inputStream:%Stream.Object,&grid,&moves,&rows,&cols]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  #Dim sc as %Status
+  #Dim ex as %Exception.AbstractException
+
+  #Dim line as %String
+  #Dim state as %Integer
+  #Dim row,col as %Integer
+  #Dim tile,mvtstr as %String
+  #Dim c,d as %String
+
+  
+  set sc = $$$OK
+  try {
+      set state = 0
+      set row = 0
+      while ('inputStream.AtEnd)
+      {
+        set line = inputStream.ReadLine(,.sc)
+        set line = $zstrip(line,"<>C")
+        if line="" {
+          set state = 1
+        } else {
+          if state=0 {
+            set tiles = line
+            set row = row + 1
+            for col=1:1:$length(tiles) {
+              set tile = $extract(tiles,col,col)
+              if (tile=".") || (tile="#") {
+                set grid(row,col) = tile
+                set:row<$get(cols(col,"min"),..#MAXINT) cols(col,"min")  = row
+                set:row>$get(cols(col,"max"),-..#MAXINT) cols(col,"max")  = row
+                set:col<$get(rows(row,"min"),..#MAXINT) rows(row,"min")  = col
+                set:col>$get(rows(row,"max"),-..#MAXINT) rows(row,"max")  = col
+              } else {
+
+              }
+            }
+          } elseif state=1 {
+            set mvtstr = line            
+            quit
+          }
+        }
+      }
+
+      set d = ""
+      set moves=0
+      for i=1:1:$length(mvtstr) {
+        set c = $extract(mvtstr,i,i)
+        if (c="R") || (c="L") {
+          if d'="" {
+            set moves=moves+1
+            set moves(moves) = d
+            set d = ""
+          }
+          set moves=moves+1
+          set moves(moves) = c
+        } else {
+          set d = d_c
+        }
+      }
+      if d'="" {
+        set moves=moves+1
+        set moves(moves) = d
+        set d = ""
+      }
+  } catch (ex) {
+    set sc = ex.AsStatus()
+  }
+  quit sc
+]]></Implementation>
+</Method>
+
+<Method name="Password">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>row:%Integer,col:%Integer,f:%String</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[  return (row*1000)+(col*4)+$case(f,">":0,"v":1,"<":2,"^":3)
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+    
+    #Dim grid
+    #Dim moves
+    #Dim rows,cols
+    #Dim f as %String
+    #Dim i as %Integer
+    #Dim move
+    #Dim s,dx,dy as %Integer
+    #Dim row,col,nrow,ncol as %Integer
+  
+    set sc = $$$OK
+    try {        
+
+      $$$TOE(sc,..ParseInput(inputStream,.grid,.moves,.rows,.cols))
+
+      set row = 1
+      set col = rows(1,"min")
+      set f = ">"
+      // apply moves
+      for i=1:1:moves {
+        set move = moves(i)
+        if move="R" {
+          set f = $case(f,"^":">",">":"v","v":"<","<":"^")
+        } elseif move="L" {
+          set f = $case(f,"^":"<","<":"v","v":">",">":"^")
+        } else {
+          set dx = $case(f,">":1,"<":-1,:0)
+          set dy = $case(f,"^":-1,"v":1,:0)
+          for s=1:1:move {
+            set nrow = row+dy
+            set ncol = col+dx
+            if $get(grid(nrow,ncol))="." { // move
+              set row = nrow
+              set col = ncol
+            } elseif $get(grid(nrow,ncol))="#" { // stop
+              quit
+            } elseif $get(grid(nrow,ncol))="" { // wrap
+              if dx = -1 {
+                quit:grid(row,rows(row,"max"))'="." 
+                set col = rows(row,"max")
+              } elseif dx=1 {
+                quit:grid(row,rows(row,"min"))'="."
+                set col = rows(row,"min")
+              } elseif dy=-1 {
+                quit:grid(cols(col,"max"),col)'="."
+                set row = cols(col,"max")
+              } elseif dy=1 {
+                quit:grid(cols(col,"min"),col)'="."
+                set row = cols(col,"min")
+              }
+            }
+          }
+        }
+      }
+      write "Part 1 answer : ",..Password(row,col,f),!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<Description>
+caveat: works only for the specific cube folding in the input provided by AoC for this day 22 part 2 puzzle
+
+facets labels used in comments : 
+
+ 12
+ 3
+45
+6
+</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim line as %String
+    #Dim grid
+    #Dim moves
+    #Dim rows,cols
+    #Dim f as %String
+    #Dim i as %Integer
+    #Dim move
+    #Dim s,dx,dy as %Integer
+    #Dim row,col,nrow,ncol as %Integer
+
+
+    set sc = $$$OK
+    try {        
+      $$$TOE(sc,..ParseInput(inputStream,.grid,.moves,.rows,.cols))
+
+      set row = 1
+      set col = rows(1,"min")
+      set f = ">"
+      set c =  (cols(1,"max")-cols(1,"min")+1)\2
+      write "cube size : ",c,!
+      // apply moves
+      for i=1:1:moves {
+        set move = moves(i)
+        if move="R" {
+          set f = $case(f,"^":">",">":"v","v":"<","<":"^")
+        } elseif move="L" {
+          set f = $case(f,"^":"<","<":"v","v":">",">":"^")
+        } else {
+          for s=1:1:move {
+            set dx = $case(f,">":1,"<":-1,:0)
+            set dy = $case(f,"^":-1,"v":1,:0)
+
+            set nrow = row+dy
+            set ncol = col+dx
+            if $get(grid(nrow,ncol))="." { // move
+              set row = nrow
+              set col = ncol
+            } elseif $get(grid(nrow,ncol))="#" { // stop
+              quit
+            } elseif $get(grid(nrow,ncol))="" { // wrap
+               if ((row >=1) && (row <= c) && (col >= (c+1)) && (col <= (2*c)))  { // currently in facet 1 
+                if f="<" { // go to facet 4 left edge
+                  set ncol = 1
+                  set nrow = ((c+1)-row)+(2*c)
+                  set nf = ">"
+                } elseif f="^" { // go to facet 6 left edge
+                  set nrow = col+(2*c)
+                  set ncol = 1
+                  set nf = ">"
+                }
+                } elseif ((row >=1) && (row <= c) && (col >=((2*c)+1)) && (col <= (3*c))) { // currently in facet 2
+                  if f="^" {  // go to facet 6 bottom edge
+                    set nrow= 4*c
+                    set ncol = col-(2*c)
+                    set nf="^"
+                  } elseif f="v" { // go to facet 3 right edge
+                    set nrow = col-c
+                    set ncol = (2*c)
+                    set nf = "<"
+                  } elseif f=">" { // go to facet 5 right edge
+                     set nrow = ((c+1)-row)+(2*c)
+                     set ncol = 2*c
+                     set nf = "<"
+                  } 
+                } elseif ((row >=(c+1)) && (row <= (2*c)) && (col >=(c+1)) && (col <= (2*c))) { // currently in facet 3                
+                  if f = ">" { // go to facet 2 bottom edge
+                    set nrow = c
+                    set ncol = row+c
+                    set nf = "^"
+                  } elseif f = "<" { // go to facet 4 top edge
+                    set nrow = (2*c)+1
+                    set ncol = row-c
+                    set nf = "v"
+                  }
+               } elseif ((row >=((2*c)+1)) && (row <= (3*c)) && (col >=1) && (col <= c)) { // currently in facet 4
+                  if f="<" { // go to facet 1 left edge
+                    set nrow = (c+1)-(row-(2*c))
+                    set ncol = c+1
+                    set nf = ">"
+                  } elseif f="^" { // go to facet 3 left edge
+                    set ncol=c+1
+                    set nrow = col+c
+                    set nf =">"
+                  }
+               } elseif ((row >= ((2*c)+1)) && (row <= (3*c)) && (col >=(c+1)) && (col <= (2*c))) { // currently in facet 5
+                  if f=">" { // go to facet 2 right edge
+                    set nrow = (c+1)-(row - (2*c))
+                    set ncol = 3*c
+                    set nf = "<"
+                  } elseif f="v" { // go to facet 6 right edge
+                    set nrow = col+(2*c)
+                    set ncol = c
+                    set nf = "<"
+                  }
+               } elseif ((row >= ((3*c)+1)) && (row <= (4*c)) && (col >=1) && (col <= c)) { // currently in facet 6
+                  if f="<" { // go to facet 1 top edge
+                    set nrow = 1
+                    set ncol = row -(2*c)
+                    set nf = "v"
+                  } elseif f="v" { // go to facet 2 top edge
+                    set nrow = 1
+                    set ncol = col+(2*c)
+                    set nf = "v"
+                  } elseif f=">" { // go to facet 5 bottom edge
+                    set nrow = 3*c
+                    set ncol=row-(2*c)
+                    set nf = "^"
+                  }
+               }
+                if grid(nrow,ncol)="#" {
+                  quit
+                } else {
+                  set f = nf
+                  set row = nrow
+                  set col = ncol
+                }                      
+             }   
+           }
+        }
+      }
+      write "Part 2 answer : ",..Password(row,col,f),!
+    }
+   catch (ex) {
+      set sc = ex.AsStatus()
+    }
+   return sc
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day23">
+<Super>Base</Super>
+<TimeChanged>66467,82283.552572</TimeChanged>
+<TimeCreated>66467,82283.552572</TimeCreated>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String="input23.txt"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex 
+    #Dim inputStream as %Stream.Object
+    
+    set sc = $$$OK
+    try {
+        set inputStream = ..GetInputStream(fileName,.sc)
+        $$$TOE(sc,sc)
+        $$$TOE(sc,..Part1(inputStream))
+        $$$TOE(sc,inputStream.Rewind())
+        $$$TOE(sc,..Part2(inputStream))
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="ParseInput">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[inputStream:%Stream.Object,&grid]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  #Dim ex as %Exception.AbstractException
+  #Dim sc as %Status
+
+  #Dim row,col as %Integer
+  #Dim line,c as %String
+  #Dim ln as %Integer
+
+  
+  set sc = $$$OK
+  try {
+      set row = 0
+      while ('inputStream.AtEnd)
+      {
+        set line = inputStream.ReadLine(,.sc)
+        set line = $zstrip(line,"<>C")
+        set row = row+1
+        set ln = $length(line)
+        set:ln>$get(grid("maxCol"),-..#MAXINT) grid("maxCol") = ln
+        for col=1:1:ln {
+          set c =$extract(line,col,col)          
+          set:c="#" grid(row,col) = c
+        }        
+      }
+      set grid("minRow")=1
+      set grid("maxRow")=row
+      set grid("minCol")=1
+
+  } catch (ex) {
+    set sc = ex.AsStatus()
+  }
+  quit sc
+]]></Implementation>
+</Method>
+
+<Method name="CountEmptyCells">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&grid]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+  #Dim minRow,maxRow,minCol,maxCol,row,col as %Integer
+  
+  set cnt = 0
+  set minRow = grid("minRow")
+  set grid("minRow") = ..#MAXINT
+  set maxRow = grid("maxRow")
+  set grid("maxRow") = -..#MAXINT
+
+  set minCol = grid("minCol")
+  set grid("minCol") = ..#MAXINT
+  set maxCol = grid("maxCol")
+  set grid("maxCol") = -..#MAXINT
+  for row=minRow:1:maxRow
+  {
+    for col=minCol:1:maxCol {
+      if $get(grid(row,col),".")="#" {        
+        set:row<grid("minRow") grid("minRow") = row
+        set:row>grid("maxRow") grid("maxRow") = row
+        set:col<grid("minCol") grid("minCol") = col
+        set:col>grid("maxCol") grid("maxCol") = col
+      }    
+    }  
+  }
+  for row=grid("minRow"):1:grid("maxRow")
+  {
+    for col=grid("minCol"):1:grid("maxCol") {
+      set:$get(grid(row,col),".")="." cnt = cnt +1
+    }    
+  }  
+  return cnt
+]]></Implementation>
+</Method>
+
+<Method name="Directions">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&directions]]></FormalSpec>
+<Implementation><![CDATA[
+  set directions("N","dy") = -1
+  set directions("N","dx") = 0
+  set directions("S","dy") = 1
+  set directions("S","dx") = 0
+  set directions("W","dy") = 0
+  set directions("W","dx") = -1
+  set directions("E","dy") = 0
+  set directions("E","dx") = 1
+  set directions("NW","dy") = -1
+  set directions("NW","dx") = -1
+  set directions("NE","dy") = -1
+  set directions("NE","dx") = 1
+  set directions("SW","dy") = 1
+  set directions("SW","dx") = -1
+  set directions("SE","dy") = 1
+  set directions("SE","dx") = 1
+]]></Implementation>
+</Method>
+
+<Method name="CountNeighbours">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&grid,&directions,row:%Integer,col:%Integer,dirs:%List]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+  set cnt = 0
+  set ptr = 0
+  while $listnext(dirs,ptr,dir) {
+    set:$get(grid(row+directions(dir,"dy"),col+directions(dir,"dx")),"")="#" cnt = cnt + 1
+  }
+  return cnt
+]]></Implementation>
+</Method>
+
+<Method name="PlayTurn">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&grid,&directions,&rotation]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+        // phase 1 : proposals
+
+        kill proposals
+
+        for row=grid("minRow"):1:grid("maxRow") {
+          for col=grid("minCol"):1:grid("maxCol") {
+            if $get(grid(row,col))="#" {
+              if ..CountNeighbours(.grid,.directions,row,col,$listbuild("N","S","W","E","NW","NE","SW","SE")) > 0 { // elf tries to move
+                set ptr = 0
+                while $listnext(rotation,ptr,dirs) {
+                  if ..CountNeighbours(.grid,.directions,row,col,dirs) = 0 {
+                    set pr = $list(dirs,1)
+                    set dx = directions(pr,"dx")
+                    set dy = directions(pr,"dy")
+                    set $list(proposals(row+dy,col+dx),*+1) = $listbuild(row,col)
+                    quit
+                  }
+                }
+              }              
+            }
+          }
+        }
+
+        // phase 2 : move
+
+        set prow = $order(proposals(""))
+        set moves = 0
+        while prow '= "" {
+          set moves = moves+1
+          set pcol = $order(proposals(prow,""))
+          while pcol '= "" {
+            if $listlength(proposals(prow,pcol))=1 {
+              set srow = $listget($listget(proposals(prow,pcol),1),1)
+              set scol = $listget($listget(proposals(prow,pcol),1),2)
+              kill grid(srow,scol)
+              set grid(prow,pcol) = "#"
+              set:prow<grid("minRow") grid("minRow")=prow
+              set:prow>grid("maxRow") grid("maxRow")=prow
+              set:pcol<grid("minCol") grid("minCol")=pcol
+              set:pcol>grid("maxCol") grid("maxCol")=pcol
+            }
+            set pcol = $order(proposals(prow,pcol))
+          }
+          set prow = $order(proposals(prow))
+        }
+        set rotation = $list(rotation,2,*)_$list(rotation,1,1)
+
+        return moves
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+    
+    #Dim line as %String
+
+   
+    set sc = $$$OK
+    try {        
+
+      do ..Directions(.directions)      
+      $$$TOE(sc,..ParseInput(inputStream,.grid))
+
+      set rotation = $listbuild($listbuild("N","NW","NE"),$listbuild("S","SW","SE"),$listbuild("W","NW","SW"),$listbuild("E","NE","SE"))
+
+      for turn=1:1:10 {
+        do ..PlayTurn(.grid,.directions,.rotation)
+      }
+
+      write "Part 1 answer : ",..CountEmptyCells(.grid),!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    set sc = $$$OK
+    try {        
+      do ..Directions(.directions)      
+      $$$TOE(sc,..ParseInput(inputStream,.grid))
+
+      set rotation = $listbuild($listbuild("N","NW","NE"),$listbuild("S","SW","SE"),$listbuild("W","NW","SW"),$listbuild("E","NE","SE"))
+
+      set turn = 1
+      while ..PlayTurn(.grid,.directions,.rotation) > 0 {
+        set turn = turn + 1
+      }
+
+      write "Part 2 answer : ",turn,!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day24">
+<Super>Base</Super>
+<TimeChanged>66467,82283.469017</TimeChanged>
+<TimeCreated>66467,82283.469017</TimeCreated>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String="input24-test.txt"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex 
+    #Dim inputStream as %Stream.Object
+    
+    set sc = $$$OK
+    try {
+        set inputStream = ..GetInputStream(fileName,.sc)
+        $$$TOE(sc,sc)
+        $$$TOE(sc,..Part1And2(inputStream))
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="BuildCellTimes">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&grid,&pos,row:%Integer,col:%Integer,period:%Integer]]></FormalSpec>
+<Implementation><![CDATA[
+  s cperiod = grid("cols")-2
+  for i=1:1:grid("cols")-2 {
+    if ($get(grid(row,i))="<") || ($get(grid(row,i))=">") {
+
+      if $get(grid(row,i))="<" {
+        s offset = ((i-1)-(col-1)) # cperiod
+      } elseif $get(grid(row,i))=">" {
+        s offset = ((col-1)-(i-1)) # cperiod
+      }      
+      s t = offset
+      while t < period {
+        s pos("h",row,col,t) = 1
+        s t = t + cperiod
+      }
+    }    
+  }
+
+  s rperiod = grid("rows")-2
+  for i=1:1:grid("rows")-2 {
+    if ($get(grid(i,col))="^") || ($get(grid(i,col))="v") {      
+      if $get(grid(i,col))="^" {
+        s offset = ((i-1)-(row-1)) # rperiod
+      } elseif $get(grid(i,col))="v" {
+        s offset = ((row-1)-(i-1)) # rperiod
+      }
+      s t = offset
+      while t < period {
+        s pos("v",row,col,t) = 1
+        s t = t + rperiod
+      }
+    }    
+  }
+]]></Implementation>
+</Method>
+
+<Method name="BuildPositions">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&grid,&pos,&period]]></FormalSpec>
+<Implementation><![CDATA[
+  s period = ..LCM(grid("rows")-2,grid("cols")-2)
+  for row=1:1:grid("rows")-2 {
+    for col=1:1:grid("cols")-2 {
+      d ..BuildCellTimes(.grid,.pos,row,col,period)
+    }
+  }
+]]></Implementation>
+</Method>
+
+<Method name="LCM">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>a:%Integer,b:%Integer</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+  return:((a=0)||(b=0)) 0
+  s aa = $zabs(a)
+  s ab = $zabs(b)
+  if ab < aa  {
+    s z =ab 
+    s ab = aa
+    s aa = z 
+  }
+  s result = ab
+  while ((result # aa) '= 0) {
+    s result = result + ab
+  }
+  return result
+]]></Implementation>
+</Method>
+
+<Method name="Neighbours">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[node:%List,&grid,&pos,period:%Integer]]></FormalSpec>
+<ReturnType>%List</ReturnType>
+<Implementation><![CDATA[
+  s dirs = $lb($lb(-1,0),$lb(1,0),$lb(0,-1),$lb(0,1),$lb(0,0))
+
+  s t0 = $listget(node,1)
+  s row = $listget(node,2)
+  s col = $listget(node,3)
+  
+  s t1 = t0 + 1
+  s t1p = t1 # period
+  s result = ""
+
+  s dp = 0
+  while $listnext(dirs,dp,dir) {
+    s dy = $listget(dir,1)
+    s dx = $listget(dir,2)
+    s scol = col+dx
+    s srow = row+dy
+    if (scol >= 0) && (scol < grid("cols")) && (srow >=0) && (srow < grid("rows")) && ($get(grid(srow,scol))'="#") && '$get(pos("h",srow,scol,t1p),0) && '$get(pos("v",srow,scol,t1p),0) {
+      s $list(result,*+1) = $lb(t1,srow,scol)
+    }    
+  }  
+  return result
+]]></Implementation>
+</Method>
+
+<Method name="SearchPath">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&grid,&pos,period:%Integer,t:%Integer,srow:%Integer,scol:%Integer,erow:%Integer,ecol:%Integer]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+  s curNode = $lb(t,srow,scol)
+  s q = $listbuild(curNode)
+  s visited(t,srow,scol)=1
+  while $listlength(q) > 0 {    
+    s curNode = $listget(q,1)
+    s q = $list(q,2,*)
+    return:(($listget(curNode,2)=erow)&&($listget(curNode,3)=ecol)) $listget(curNode,1)
+    s neighbours = ..Neighbours(curNode,.grid,.pos,period) 
+    s pn = 0
+    while $listnext(neighbours,pn,neighbour) {
+      if '$get(visited($listget(neighbour,1),$listget(neighbour,2),$listget(neighbour,3)),0) {
+        s $list(q,*+1) = neighbour
+        s visited($listget(neighbour,1),$listget(neighbour,2),$listget(neighbour,3)) = 1
+      }
+    }
+  }
+  return -999
+]]></Implementation>
+</Method>
+
+<Method name="DrawGrid">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&grid]]></FormalSpec>
+<Implementation><![CDATA[
+  for row=0:1:grid("rows")-1 {
+    for col=0:1:grid("cols")-1 {
+      w grid(row,col)
+    }
+    w !
+  }
+]]></Implementation>
+</Method>
+
+<Method name="Part1And2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+    
+    #Dim line as %String
+
+   
+    set sc = $$$OK
+    try {        
+      s row = 0
+      while ('inputStream.AtEnd)
+      {
+        set line = inputStream.ReadLine(,.sc)
+        set line = $zstrip(line,"<>C")
+        s col = 0
+        for i=1:1:$length(line) {
+          s c = $extract(line,i,i)
+          s grid(row,col) = c
+          s col = col+1
+        }
+        s row = row+1
+      }
+      s grid("rows") = row
+      s grid("cols") = $length(line)
+
+      // find start
+      s srow = 0
+      for scol=0:1:grid("cols")-1 {
+        quit:$get(grid(srow,scol),".")="." 
+      }
+
+      // find exit
+      s erow = grid("rows")-1
+      for ecol=0:1:grid("cols")-1 {
+        quit:$get(grid(erow,ecol),".")="." 
+      }
+      
+
+      d ..BuildPositions(.grid,.pos,.period)
+
+
+      s t = ..SearchPath(.grid,.pos,period,0,srow,scol,erow,ecol)
+      write "Part 1 answer : ",t,!
+
+      s tb = ..SearchPath(.grid,.pos,period,t,erow,ecol,srow,scol)
+      s tr = ..SearchPath(.grid,.pos,period,tb,srow,scol,erow,ecol)
+
+      write "Part 2 answer : ",tr,!
+      
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day25">
+<Super>Base</Super>
+<TimeChanged>66468,37107.30058</TimeChanged>
+<TimeCreated>66468,37107.30058</TimeCreated>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String="input25.txt"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex 
+    #Dim inputStream as %Stream.Object
+    
+    set sc = $$$OK
+    try {
+        set inputStream = ..GetInputStream(fileName,.sc)
+        $$$TOE(sc,sc)
+        $$$TOE(sc,..Part1(inputStream))
+        $$$TOE(sc,inputStream.Rewind())
+        $$$TOE(sc,..Part2(inputStream))
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="SnafuToDec">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>sn:%String</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+  #Dim rn as %String
+  #Dim f,i,d,result as %Integer
+
+  set rn = $reverse(sn)
+  set result = 0
+  set f = 1
+  for i=1:1:$length(rn) {
+    set d = $case($extract(rn,i,i),"2":"2","1":"1","0":"0","-":-1,"=":-2)
+    set result = result+(d*f)
+    set f = f * 5
+  }
+  return result
+]]></Implementation>
+</Method>
+
+<Method name="DecToSnafuInternal">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>n:%Integer</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+  #Dim r,d As %Integer
+  
+  if n=0 return ""
+  set r = n # 5
+  for d=-2:1:2 {
+    if ((d+5)#5) = r {
+      return ..DecToSnafuInternal((n-d)\5)_$case(d,-2:"=",-1:"-",0:"0",1:"1",2:"2")
+    }
+  }   
+  return ""
+]]></Implementation>
+</Method>
+
+<Method name="DecToSnafu">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>n:%Integer</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+  return:n=0 "0"
+  return ..DecToSnafuInternal(n)
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+    
+    #Dim line as %String
+
+   
+    set sc = $$$OK
+    try {        
+      set total = 0
+      while ('inputStream.AtEnd)
+      {
+        set line = inputStream.ReadLine(,.sc)
+        set line = $zstrip(line,"<>C")
+        set total = total + ..SnafuToDec(line)
+      }
+      write "Part 1 answer : ",..DecToSnafu(total),!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim line as %String
+
+    set sc = $$$OK
+    try {        
+      write "Part 2 answer : \o/ start the blender and enjoy a ... merry Christmas and happy 2023 !",!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day3">
+<Super>Base</Super>
+<TimeChanged>66467,82283.58585</TimeChanged>
+<TimeCreated>66467,82283.58585</TimeCreated>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String="input3.txt"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+
+    #Dim inputStream as %Stream.Object
+    
+    set sc = $$$OK
+    try {
+        set inputStream = ..GetInputStream(fileName,.sc)
+        $$$TOE(sc,sc)
+        $$$TOE(sc,..Part1(inputStream))
+        $$$TOE(sc,inputStream.Rewind())
+        $$$TOE(sc,..Part2(inputStream))
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+    
+    #Dim line,comp1,comp2,it as %String
+    #Dim len,cnt,total as %Integer
+   
+    set sc = $$$OK
+    try {
+        set total = 0
+        while 'inputStream.AtEnd {
+            set line = inputStream.ReadLine(,.sc)
+            set len = $length(line)
+            set cnt = len/2
+            set comp1 = $extract(line,1,cnt)
+            set comp2 = $extract(line,cnt+1,len)
+            set it = ..CommonItems(comp1,comp2)
+            set total = total+..ItemPriority(it)
+        }
+        write "Part 1 answer : ",total,!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="ItemPriority">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>it:%String</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+  #Dim itc As %Integer
+
+  set itc = $ascii(it)            
+  return $select(itc>96:itc-96,1:itc-38)
+]]></Implementation>
+</Method>
+
+<Method name="CommonItems">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>comp1:%String,comp2:%String</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+  #Dim l1,l2,p1,p2 As %Integer
+  #Dim bl As %String
+
+  set l1 = $length(comp1)
+  set l2 = $length(comp2)
+  set bl = ""
+  set $extract(bl,$select(l1>l2:l1,1:l2)) = " "
+  set p1 = 1
+  set result = ""
+  for {
+   set p1 = $find($translate(comp1,comp2,bl)," ",p1)
+   quit:p1<1
+   set p2 = $find(comp2,$extract(comp1,p1-1))-1
+   set:p2>=1 result = result_$extract(comp2,p2)
+  }
+  return result
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+    
+    #Dim rug1,rug2,rug3,it as %String
+    #Dim total as %Integer
+   
+    set sc = $$$OK
+    try {
+        set total = 0
+        while 'inputStream.AtEnd {
+            set rug1 = inputStream.ReadLine(,.sc)
+            set rug2 = inputStream.ReadLine(,.sc)
+            set rug3 = inputStream.ReadLine(,.sc)            
+            set it = $extract(..CommonItems(rug1,..CommonItems(rug2,rug3)),1)
+            set total = total + ..ItemPriority(it)
+        }
+        write "Part 2 answer : ",total,!
+    }
+    
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day4">
+<Super>Base</Super>
+<TimeChanged>66467,82283.561801</TimeChanged>
+<TimeCreated>66467,82283.561801</TimeCreated>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String="input4.txt"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+
+    #Dim inputStream as %Stream.Object
+    
+    set sc = $$$OK
+    try {
+        set inputStream = ..GetInputStream(fileName,.sc)
+        $$$TOE(sc,sc)
+        $$$TOE(sc,..Part1(inputStream))
+        $$$TOE(sc,inputStream.Rewind())
+        $$$TOE(sc,..Part2(inputStream))
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+    
+    #Dim line as %String
+    #Dim total,p1l,p1h,p2l,p2h as %Integer
+    #Dim overlap as %Boolean
+
+
+   
+    set sc = $$$OK
+    try {
+        set total = 0
+        while 'inputStream.AtEnd {
+            set line = inputStream.ReadLine(,.sc)
+            $$$TOE(sc,..ParseInputLine(line,.p1l,.p1h,.p2l,.p2h))
+            set overlap = ((p2l >= p1l) && (p2h <= p1h))||((p1l >= p2l) && (p1h <= p2h))
+            set total = total + overlap
+        }
+        write "Part 1 answer : ",total,!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+    
+    #Dim line as %String
+    #Dim total,p1l,p1h,p2l,p2h as %Integer
+    #Dim overlap as %Boolean
+
+   
+    set sc = $$$OK
+    try {
+        set total = 0
+        while 'inputStream.AtEnd {
+            set line = inputStream.ReadLine(,.sc)
+            $$$TOE(sc,..ParseInputLine(line,.p1l,.p1h,.p2l,.p2h))
+            set overlap = ((p2h>=p1l)&&(p2h <= p1h)) || ((p1h>=p2l)&&(p1h <= p2h))
+            set total = total + overlap
+        }
+        write "Part 1 answer : ",total,!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="ParseInputLine">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[line:%String,&p1l:%String,&p1h:%String,&p2l:%String,&p2h:%String]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+
+    #Dim p1,p2 As %String
+    
+    set sc = $$$OK
+    try {
+      set p1 = $piece(line,",",1)
+      set p2 = $piece(line,",",2)
+      set p1l = $piece(p1,"-",1)
+      set p1h = $piece(p1,"-",2)
+      set p2l = $piece(p2,"-",1)
+      set p2h = $piece(p2,"-",2)
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    quit sc
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day5">
+<Super>Base</Super>
+<TimeChanged>66467,82283.587005</TimeChanged>
+<TimeCreated>66467,82283.587005</TimeCreated>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String="input5.txt"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+
+    #Dim inputStream as %Stream.Object
+    
+    set sc = $$$OK
+    try {
+        set inputStream = ..GetInputStream(fileName,.sc)
+        $$$TOE(sc,sc)
+
+        $$$TOE(sc,..ParseStacks(inputStream,.stacks))
+        $$$TOE(sc,..ParseMoves(inputStream,.moves))
+        merge part1Stacks=stacks,part2Stacks=stacks
+
+        $$$TOE(sc,..Part1(.part1Stacks,.moves))
+        $$$TOE(sc,..Part2(.part2Stacks,.moves))
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="ParseStacks">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[inputStream:%Stream.Object,&stacks:%String]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+
+    #Dim line as %String
+
+    set sc = $$$OK
+    try {        
+        set stacks = ""
+        while 'inputStream.AtEnd {
+            set line = inputStream.ReadLine(,.sc)
+            set line = $zstrip(line,"<>C")
+            quit:line=""
+            do ..ParseStackLine(line,.stacks)
+        }
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="ParseMoves">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[inputStream:%Stream.Object,&moves:%Integer]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+
+    #Dim line as %String
+    #Dim cnt,numCrates,sourceStack,destStack as %Integer
+
+    set sc = $$$OK
+    try {        
+        set moves = ""
+        set cnt = 0
+        while 'inputStream.AtEnd {
+            set line = inputStream.ReadLine(,.sc)
+            set line = $zstrip(line,"<>C")
+            quit:line=""
+            
+            do ..ParseMoveLine(line,.numCrates,.sourceStack,.destStack)
+            set cnt = cnt + 1
+            set moves(cnt,"num") = numCrates
+            set moves(cnt,"src") = sourceStack
+            set moves(cnt,"dst") = destStack
+        }
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="ParseStackLine">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[line:%String,&stacks]]></FormalSpec>
+<Implementation><![CDATA[
+  #Dim col as %Integer
+  #Dim crate as %String
+  set col = 0            
+  set stacks=0            
+  while (col*4) < $length(line) {               
+    set crate = $extract(line,(col*4)+2,(col*4)+2)
+    if crate?1U  {
+      set stacks(col) = crate_$get(stacks(col),"")                
+    }            
+    set col = col+1
+  }
+]]></Implementation>
+</Method>
+
+<Method name="ParseMoveLine">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[line:%String,&numCrates:%Integer,&sourceStack:%Integer,&destStack:%Integer]]></FormalSpec>
+<Implementation><![CDATA[
+  set numCrates = $zstrip($extract(line,$find(line,"move"),$find(line,"from")-5),"<>W")
+  set sourceStack = $zstrip($extract(line,$find(line,"from"),$find(line,"to")-3),"<>W")-1
+  set destStack = $zstrip($extract(line,$find(line,"to"),*),"<>W")-1
+]]></Implementation>
+</Method>
+
+<Method name="StackTops">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&stacks]]></FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+  set result = ""
+  set k = $order(stacks(""))
+  while k '= "" {
+    set result = result_$extract(stacks(k),$length(stacks(k)),$length(stacks(k)))
+    set k = $order(stacks(k))
+  }
+  return result
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&stacks:%String,&moves:%Integer]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+    
+    #Dim k as %Integer
+
+    set sc = $$$OK
+    try {
+        set k = $order(moves(""))
+        while k'="" {            
+            set movedCrates = $extract(stacks(moves(k,"src")),$length(stacks(moves(k,"src")))-(moves(k,"num")-1),*)
+            set stacks(moves(k,"dst")) = stacks(moves(k,"dst"))_$reverse(movedCrates)
+            set stacks(moves(k,"src")) = $extract(stacks(moves(k,"src")),1,$length(stacks(moves(k,"src")))-moves(k,"num"))
+            set k = $order(moves(k))
+        }        
+        write "Part 1 answer : ",..StackTops(.stacks),!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&stacks:%String,&moves:%Integer]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim k as %Integer
+
+    set sc = $$$OK
+    try {
+        set k = $order(moves(""))
+        while k'="" {            
+            set movedCrates = $extract(stacks(moves(k,"src")),$length(stacks(moves(k,"src")))-(moves(k,"num")-1),*)
+            set stacks(moves(k,"dst")) = stacks(moves(k,"dst"))_movedCrates
+            set stacks(moves(k,"src")) = $extract(stacks(moves(k,"src")),1,$length(stacks(moves(k,"src")))-moves(k,"num"))
+            set k = $order(moves(k))
+        }        
+        write "Part 2 answer : ",..StackTops(.stacks),!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day6">
+<Super>Base</Super>
+<TimeChanged>66467,82283.576894</TimeChanged>
+<TimeCreated>66467,82283.576894</TimeCreated>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String="input6.txt"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex 
+    #Dim inputStream as %Stream.Object
+    
+    set sc = $$$OK
+    try {
+        set inputStream = ..GetInputStream(fileName,.sc)
+        $$$TOE(sc,sc)
+        $$$TOE(sc,..Part1(inputStream))
+        $$$TOE(sc,inputStream.Rewind())
+        $$$TOE(sc,..Part2(inputStream))
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+    
+    #Dim line as %String
+
+   
+    set sc = $$$OK
+    try {        
+      set line = inputStream.ReadLine(,.sc)
+      set line = $zstrip(line,"<>C")
+      write "Part 1 answer : ",..MarkerPosition(line,4),!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim line as %String
+
+    set sc = $$$OK
+    try {
+        set line = inputStream.ReadLine(,.sc)
+        set line = $zstrip(line,"<>C")        
+        set p = ..MarkerPosition(line,14)
+        write "Part 2 answer : ",p,!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="MarkerPosition">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>msg:%String,len:%Integer</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+  #Dim p,i,j,l as %Integer
+  #Dim buf as %String
+
+  set p = 1
+  set buf = ""
+  set j=0
+
+  set l = $length(msg)
+  while (p <= l) {
+    set c = $extract(msg,p,p)                    
+    set buf = buf_c
+    if $length(buf) = len {
+      set i = 1                    
+      while (i < len) {
+        set c = $extract(buf,i,i)
+        set j = i+1                        
+        while (j <= len) {
+         set d = $extract(buf,j,j)
+         quit:c=d                            
+         set j = j +1
+        }   
+        quit:c=d                     
+        set i = i+1
+      }      
+      quit:i=len
+      set buf = $extract(buf,2,len)
+    }                                
+    set p = p + 1
+  }            
+  return p
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day7">
+<Super>Base</Super>
+<TimeChanged>66467,82283.602165</TimeChanged>
+<TimeCreated>66467,82283.602165</TimeCreated>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String="input7.txt"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex 
+    #Dim inputStream as %Stream.Object
+    
+    set sc = $$$OK
+    try {
+        set inputStream = ..GetInputStream(fileName,.sc)
+        $$$TOE(sc,sc)
+        $$$TOE(sc,..Part1(inputStream))
+        $$$TOE(sc,inputStream.Rewind())
+        $$$TOE(sc,..Part2(inputStream))
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="SizeDirs">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[inputStream:%Stream.Object,&fs:%Integer]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status = $$$OK
+    #Dim ex as %Exception.AbstractException
+
+    #Dim line as %String
+
+    #Dim curdir,totdir,cmdline,cmd,arg As %String
+    #Dim size as %Integer
+
+    set fs = ""
+    set curdir="."
+    try {        
+        while 'inputStream.AtEnd {
+          set line = inputStream.ReadLine(,.sc)
+          set line = $zstrip(line,"<>C")    
+          if ($extract(line,1,1) = "$") { // command prompt
+            set cmdline = $extract(line,3,*)
+            set cmd = $piece(cmdline," ",1)
+            set arg = $piece(cmdline," ",2)
+            if cmd="cd" {
+              if arg="/" {
+                set curdir = "."
+              } elseif arg=".." {
+                set curdir = $piece(curdir,"/",1,*-1)
+              } else {
+                set curdir = $get(curdir)_"/"_arg
+              }
+            } elseif cmd="ls" {
+              // ignore 
+            }
+          } else {
+            set size = $piece(line," ",1)
+            // ignore file name s fname = $piece(line," ",2)
+            if size="dir" {
+              // ignore
+            } else {
+              set totdir = curdir
+              while(totdir '= ".") {
+                set fs(totdir) = $get(fs(totdir),0)+size+0
+                set totdir = $piece(totdir,"/",1,*-1)
+              }                
+              set fs(totdir) = $get(fs(totdir),0)+size
+            }            
+          }
+        } 
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+    
+
+    #Dim fs As %Integer
+    #Dim curdir As %String
+    #Dim total as %Integer
+
+   
+    set sc = $$$OK
+    try {        
+        $$$TOE(sc,..SizeDirs(inputStream,.fs))
+        set curdir = $order(fs(""))
+        set total=0
+        while curdir '= "" {
+          if fs(curdir) <= 100000 {
+            set total = total + fs(curdir)
+          }
+          set curdir = $order(fs(curdir))
+        }
+        write "Part 1 answer : ",total,!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Parameter name="TOTALSIZE">
+<Default>70000000</Default>
+</Parameter>
+
+<Parameter name="MINFREE">
+<Default>30000000</Default>
+</Parameter>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    
+    #Dim curdir as %String
+    #Dim tofree,free,mindir as %Integer
+
+    set sc = $$$OK
+
+    try {
+        $$$TOE(sc,..SizeDirs(inputStream,.fs))        
+        set curdir = $order(fs(""))
+        set free = ..#TOTALSIZE-fs(".")
+        set tofree = ..#MINFREE - free
+        set mindir = ..#TOTALSIZE
+        while curdir '= "" {
+          if (fs(curdir) >= tofree) && (fs(curdir) < mindir) {
+            set mindir = fs(curdir)
+      
+          }
+          set curdir = $order(fs(curdir))
+        }
+        write "Part 2 answer : ",mindir,!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day8">
+<Super>Base</Super>
+<TimeChanged>66467,82283.613331</TimeChanged>
+<TimeCreated>66467,82283.613331</TimeCreated>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String="input8.txt"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex 
+    #Dim inputStream as %Stream.Object
+    
+    set sc = $$$OK
+    try {
+        set inputStream = ..GetInputStream(fileName,.sc)
+        $$$TOE(sc,sc)
+        $$$TOE(sc,..BuildGrid(inputStream,.grid,.rowCnt,.colCnt))        
+        $$$TOE(sc,..Part1(.grid,rowCnt,colCnt))
+        $$$TOE(sc,..Part2(.grid,rowCnt,colCnt))
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="IsVisible">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&grid,rowCnt:%Integer,colCnt:%Integer,row:%Integer,col:%Integer]]></FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+    #Dim height,l,r,t,b as %Integer
+
+    if (row=1) || (row = rowCnt) || (col = 1) || (col=colCnt) return 1
+   
+    set height = grid(row,col)
+
+    set l = 0
+    for i=1:1:col-1 {
+      if grid(row,i) >= height {
+          set l = 1
+          quit
+      }        
+    }    
+
+    set r  = 0
+    for i=col+1:1:colCnt {
+      if grid(row,i) >= height {
+          set r  = 1
+          quit
+      }        
+    }    
+
+    set t=0
+    for j=1:1:row-1 {
+      if grid(j,col) >= height {
+          set t=1
+          quit
+      }
+    }
+
+    set b=0
+    for j=row+1:1:rowCnt {
+      if grid(j,col) >= height {
+         set b=1
+         quit
+      }
+    }
+
+    return 'l || 'r || 't || 'b
+]]></Implementation>
+</Method>
+
+<Method name="Score">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&grid,rowCnt:%Integer,colCnt:%Integer,row:%Integer,col:%Integer]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status = $$$OK
+    #Dim ex as %Exception.AbstractException
+
+    #Dim lvd,rvd,tvd,bvd as %Integer
+    #Dim ht as %Integer
+    #Dim i as %Integer
+    
+    try {
+        if (row=1) || (row = rowCnt) || (col = 1) || (col=colCnt) return 0
+
+        set lvd=0
+        set ht = grid(row,col)    
+        for i=col-1:-1:1 {
+           set lvd=lvd+1
+           quit:grid(row,i)>=ht
+        }
+        set rvd = 0
+        set ht = grid(row,col)
+        for i=col+1:1:colCnt {
+           set rvd = rvd+1 
+           quit:grid(row,i)>=ht
+        }
+        set tvd = 0
+        set ht = grid(row,col)
+        for i=row-1:-1:1 {
+            set tvd=tvd+1
+            quit:grid(i,col)>=ht
+        }
+
+        set bvd = 0
+        set ht = grid(row,col)
+        for i = row+1:1:rowCnt {
+            set bvd = bvd+1
+            quit:grid(i,col)>=ht
+        }
+        return lvd*rvd*tvd*bvd
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    quit sc
+]]></Implementation>
+</Method>
+
+<Method name="BuildGrid">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[inputStream:%Stream.Object,&grid,&rowCnt:%Integer,&colCnt:%Integer]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim ex as %Exception.AbstractException
+    #Dim sc as %Status
+
+    #Dim line as %String
+    #Dim i as %Integer
+
+    set sc = $$$OK
+    try {
+        set rowCnt = 0     
+        set colCnt = 0
+        set grid = 0
+        while 'inputStream.AtEnd {
+            set line = inputStream.ReadLine(,.sc)
+            set line = $zstrip(line,"<>C")
+            set rowCnt = rowCnt + 1
+            set colCnt = $length(line)
+            for i=1:1:colCnt {                                
+                set grid(rowCnt,i)=$extract(line,i,i)
+            }        
+        }
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    quit sc
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&grid,rowCnt:%Integer,colCnt:%Integer]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+
+    #Dim tot,i,j As %Integer
+
+       
+    set sc = $$$OK
+    try {   
+        set tot = 0
+        for i=1:1:rowCnt {
+            for j=1:1:colCnt {
+                set tot = tot +..IsVisible(.grid,rowCnt,colCnt,i,j)
+            }
+        }
+        write "Part 1 answer : ",tot,!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&grid,rowCnt:%Integer,colCnt:%Integer]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim maxScore,i,j,score as %Integer
+
+    set sc = $$$OK
+
+    try {
+        set maxScore = 0
+        for i=1:1:rowCnt {
+            for j=1:1:colCnt {
+                set score = ..Score(.grid,rowCnt,colCnt,i,j)
+                set:score>maxScore maxScore = score
+            }
+        }
+        write "Part 2 answer : ",maxScore,!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc2022.Day9">
+<Super>Base</Super>
+<TimeChanged>66467,82283.617074</TimeChanged>
+<TimeCreated>66467,82283.617074</TimeCreated>
+
+<Method name="Run">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fileName:%String="input9.txt"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex 
+    #Dim inputStream as %Stream.Object
+    
+    set sc = $$$OK
+    try {
+        set inputStream = ..GetInputStream(fileName,.sc)
+        $$$TOE(sc,sc)
+        $$$TOE(sc,..Part1(inputStream))
+        $$$TOE(sc,inputStream.Rewind())
+        $$$TOE(sc,..Part2(inputStream))
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="PrintGrid">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&grid,hx,hy,tx,ty]]></FormalSpec>
+<Implementation><![CDATA[
+  for row=4:-1:0 {
+    for col=0:1:5 {
+      if (row=ty)&&(col=tx) {
+        write "T"
+      } elseif (row=ty)&&(col=hx) {
+        write "H"
+      } elseif $get(grid(col,row),0) {
+        write "#"
+      } else {
+        write "."
+      }          
+    }
+    write !
+  }
+]]></Implementation>
+</Method>
+
+<Method name="MoveNode">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[hx:%Integer,hy:%Integer,&tx:%Integer,&ty:%Integer]]></FormalSpec>
+<Implementation><![CDATA[
+          if $zabs(tx-hx) > 1 {
+          if tx > hx {
+            set tx = tx-1
+          } else {
+            set tx = tx+1
+          }    
+          set:ty<hy ty=ty+1
+          set:ty>hy ty=ty-1
+        }
+        if $zabs(ty-hy) > 1 {
+          if ty > hy {
+            set ty=ty-1
+          } else {
+            set ty=ty+1
+          }     
+          set:tx>hx tx=tx-1
+          set:tx<hx tx=tx+1    
+        }
+]]></Implementation>
+</Method>
+
+<Method name="MoveNodeArr">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[hx:%Integer,hy:%Integer,&tx:%Integer,&ty:%Integer,i:%Integer]]></FormalSpec>
+<Implementation><![CDATA[
+  set ttx = tx(i)
+  set tty = ty(i)
+  do ..MoveNode(hx,hy,.ttx,.tty)
+  set tx(i) = ttx
+  set ty(i) = tty
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim sc as %Status
+    #Dim ex as %Exception.AbstractException
+    
+    #Dim line as %String
+
+   
+    set sc = $$$OK
+    try {        
+        set hx=0
+        set hy=0
+        set tx=0
+        set ty=0
+        set tot=1
+        set grid(tx,ty)=1
+
+      while 'inputStream.AtEnd {
+        set line = inputStream.ReadLine(,.sc)
+        set line = $zstrip(line,"<>C")
+        set dir = $piece(line," ",1)
+        set steps = $piece(line," ",2)
+        set ox = $case(dir,"L":-1,"R":1,:0)
+        set oy = $case(dir,"U":1,"D":-1,:0)
+
+        for i=1:1:steps {
+
+        set hx=hx+ox
+        set hy=hy+oy
+        do ..MoveNode(hx,hy,.tx,.ty)
+        if '$get(grid(tx,ty),0) {
+          set tot = tot+1
+          set grid(tx,ty)=1
+        }
+        }
+      }
+      //d ..PrintGrid(.grid,hx,hy,tx,ty)
+      write "Part 1 answer : ",tot,!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>inputStream:%Stream.Object</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    #Dim line as %String
+    #Dim len as %Integer
+
+    set sc = $$$OK
+    try {
+        set hx=0
+        set hy=0
+        
+        set len=9
+        for i = 1:1:len {
+          set tx(i) = 0
+          set ty(i) = 0
+        }
+        set tot=1
+        set grid(0,0)=1
+
+      while 'inputStream.AtEnd {
+        set line = inputStream.ReadLine(,.sc)
+        set line = $zstrip(line,"<>C")
+        set dir = $piece(line," ",1)
+        set steps = $piece(line," ",2)
+        set ox = $case(dir,"L":-1,"R":1,:0)
+        set oy = $case(dir,"U":1,"D":-1,:0)
+        for i=1:1:steps {
+        set hx=hx+ox
+        set hy=hy+oy
+
+        set nx=hx
+        set ny=hy
+
+        for j=1:1:len {
+         do ..MoveNodeArr(nx,ny,.tx,.ty,j)
+         set nx = tx(j)
+         set ny = ty(j)
+        }
+
+        if '$get(grid(tx(len),ty(len)),0) {
+          set tot = tot+1
+          set grid(tx(len),ty(len))=1
+        }
+        }
+      }
+      //d ..PrintGrid(.grid,hx,hy,tx,ty)
+      write "Part 2 answer : ",tot,!
+    }
+    catch (ex) {
+      set sc = ex.AsStatus()
+    }
+    return sc
+]]></Implementation>
+</Method>
+</Class>
+</Export>

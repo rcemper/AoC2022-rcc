@@ -1,0 +1,2573 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2018.1.7 (Build 721U)" ts="2022-12-25 19:54:49">
+<Project name="aoc-kan" LastModified="2022-12-25 19:37:37.363867">
+  <Items>
+    <ProjectItem name="dc.aoc" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.base" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.day1" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.day2" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.day3" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.day4" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.day5" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.day6" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.day7" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.day8" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.day9" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.day10" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.day11" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.day12" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.day13" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.day14" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.day15" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.day16" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.day17" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.day18" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.day19" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.day20" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.day21" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.day22" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.day23" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.day24" type="CLS"></ProjectItem>
+    <ProjectItem name="dc.AoC2022.day25" type="CLS"></ProjectItem>
+  </Items>
+</Project>
+
+
+<Class name="dc.AoC2022.base">
+<TimeChanged>66468,70623.821922</TimeChanged>
+<TimeCreated>66468,66854.143118</TimeCreated>
+
+<Method name="PrintAllDays">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>from=1,d=25,test=0</FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  #; set ^zTEST = 0 // use my own inputs
+  #; comment out one of the following lines to toggle which inputs get run
+  #; set ^zTEST = 1 // use test 1 inputs
+  #; set ^zTEST = 2 // use test 2 inputs
+  set ^zTEST=test
+  for i=from:1:d {
+      set %res=0
+      s curr = $xecute("return "_"##class(dc.AoC2022.day"_i_").Part1()")
+      w "Problem "_i_" Part 1 = "_curr,!
+      s %res=2
+      s curr = $xecute("return "_"##class(dc.AoC2022.day"_i_").Part2()")
+      w "Problem "_i_" Part 2 = "_curr,!
+      w !     
+  }
+  return "Done."
+]]></Implementation>
+</Method>
+
+<Method name="Read">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[input,&result,case=0]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  set file = ##class(%Stream.FileCharacter).%New()
+  set testMode = $g(^zTEST, 0)
+  if (testMode '= 0) {
+#;    set re = ##class(%Regex.Matcher).%New("/irisdev/app/inputs/2022/([0-9]+)\.in")
+#;    if (re.Match(input) && (testMode = 1)) {
+#;      set input = "/irisdev/app/inputs/2022/test_set_1/"_(re.Group(1))_"/data.txt"
+#;    } elseif (re.Match(input) && (testMode = 2)) {
+#;      set input = "/irisdev/app/inputs/2022/test_set_2/"_(re.Group(1))_"/input.txt"
+#;    }
+    set day=+$P(input,"/",*)
+    set set=^zTEST
+    set dir="C:\GitHub\set"_set_"\"_day_"\"
+    set input=dir_$s(set=1:"data",1:"input")_".txt"
+    set ok =##class(dc.aoc).res(dir)
+    break:'ok
+  }
+  
+  s sc = file.LinkToFile(input)
+  if ('sc) return sc
+  if (case = 0) {
+    s i = 0
+    while 'file.AtEnd {
+      s i = i+1
+      s result(i) = $translate(file.ReadLine(), $c(13))
+    }
+    s result = i
+  }
+  if (case = 1) {
+    s i = 1, j = 1
+    while 'file.AtEnd {
+      set l = $translate(file.ReadLine(), $c(13))
+      if (l = "") {
+        s result(i) = j - 1
+        s i = i+1, j = 1
+        continue 
+      }
+      s result(i, j) = l
+      s j = j + 1
+    }
+    s result(i) = j - 1
+    s result = i
+  }
+  if (case = 2) {
+    s i = 1
+    while 'file.AtEnd {
+      set l = $translate(file.ReadLine(), $c(13))
+      set n = $length(l)
+      for j=1:1:n {
+        set result(i, j) = $e(l, j)
+      }
+      set result(i) = n
+      set i = i+1
+    }
+    s result = i-1
+  }
+  return 1
+]]></Implementation>
+</Method>
+
+<Method name="Max">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>a,b</FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+  if (a > b) return a
+  return b
+]]></Implementation>
+</Method>
+
+<Method name="Min">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>a,b</FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+  if (a < b) return a
+  return b
+]]></Implementation>
+</Method>
+
+<Method name="Reverse">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>s</FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+  set n = $length(s)
+  for i=1:1:n/2 {
+    set temp = $e(s, i)
+    set $e(s, i) = $e(s, n-i+1)
+    set $e(s, n-i+1) = temp
+  }
+  return s
+]]></Implementation>
+</Method>
+
+<Method name="Equal">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&a,&b]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+  set aptr = ""
+  for {
+    set aptr = $o(a(aptr))
+    if (aptr = "") quit
+
+    if ('$d(b(aptr))) return 0
+  }
+  set bptr = ""
+  for {
+    set bptr = $o(b(bptr))
+    if (bptr = "") quit
+
+    if ('$d(a(bptr))) return 0
+  }
+  return 1
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.AoC2022.day1">
+<Super>dc.AoC2022.base</Super>
+<TimeChanged>66468,66854.208776</TimeChanged>
+<TimeCreated>66468,66854.208776</TimeCreated>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	d ..Read("/irisdev/app/inputs/2022/1.in", .input)
+    set x = 0, vs = 0
+    for i=1:1:input {
+        set x = x + input(i)
+        if (input(i) = "") {
+            set vs(x) = $g(vs(x), 0) + 1
+            set x = 0
+        }
+    }
+    return $order(vs(""), -1)
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	d ..Read("/irisdev/app/inputs/2022/1.in", .input)
+    set x = 0, vs = 0
+    for i=1:1:input {
+        set x = x + input(i)
+        if (input(i) = "") {
+            set vs(x) = $g(vs(x), 0) + 1
+            set x = 0
+        }
+    }
+    set y = 3, total = 0, c = ""
+    for i=1:1:3 {
+        set c = $order(vs(c), -1, t)
+        while ((y > 0) && (t > 0)) {
+            set total = total + c
+            set y = y - 1
+            set t = t - 1
+        }
+    }
+    return total
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.AoC2022.day10">
+<Super>dc.AoC2022.base</Super>
+<TimeChanged>66468,66854.747421</TimeChanged>
+<TimeCreated>66468,66854.747421</TimeCreated>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  d ..Read("/irisdev/app/inputs/2022/10.in", .input)
+  set x = 1, t = 0, j = 0
+  for i=20:40:220 {
+    set cs(i) = ""
+  }
+  for i=1:1:input {
+    set j = j+1
+    if ($d(cs(j))) set t = j * x + t
+    if ($length(input(i), " ") = 2) {
+      set j = j+1
+      if ($d(cs(j)))  set t = j * x + t
+      set x = x + $p(input(i), " ", 2)
+    }
+  }
+  return t
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  d ..Read("/irisdev/app/inputs/2022/10.in", .input)
+  set x = 1, j = 0
+  set crt = ""
+  for i=1:1:6 {
+    set crt(i) = ""
+  }
+  for i=1:1:input {
+    set draw = j#40, row = (j-1)\40 + 1
+    if ((x-1 <= draw) && (draw <= (x+1))) set $e(crt(row), draw+1) = "#"
+    set j = j+1
+    if ($length(input(i), " ") = 2) {
+      set draw = j#40, row = (j-1)\40 + 1
+      if ((x-1 <= draw) && (draw <= (x+1))) set $e(crt(row), draw+1) = "#"
+      set x = x + $p(input(i), " ", 2)
+      set j = j+1
+    }
+  }
+  s $e(crt(6), 1) = "#"
+  for r=1:1:6 {
+    w crt(r), !
+  }
+  return "RFZEKBFA"
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.AoC2022.day11">
+<Super>dc.AoC2022.base</Super>
+<TimeChanged>66468,66854.810517</TimeChanged>
+<TimeCreated>66468,66854.810517</TimeCreated>
+
+<Method name="BuildMonkeys">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&ls,&monkey,&tests]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  s monkey = ls-1
+  for i=1:1:ls {
+    set monkey(i-1) = $LISTFROMSTRING($p(ls(i, 2), ": ", 2), ", ")
+    set monkey(i-1, "op") = "return "_$p(ls(i, 3), " ", 6, *)
+    set $list(tests, i) = $p(ls(i, 4), " ", 6)_" "_$p(ls(i, 5), " ", 10)_" "_$p(ls(i, 6), " ", 10)
+  }
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  d ..Read("/irisdev/app/inputs/2022/11.in", .ls, 1)
+  d ..BuildMonkeys(.ls, .monkey, .tests)
+  for m=0:1:monkey {
+    set counter(m) = 0
+  }
+  for t=1:1:20 {
+    for m=0:1:monkey {
+      set counter(m) = counter(m) + $LISTLENGTH(monkey(m))
+      set ptr = 0
+      set test = $list(tests, m+1)
+      set a = $p(test, " "), b = $p(test, " ", 2), c = $p(test, " ", 3)
+      while $listnext(monkey(m), ptr, item) {
+        set op = $replace(monkey(m, "op"), "old", item)
+        set x = $XECUTE(op) \ 3
+        set y = b
+        if (x # a > 0) set y = c
+        set $list(monkey(y), *+1) = x
+      }
+      set monkey(m) = ""
+    }
+  }
+  for m=0:1:monkey {
+    set scounter(counter(m)) = ""
+  }
+  set ptr = "", res = 1
+  for i=1:1:2 {
+    set ptr = $order(scounter(ptr), -1)
+    set res = res * ptr
+  }
+  return res
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  d ..Read("/irisdev/app/inputs/2022/11.in", .ls, 1)
+  d ..BuildMonkeys(.ls, .monkey, .tests)
+  for m=0:1:monkey {
+    set counter(m) = 0
+  }
+  set mod = 1
+  for m=0:1:monkey {
+    set mod = mod * $p($list(tests, m+1), " ")
+  }
+  for t=1:1:10000 {
+    for m=0:1:monkey {
+      set counter(m) = counter(m) + $LISTLENGTH(monkey(m))
+      set ptr = 0
+      set test = $list(tests, m+1)
+      set a = $p(test, " "), b = $p(test, " ", 2), c = $p(test, " ", 3)
+      while $listnext(monkey(m), ptr, item) {
+        if ($d(item) = 0) continue
+        set op = $replace(monkey(m, "op"), "old", item)
+        set x = $XECUTE(op) # mod
+        set y = b
+        if (x # a > 0) set y = c
+        set $list(monkey(y), *+1) = x
+      }
+      set monkey(m) = ""
+    }
+  }
+  for m=0:1:monkey {
+    set scounter(counter(m)) = ""
+  }
+  set ptr = "", res = 1
+  for i=1:1:2 {
+    set ptr = $order(scounter(ptr), -1)
+    set res = res * ptr
+  }
+  return res
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.AoC2022.day12">
+<Super>dc.AoC2022.base</Super>
+<TimeChanged>66468,66854.871315</TimeChanged>
+<TimeCreated>66468,66854.871315</TimeCreated>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  d ..Read("/irisdev/app/inputs/2022/12.in", .g)
+  set m = g, n = $length(g(1))
+  set d = 5, d(1) = 1, d(2) = 0, d(3) = -1, d(4) = 0, d(5) = 1, fr = 0, fc = 0
+  set vs = 0
+  set frontier = []
+  for r=1:1:m {
+    for c=1:1:n {
+      if ($e(g(r), c) = "S") {
+        set $e(g(r), c) = "a"
+        set vs(r, c) = ""
+        do frontier.%Push("a "_r_" "_c)
+      } elseif ($e(g(r), c) = "E") {
+        set fr = r, fc = c
+        set $e(g(r), c) = "z"
+      }
+    }
+  }
+  set d = 1
+  while (frontier.%Size() > 0) {
+    set nf = []
+    set iter = frontier.%GetIterator()
+    while iter.%GetNext(.k, .v) {
+      set x = $p(v, " "), r = $p(v, " ", 2), c = $p(v, " ", 3)
+      for i=1:1:4 {
+        set nr = r+d(i), nc = c + d(i+1)
+        if ((1<=nr) && (nr<=m) && (1<=nc) && (nc<=n) && ($d(vs(nr, nc)) = 0) && ($ASCII($e(g(nr), nc)) - $ASCII(x) <= 1)) {
+          if ((nr = fr) && (nc = fc)) return d
+          do nf.%Push($e(g(nr), nc)_" "_nr_" "_nc)
+          set vs(nr, nc) = ""
+        }
+      }
+    }
+    set frontier = nf
+    set d = d + 1
+  }
+  return -1
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  d ..Read("/irisdev/app/inputs/2022/12.in", .g)
+  set m = g, n = $length(g(1))
+  set d = 5, d(1) = 1, d(2) = 0, d(3) = -1, d(4) = 0, d(5) = 1, fr = 0, fc = 0
+  set vs = 0
+  set frontier = []
+  for r=1:1:m {
+    for c=1:1:n {
+      if ($e(g(r), c) = "a") {
+        do frontier.%Push("a "_r_" "_c)
+        set vs(r, c) = ""
+      } elseif ($e(g(r), c) = "E") {
+        set fr = r, fc = c
+        set $e(g(r), c) = "z"
+      }
+    }
+  }
+  set d = 1
+  while (frontier.%Size() > 0) {
+    set nf = []
+    set iter = frontier.%GetIterator()
+    while iter.%GetNext(.k, .v) {
+      set x = $p(v, " "), r = $p(v, " ", 2), c = $p(v, " ", 3)
+      for i=1:1:4 {
+        set nr = r+d(i), nc = c + d(i+1)
+        if ((1<=nr) && (nr<=m) && (1<=nc) && (nc<=n) && ($d(vs(nr, nc)) = 0) && ($ASCII($e(g(nr), nc)) - $ASCII(x) <= 1)) {
+          if ((nr = fr) && (nc = fc)) return d
+          do nf.%Push($e(g(nr), nc)_" "_nr_" "_nc)
+          set vs(nr, nc) = ""
+        }
+      }
+    }
+    set frontier = nf
+    set d = d + 1
+  }
+  return -1
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.AoC2022.day13">
+<Super>dc.AoC2022.base</Super>
+<TimeChanged>66468,66854.931781</TimeChanged>
+<TimeCreated>66468,66854.931781</TimeCreated>
+
+<Method name="Helper">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&a,&b]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+  set m = $listlength(a), n = $listlength(b)
+  if (m && ('$listdata(a, 1))) set m = m - 1
+  if (n && ('$listdata(b, 1))) set n = n - 1
+  for i=1:1:..Min(m, n) {
+    set x = $list(a, i), y = $list(b, i)
+    if (('$LISTVALID(x)) && ('$LISTVALID((y)))) {
+      set d = x - y
+    } elseif (($LISTVALID(x)) && ('$LISTVALID((y)))) {
+      set d = ..Helper(.x, $lb(y))
+    } elseif (('$LISTVALID(x)) && ($LISTVALID((y)))) {
+      set d = ..Helper($lb(x), .y)
+    } else {
+      set d = ..Helper(.x, .y)
+    }
+    if (d '= 0) return d
+  }
+  return m - n
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	d ..Read("/irisdev/app/inputs/2022/13.in", .ls, 1)
+  set res = 0
+  for i=1:1:150 {
+    set a = $replace($replace(ls(i, 1), "[", "$lb("), "]", ")")
+    set cmd = "(x) s x="_a_" QUIT 0"
+    s null = $XECUTE(cmd, .a)
+    if (null) return -1
+    set b = $replace($replace(ls(i, 2), "[", "$lb("), "]", ")")
+    set cmd = "(x) s x="_b_" QUIT 0"
+    s null = $XECUTE(cmd, .b)
+    if (null) return -1
+    if (..Helper(.a, .b) < 0) set res = res + i
+  }
+  return res
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	d ..Read("/irisdev/app/inputs/2022/13.in", .ls, 1)
+  set two = $lb($lb(2)), six = $lb($lb(6))
+  set counter2 = 0, counter6 = 0
+  if (..Helper(.two, .six) < 0) {
+    set counter6 = 1
+  } else {
+    set counter6 = 1
+  }
+  for i=1:1:150 {
+    set a = $replace($replace(ls(i, 1), "[", "$lb("), "]", ")")
+    set cmd = "(x) s x="_a_" QUIT 0"
+    s null = $XECUTE(cmd, .a)
+    if (null) return -1
+    set b = $replace($replace(ls(i, 2), "[", "$lb("), "]", ")")
+    set cmd = "(x) s x="_b_" QUIT 0"
+    s null = $XECUTE(cmd, .b)
+    if (null) return -1
+    if (..Helper(.a, .two) < 0) set counter2 = counter2 + 1
+    if (..Helper(.a, .six) < 0) set counter6 = counter6 + 1
+    if (..Helper(.b, .two) < 0) set counter2 = counter2 + 1
+    if (..Helper(.b, .six) < 0) set counter6 = counter6 + 1
+  }
+  return (1+counter2) * (1+counter6)
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.AoC2022.day14">
+<Super>dc.AoC2022.base</Super>
+<TimeChanged>66468,66854.992147</TimeChanged>
+<TimeCreated>66468,66854.992147</TimeCreated>
+
+<Method name="GetBarrier">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&barrier]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  d ..Read("/irisdev/app/inputs/2022/14.in", .ls)
+  set barrier = 0
+  for i=1:1:ls {
+    set l = $replace(ls(i), " -> ", " ")
+    set px = $p($p(l, " "), ","), py= $p($p(l, " "), ",", 2)
+    set barrier = ..Max(barrier, py)
+    for j=2:1:$LENGTH(l, " ") {
+      set cx = $p($p(l, " ", j), ","), cy= $p($p(l, " ", j), ",", 2)
+      if (cx = px) {
+        set sy = ..Min(py, cy), ey = ..Max(py, cy)
+        for y=sy:1:ey {
+          set barrier(cx, y) = ""
+        }
+      }
+      if (cy = py) {
+        set sx = ..Min(px, cx), ex = ..Max(px, cx)
+        for x=sx:1:ex {
+          set barrier(x, cy) = ""
+        }
+      }
+      set barrier = ..Max(barrier, cy)
+      set px = cx, py = cy
+    }
+  }
+  return 1
+]]></Implementation>
+</Method>
+
+<Method name="Drop">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[x,y,&barrier,&stop]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  if (y = barrier) {
+    set stop = 1
+    return
+  }
+  if ('$d(barrier(x, y+1))) {
+    do ..Drop(x, y+1, .barrier, .stop)
+    return
+  }
+  if ('$d(barrier(x-1, y+1))) {
+    do ..Drop(x-1, y+1, .barrier, .stop)
+    return
+  }
+  if ('$d(barrier(x+1, y+1))) {
+    do ..Drop(x+1, y+1, .barrier, .stop)
+    return
+  }
+  set barrier(x, y) = ""
+]]></Implementation>
+</Method>
+
+<Method name="Drop2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[x,y,&barrier]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  if ($d(barrier(x, y))) return
+  if (y+1 = barrier) {
+    set barrier(x, y) = ""
+    return
+  }
+  if ('$d(barrier(x, y+1))) {
+    do ..Drop2(x, y+1, .barrier)
+    return
+  }
+  if ('$d(barrier(x-1, y+1))) {
+    do ..Drop2(x-1, y+1, .barrier)
+    return
+  }
+  if ('$d(barrier(x+1, y+1))) {
+    do ..Drop2(x+1, y+1, .barrier)
+    return
+  }
+  set barrier(x, y) = ""
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  do ..GetBarrier(.barrier)
+  set res = 0, stop = 0
+  while (stop = 0) {
+    do ..Drop(500, 0, .barrier, .stop)
+    if (stop = 0) set res = res + 1
+  }
+  return res
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  do ..GetBarrier(.barrier)
+  set barrier = barrier + 2
+  set res = 0
+  while ('$d(barrier(500, 0))) {
+    do ..Drop2(500, 0, .barrier)
+    set res = res + 1
+  }
+  return res
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.AoC2022.day15">
+<Super>dc.AoC2022.base</Super>
+<TimeChanged>66468,66855.054765</TimeChanged>
+<TimeCreated>66468,66855.054765</TimeCreated>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  d ..Read("/irisdev/app/inputs/2022/15.in", .ls)
+  set Y = 2000000
+  set vs = "", bs = ""
+  for i=1:1:ls {
+    set l = $replace(ls(i), "Sensor at x=", "")
+    set l = $replace(l, ", y=", " ")
+    set l = $replace(l, ": closest beacon is at x=", " ")
+    set x = $p(l, " "), y = $p(l, " ", 2)
+    set cx = $p(l, " ", 3), cy = $p(l, " ", 4)
+    if (cy = Y) set bs(cx) = ""
+    set d = $zabs(x - cx) + $zabs(y - cy)
+    set dy = $zabs(Y - y)
+    set free = ..Max(d - dy, 0)
+    for ix=x-free:1:x+free set vs(ix) = ""
+  }
+  set ptr = "", res = 0
+  for {
+    set ptr = $o(vs(ptr))
+    if (ptr = "") quit
+    if ('$d(bs(ptr))) set res = res + 1
+  }
+  return res
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  zw "This will take awhile"
+  d ..Read("/irisdev/app/inputs/2022/15.in", .ls)
+  set Y = 2000000, bs = ""
+  for i=1:1:ls {
+      set l = $replace(ls(i), "Sensor at x=", "")
+      set l = $replace(l, ", y=", " ")
+      set l = $replace(l, ": closest beacon is at x=", " ")
+      set ls(i) = l
+      set x = $p(l, " "), y = $p(l, " ", 2)
+      set cx = $p(l, " ", 3), cy = $p(l, " ", 4)
+      set bs(x, y) = "", bs(cx, cy) = ""
+  }
+  for yy=2*Y:-1:0  {
+    kill ints
+    set ints = ""
+    for i=1:1:ls {
+      set l = ls(i)
+      set x = $p(l, " "), y = $p(l, " ", 2)
+      set cx = $p(l, " ", 3), cy = $p(l, " ", 4)
+      set d = $zabs(x - cx) + $zabs(y - cy)
+      set dy = $zabs(yy - y)
+      if (d - dy < 0) continue
+      set free = d - dy
+      set l = ..Max(0, x-free), r = ..Min(2*Y, x+free)
+      if ($d(ints(l))) {
+        set ints(l) = ..Max(r, ints(l))
+      } else {
+        set ints(l) = r
+      }
+    }
+    set ptr = $order(ints(""), 1, msf)
+    for {
+      set ptr = $order(ints(ptr), 1, x)
+      if (ptr = "") quit
+      if ((msf + 2 = ptr) && ('$d(bs(yy, msf+1)))) {
+        return (msf + 1) * 2 * Y + (yy)
+      }
+      set msf = ..Max(msf, x)
+      if (2*Y = msf) continue
+    }
+  }
+  return -1
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.AoC2022.day16">
+<Super>dc.AoC2022.base</Super>
+<TimeChanged>66468,66855.121073</TimeChanged>
+<TimeCreated>66468,66855.121073</TimeCreated>
+
+<Method name="BuildGraph">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&flows,&dists,&n]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  d ..Read("/irisdev/app/inputs/2022/16.in", .ls)
+  set flows = "", dists = "", compression("AA") = 0, id = 1
+  for i=1:1:ls {
+    set ls(i) = $replace(ls(i), "=", " ")
+    set ls(i) = $replace(ls(i), ";", "")
+    set ls(i) = $change(ls(i), ", ", " ")
+    set c = $p(ls(i), " ", 2)
+    if ((c '= "AA") && (+$p(ls(i), " ", 6) > 0)) set compression(c) = id, id = id + 1
+  }
+  set n = id
+  for i=1:1:ls {
+    set c = $p(ls(i), " ", 2)
+    if ((c '= "AA") && (+$p(ls(i), " ", 6) = 0)) set compression(c) = id, id = id + 1
+  }
+  for i=1:1:ls {
+    set flows(compression($p(ls(i), " ", 2))) = $p(ls(i), " ", 6)
+    for j=11:1:$LENGTH(ls(i), " ") {
+      set dists(compression($p(ls(i), " ", 2)), compression($p(ls(i), " ", j))) = 1
+    }
+  }
+  for v=0:1:ls-1 {
+    for u=0:1:ls-1 {
+      for w=0:1:ls-1 {
+        set dists(u, w) = ..Min($g(dists(u, w), 100), $g(dists(u, v), 100) + $g(dists(v, w), 100))
+      }
+    }
+  }
+]]></Implementation>
+</Method>
+
+<Method name="dfs">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[u,t,opened,n,&flows,&dists,&cache]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  if ($d(cache(u_" "_t_" "_opened), targ)) return targ
+  set x = 0
+  for v=0:1:n-1 {
+    if (($ZBOOLEAN(opened, $ZPOWER(2, v), 1) = 0) || (dists(u, v) >= t) || (flows(v) = 0)) continue
+    set arrival = t - 1 - dists(u, v)
+    set x = ..Max(x, flows(v) * arrival + ..dfs(v, arrival, opened - $ZPOWER(2, v), n, .flows, .dists, .cache))
+  }
+  set cache(u_" "_t_" "_opened) = x
+  return x
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  do ..BuildGraph(.flows, .dists, .n)
+  return ..dfs(0, 30, $ZPOWER(2, n)-1, n, .flows, .dists, .cache)
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  zw "This will take awhile"
+  do ..BuildGraph(.flows, .dists, .n)
+  set M = $ZPOWER(2, n)-1, msf = 0
+  for mask=0:1:M {
+    set msf = ..Max(msf, ..dfs(0, 26, mask, n, .flows, .dists, .cache) + ..dfs(0, 26, M - mask, n, .flows, .dists, .cache))
+  }
+  return msf
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.AoC2022.day17">
+<Super>dc.AoC2022.base</Super>
+<TimeChanged>66468,66855.183537</TimeChanged>
+<TimeCreated>66468,66855.183537</TimeCreated>
+
+<Method name="HorizontalMove">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&field,&rock,dx]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  merge previous = rock
+  set coord = ""
+  for {
+    set coord = $o(previous(coord))
+    if (coord = "") quit
+    set x = $p(coord, " "), y = $p(coord, " ", 2)
+    if ((x + dx < 0) || (x + dx > 6) || $d(field((x+dx)_" "_y))) return
+  }
+  kill rock
+  for {
+    set coord = $o(previous(coord))
+    if (coord = "") quit
+    set x = $p(coord, " "), y = $p(coord, " ", 2)
+    set rock((x + dx)_" "_y) = ""
+  }
+]]></Implementation>
+</Method>
+
+<Method name="VerticalMove">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&field,&rock]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  merge previous = rock
+  set coord = ""
+  for {
+    set coord = $o(previous(coord))
+    if (coord = "") quit
+    set x = $p(coord, " "), y = $p(coord, " ", 2)
+    if ((y - 1 = 0) || $d(field(x_" "_(y-1)))) return 0
+  }
+  kill rock
+  for {
+    set coord = $o(previous(coord))
+    if (coord = "") quit
+    set x = $p(coord, " "), y = $p(coord, " ", 2)
+    set rock(x_" "_(y - 1)) = ""
+  }
+  return 1
+]]></Implementation>
+</Method>
+
+<Method name="GetRock">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&r,x,y,index]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  set index = index # 5
+  if (index = 0) {
+    for X=2:1:5 set r(X_" "_y) = ""
+  } elseif (index = 1) {
+    for X=2:1:4 set r(X_" "_(y+1)) = ""
+    for Y=y:1:y+2 set r((x+1)_" "_Y) = ""
+  } elseif (index = 2) {
+    for X=2:1:4 set r(X_" "_y) = ""
+    for Y=y:1:y+2 set r(4_" "_Y) = ""
+  } elseif (index = 3) {
+    for Y=y:1:y+3 set r(x_" "_Y) = ""
+  } else {
+    for X=2:1:3 set r(X_" "_y) = "", r(X_" "_(y+1)) = ""
+  }
+]]></Implementation>
+</Method>
+
+<Method name="HasIntersection">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&a,&b]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  set coord = ""
+  for {
+    set coord = $o(a(coord))
+    if (coord = "") quit
+    if ($d(b(coord))) return 1
+  }
+  return 0
+]]></Implementation>
+</Method>
+
+<Method name="AddToFieldAndReturnMaxY">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&field,&r,msfY]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  set coord = ""
+  for {
+    set coord = $o(r(coord))
+    if (coord = "") quit
+    set field(coord) = ""
+    set msfY = ..Max(msfY, $p(coord, " ", 2))
+  }
+  return msfY
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  d ..Read("/irisdev/app/inputs/2022/17.in", .ls)
+  set gases = ls(1), msfY = 0, gasInd = 0, field = 0, m = $length(gases), n = 5
+  for t=0:1:2021 {
+    kill rock
+    do ..GetRock(.rock, 2, msfY + 4, t # n)
+    while 1 {
+      do ..HorizontalMove(.field, .rock, $case($e(gases, gasInd+1),">":1,:-1))
+      set gasInd = (gasInd + 1) # m
+      set moved = ..VerticalMove(.field, .rock)
+      if ('moved) quit
+    }
+    set msfY = ..AddToFieldAndReturnMaxY(.field, .rock, msfY)
+  }
+  return msfY
+]]></Implementation>
+</Method>
+
+<Method name="GetSerial">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&field,msfY]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  set serial = ""
+  for y=1:1:..Min(50, msfY) {
+    set s = ""
+    for x=0:1:6 {
+       set s = s_$case($d(field(x_" "_(msfY-y))),1:"#",:".")
+    }
+    set $list(serial(y)) = s
+  }
+  return serial
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  d ..Read("/irisdev/app/inputs/2022/17.in", .ls)
+  set gases = ls(1), msfY = 0, gasInd = 0, field = 0, m = $length(gases), n = 5
+  set histories = 0, t = 0, T = 1000000000000, jump = 0
+  while (t < T) {
+    kill rock
+    do ..GetRock(.rock, 2, msfY + 4, t # n)
+    while 1 {
+      do ..HorizontalMove(.field, .rock, $case($e(gases, gasInd+1),">":1,:-1))
+      set gasInd = (gasInd + 1) # m
+      set moved = ..VerticalMove(.field, .rock)
+      if ('moved) quit
+    }
+    set msfY = ..AddToFieldAndReturnMaxY(.field, .rock, msfY)
+    set fingerprint = gasInd_" "_(t # n)_" "_..GetSerial(.field, msfY)
+    if ($d(histories(fingerprint), targ) && (t > 2022)) {
+      set dy = msfY - $p(targ, ","), dt = t - $p(targ, ",", 2)
+      set gain = (T - t) \ dt
+      set jump = jump + (gain * dy), t = t + (gain * dt)
+    }
+    set histories(fingerprint) = msfY_","_t
+    set t = t + 1
+  }
+  return msfY + jump
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.AoC2022.day18">
+<Super>dc.AoC2022.base</Super>
+<TimeChanged>66468,66855.242692</TimeChanged>
+<TimeCreated>66468,66855.242692</TimeCreated>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  d ..Read("/irisdev/app/inputs/2022/18.in", .ls)
+  set space = 0
+  for i=1:1:ls set space(ls(i)) = ""
+  set coord = "", total = 0
+  for {
+    set coord = $order(space(coord))
+    if (coord = "") quit
+    set total = total + 6
+    for i=1:1:3 {
+      for d=-1:2:1 {
+        set cc = coord
+        set $p(cc, ",", i) = d+$p(cc, ",", i)
+        if ($d(space(cc))) set total = total - 1
+      }
+    }
+  }
+  return total
+]]></Implementation>
+</Method>
+
+<Method name="ok">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>cMin,cc,cMax</FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  for i=1:1:3 {
+    set s = $p(cMin, ",", i), m = $p(cc, ",", i), l = $p(cMax, ",", i)
+    if ((s > m) || (m > l)) return 0
+  }
+  return 1
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  d ..Read("/irisdev/app/inputs/2022/18.in", .ls)
+  set space = 0, cMin = ls(1), cMax = ls(1), total = 0
+  for i=1:1:ls {
+    set space(ls(i)) = ""
+    for j=1:1:3 {
+      set $p(cMin, ",", j) = ..Min($p(cMin, ",", j), $p(ls(i), ",", j))
+      set $p(cMax, ",", j) = ..Max($p(cMax, ",", j), $p(ls(i), ",", j))
+    }
+  }
+  for j=1:1:3 {
+    set $p(cMin, ",", j) = $p(cMin, ",", j) - 5
+    set $p(cMax, ",", j) = $p(cMax, ",", j) + 5
+  }
+  set st = [], vs = ""
+  do st.%Push(cMin)
+  set vs(cMin) = ""
+  while (st.%Size() > 0) {
+    set p = st.%Pop()
+    for i=1:1:3 {
+      for d=-1:2:1 {
+        set cc = p
+        set $p(cc, ",", i) = $p(cc, ",", i) + d
+        if ($d(space(cc))) {
+          set total = total + 1
+        } elseif ('$d(vs(cc)) && ..ok(cMin, cc, cMax)) {
+          do st.%Push(cc)
+          set vs(cc) = ""
+        }
+      }
+    }
+  }
+  return total
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.AoC2022.day19">
+<Super>dc.AoC2022.base</Super>
+<TimeChanged>66468,66855.304643</TimeChanged>
+<TimeCreated>66468,66855.304643</TimeCreated>
+
+<Method name="dfs">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&cache,&bp,rs,os,mo1,t=24]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  if ($d(cache(rs, os, t), targ)) return targ
+  set r1 = $p(rs, " "), r2 = $p(rs, " ", 2), r3 = $p(rs, " ", 3), r4 = $p(rs, " ", 4)
+  set o1 = $p(os, " "), o2 = $p(os, " ", 2), o3 = $p(os, " ", 3), o4 = $p(os, " ", 4)
+  set no1 = o1 + r1, no2 = o2 + r2, no3 = o3 + r3, no4 = o4 + r4
+  if (t = 1) {
+    return no4
+  }
+  if ((o1 >= bp(5)) && (o3 >= bp(6))) {
+    return ..dfs(.cache, .bp, r1_" "_r2_" "_r3_" "_(r4+1), (no1-bp(5))_" "_no2_" "_(no3-bp(6))_" "_no4, mo1, t-1)
+  }
+  if ((o1 >= bp(3)) && (o2 >= bp(4)) && (r3+1 <= bp(6))) {
+    return ..dfs(.cache, .bp, r1_" "_r2_" "_(r3+1)_" "_r4, (no1-bp(3))_" "_(no2-bp(4))_" "_no3_" "_no4, mo1, t-1)
+  }
+  set msf = ..dfs(.cache, .bp, rs, no1_" "_no2_" "_no3_" "_no4, mo1, t-1)
+  if ((o1 >= bp(1)) && (r1+1 <= mo1)) {
+    set msf = ..Max(msf, ..dfs(.cache, .bp, (r1+1)_" "_r2_" "_r3_" "_r4, (no1-bp(1))_" "_no2_" "_no3_" "_no4, mo1, t-1))
+  }
+  if ((o1 >= bp(2)) && (r2+1 <= bp(4))) {
+    set msf = ..Max(msf, ..dfs(.cache, .bp, r1_" "_(r2+1)_" "_r3_" "_r4, (no1-bp(2))_" "_no2_" "_no3_" "_no4, mo1, t-1))
+  }
+
+  set cache(rs, os, t) = msf
+  return msf
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  d ..Read("/irisdev/app/inputs/2022/19.in", .ls)
+  set total = 0
+  for i=1:1:ls {
+    kill cache, bp
+    set nums = "", ind = 1
+    for j=1:1:$length(ls(i)) {
+      set c = $e(ls(i), j)
+      if ((($ASCII(c) >= $ASCII(0)) && ($ASCII(c) <= $ASCII(9))) || ((c = " ") && ($e(nums, *) '= " ") )) {
+        set $e(nums, ind) = c
+        set ind = ind + 1
+      }
+    }
+    set nums = $e(nums, 2, *-1)
+    for j=2:1:7 set bp(j-1) = $p(nums, " ", j)
+    set mo1 = ..Max(bp(1), ..Max(bp(2), ..Max(bp(3), bp(5))))
+    set x = ..dfs(.cache, .bp, "1 0 0 0", "0 0 0 0", mo1)
+    set total = total + (i * x)
+  }
+  return total
+]]></Implementation>
+</Method>
+
+<Method name="dfs2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&cache,&bp,rs,os,mo1,t=24]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  if ($d(cache(rs, os, t), targ)) return targ
+  set r1 = $p(rs, " "), r2 = $p(rs, " ", 2), r3 = $p(rs, " ", 3), r4 = $p(rs, " ", 4)
+  set o1 = $p(os, " "), o2 = $p(os, " ", 2), o3 = $p(os, " ", 3), o4 = $p(os, " ", 4)
+  set no1 = o1 + r1, no2 = o2 + r2, no3 = o3 + r3, no4 = o4 + r4
+  if (t = 1) return no4
+  if ((o1 >= bp(5)) && (o3 >= bp(6))) {
+    return ..dfs2(.cache, .bp, r1_" "_r2_" "_r3_" "_(r4+1), (no1-bp(5))_" "_no2_" "_(no3-bp(6))_" "_no4, mo1, t-1)
+  }
+  if ((o1 >= bp(3)) && (o2 >= bp(4)) && (r3+1 <= bp(6))) {
+    return ..dfs2(.cache, .bp, r1_" "_r2_" "_(r3+1)_" "_r4, (no1-bp(3))_" "_(no2-bp(4))_" "_no3_" "_no4, mo1, t-1)
+  }
+  set msf = 0
+  if ((o1 >= bp(1)) && (r1+1 <= mo1)) {
+    set msf = ..Max(msf, ..dfs2(.cache, .bp, (r1+1)_" "_r2_" "_r3_" "_r4, (no1-bp(1))_" "_no2_" "_no3_" "_no4, mo1, t-1))
+  }
+  if ((o1 >= bp(2) && (r2+1 <= bp(4)))) {
+    set msf = ..Max(msf, ..dfs2(.cache, .bp, r1_" "_(r2+1)_" "_r3_" "_r4, (no1-bp(2))_" "_no2_" "_no3_" "_no4, mo1, t-1))
+  }
+  if (o1 < 4) {
+    set msf = ..Max(msf, ..dfs2(.cache, .bp, rs, no1_" "_no2_" "_no3_" "_no4, mo1, t-1))
+  }
+  set cache(rs, os, t) = msf
+  return msf
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  d ..Read("/irisdev/app/inputs/2022/19.in", .ls)
+  set total = 1
+  for i=1:1:3 {
+    kill cache, bp
+    set nums = "", ind = 1
+    for j=1:1:$length(ls(i)) {
+      set c = $e(ls(i), j)
+      if ((($ASCII(c) >= $ASCII(0)) && ($ASCII(c) <= $ASCII(9))) || ((c = " ") && ($e(nums, *) '= " ") )) {
+        set $e(nums, ind) = c
+        set ind = ind + 1
+      }
+    }
+    set nums = $e(nums, 2, *-1)
+    for j=2:1:7 set bp(j-1) = $p(nums, " ", j)
+    set mo1 = ..Max(bp(1), ..Max(bp(2), ..Max(bp(3), bp(5))))
+    set total = total * ..dfs2(.cache, .bp, "1 0 0 0", "0 0 0 0", mo1, 32)
+  }
+  return total
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.AoC2022.day2">
+<Super>dc.AoC2022.base</Super>
+<TimeChanged>66468,66854.268165</TimeChanged>
+<TimeCreated>66468,66854.268165</TimeCreated>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	d ..Read("/irisdev/app/inputs/2022/2.in", .input)
+  set dp("A X") = 4
+  set dp("A Y") = 8
+  set dp("A Z") = 3
+  set dp("B X") = 1
+  set dp("B Y") = 5
+  set dp("B Z") = 9
+  set dp("C X") = 7
+  set dp("C Y") = 2
+  set dp("C Z") = 6
+  set res = 0
+  for i=1:1:input {
+    set res = res + dp(input(i))
+  }
+  return res
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	d ..Read("/irisdev/app/inputs/2022/2.in", .input)
+  set dp("A X") = 3
+  set dp("A Y") = 4
+  set dp("A Z") = 8
+  set dp("B X") = 1
+  set dp("B Y") = 5
+  set dp("B Z") = 9
+  set dp("C X") = 2
+  set dp("C Y") = 6
+  set dp("C Z") = 7
+  set res = 0
+  for i=1:1:input {
+    set res = res + dp(input(i))
+  }
+  return res
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.AoC2022.day20">
+<Super>dc.AoC2022.base</Super>
+<TimeChanged>66468,66855.36534</TimeChanged>
+<TimeCreated>66468,66855.36534</TimeCreated>
+
+<Method name="Remove">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&vector,index]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  set vector = vector-1
+  for i=index:1:vector-1 {
+    set vector(i) = vector(i+1)
+  }
+  kill vector(vector)
+]]></Implementation>
+</Method>
+
+<Method name="Insert">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&vector,index,x]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  set vector = vector + 1
+  if (vector-1 = index) {
+    set vector(index) = x
+    return
+  }
+  for i=vector-1:-1:index+1 {
+    set vector(i) = vector(i-1)
+  }
+  set vector(index) = x
+]]></Implementation>
+</Method>
+
+<Method name="Find">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&vector,x]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  for i=0:1:vector-1 {
+    if (vector(i) = x) return i
+  }
+  return -1
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  d ..Read("/irisdev/app/inputs/2022/20.in", .ls)
+  set n = ls
+  set nums = n, indices = n
+  for i=1:1:ls {
+    set nums(i-1) = +ls(i)
+    set indices(i-1) = i-1
+  }
+  for i=0:1:n-1 {
+    set j = ..Find(.indices, i)
+    do ..Remove(.indices, j)
+    set j = (j + nums(i)) # (n - 1)
+    do ..Insert(.indices, j, i)
+  }
+  set ans = 0
+  set ind = ..Find(.indices, ..Find(.nums, 0))
+  for i=1000:1000:3000 {
+    set ans = ans + nums(indices((ind+i) # n))
+  }
+  return ans
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  d ..Read("/irisdev/app/inputs/2022/20.in", .ls)
+  set n = ls, hash = 811589153
+  set nums = n, indices = n
+  for i=1:1:ls {
+    set nums(i-1) = hash * (+ls(i))
+    set indices(i-1) = i-1
+  }
+  for z=1:1:10 {
+    for i=0:1:n-1 {
+      set j = ..Find(.indices, i)
+      do ..Remove(.indices, j)
+      set j = (j + nums(i)) # (n - 1)
+      do ..Insert(.indices, j, i)
+    }
+  }
+  set ans = 0
+  set ind = ..Find(.indices, ..Find(.nums, 0))
+  for i=1000:1000:3000 {
+    set ans = ans + nums(indices((ind+i) # n))
+  }
+  return ans
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.AoC2022.day21">
+<Super>dc.AoC2022.base</Super>
+<TimeChanged>66468,66855.425864</TimeChanged>
+<TimeCreated>66468,66855.425864</TimeCreated>
+
+<Method name="dfs">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&adj,&vs,u]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  if ($d(vs(u), targ)) return targ
+  set a = $p(adj(u), " "), op = $p(adj(u), " ", 2), b = $p(adj(u), " ", 3)
+  set x = 0
+  if (op = "+") {
+    set x = ..dfs(.adj, .vs, a) + ..dfs(.adj, .vs, b)
+  }
+  if (op = "-") {
+    set x = ..dfs(.adj, .vs, a) - ..dfs(.adj, .vs, b)
+  }
+  if (op = "*") {
+    set x = ..dfs(.adj, .vs, a) * ..dfs(.adj, .vs, b)
+  }
+  if (op = "/") {
+    set x = ..dfs(.adj, .vs, a) / ..dfs(.adj, .vs, b)
+  }
+  set vs(u) = x
+  return x
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  d ..Read("/irisdev/app/inputs/2022/21.in", .ls)
+  set adj = 0
+  set vs = ls
+  for i=1:1:ls {
+    set l = ls(i)
+    set m = $p(l, ": "), exp = $p(l, ": ", 2)
+    if (+exp = exp) {
+      set vs(m) = exp
+    } else {
+      set adj(m) = exp, adj = adj + 1
+    }
+  }
+  return ..dfs(.adj, .vs, "root")
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  #; notice it is monotonically dec so we can binary search
+  d ..Read("/irisdev/app/inputs/2022/21.in", .ls)
+  set adj = 0
+  set vs = ls
+  for i=1:1:ls {
+    set l = ls(i)
+    set m = $p(l, ": "), exp = $p(l, ": ", 2)
+    if (+exp = exp) {
+      set vs(m) = exp
+    } else {
+      set adj(m) = exp, adj = adj + 1
+    }
+  }
+  kill adj("humn")
+  set l = 1, r = 10000000000000
+  set a = $p(adj("root"), " "), b = $p(adj("root"), " ", 3)
+  while (l < r) {
+    set m = (l + r + 1) \ 2
+    kill vsc
+    MERGE vsc = vs
+    set vsc("humn") = m
+    set left = ..dfs(.adj, .vsc, a), right = ..dfs(.adj, .vsc, b)
+    if (left = right) {
+      return m
+    } elseif (left > right) {
+      set l = m
+    } else {
+      set r = m - 1
+    }
+  }
+  return -1
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.AoC2022.day22">
+<Super>dc.AoC2022.base</Super>
+<TimeChanged>66468,66855.487914</TimeChanged>
+<TimeCreated>66468,66855.487914</TimeCreated>
+
+<Method name="GetGrid">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&grid,&input]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  for r=1:1:input(1) {
+    for c=1:1:$length(input(1, r)) {
+      set p = $e(input(1, r), c)
+      if ((p = ".") || (p = "#")) set grid(r-1, c-1) = p
+    }
+  }
+]]></Implementation>
+</Method>
+
+<Method name="GetSteps">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&steps,moves]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  set n = $length(moves), c = 0, index = 1
+  for i=1:1:n {
+    if (($ascii("0") <= $ascii($e(moves, i))) && ($ascii($e(moves, i)) <= $ascii("9"))) {
+      set c = 10 * c + $e(moves, i)
+    } else {
+      set steps(index) = c_" "_$e(moves, i)
+      set c = 0
+      set index = index + 1
+    }
+  }
+  set steps(index) = c_" "
+  set steps = index
+]]></Implementation>
+</Method>
+
+<Method name="Teleport">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&r,&c,di,&grid]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  if (di = 0) {
+    set nr = r, nc = 0
+    while ('$d(grid(nr, nc))) {
+      set nc = nc + 1
+    }
+    set c = nc
+    return
+  }
+  if (di = 1) {
+    set nr = 0, nc = c
+    while ('$d(grid(nr, nc))) {
+      set nr = nr + 1
+    }
+    set r = nr
+    return
+  }
+  if (di = 2) {
+    set nr = r, nc = 149
+    while ('$d(grid(nr, nc))) {
+      set nc = nc - 1
+    }
+    set c = nc
+    return
+  }
+  if (di = 3) {
+    set nr = 199, nc = c
+    while ('$d(grid(nr, nc))) {
+      set nr = nr - 1
+    }
+    set r = nr
+    return
+  }
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	d ..Read("/irisdev/app/inputs/2022/22.in", .ls, 1)
+  do ..GetGrid(.grid, .ls)
+  do ..GetSteps(.steps, ls(2, 1))
+  set ds(0) = "0 1", ds(1) = "1 0", ds(2) = "0 -1", ds(3) = "-1 0"
+  set di = 0, r = 0, c = 0
+  while 1 {
+    if ($d(grid(r, c), targ) && (targ = ".")) quit
+    set c = c + 1
+  }
+  for s=1:1:steps {
+    set n = $p(steps(s), " ")
+    for z=1:1:n {
+      set nr = r + $p(ds(di), " "), nc = c + $p(ds(di), " ", 2)
+      if ('$d(grid(nr, nc))) do ..Teleport(.nr, .nc, di, .grid)
+      if (grid(nr, nc) = ".") set r = nr, c = nc
+    }
+    set d = $p(steps(s), " ", 2)
+    if (d = "R") {
+      set di = (di + 1) # 4
+    } elseif (d = "L") {
+      set di = (di + 3) # 4
+    }
+  }
+
+  return (1000 * (r+1)) + (4 * (c+1)) + di
+]]></Implementation>
+</Method>
+
+<Method name="CrossFace">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&r,&c,&di]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  set pr = r, pc = c, pdi = di
+  if (pdi = 0) {
+    if (pr \ 50 = 0) {
+      set r = 149 - pr, c = 99, di = 2
+      return
+    }
+    if (pr \ 50 = 1) {
+      set r = 49, c = pr + 50, di = 3
+      return
+    }
+    if (pr \ 50 = 2) {
+      set r = 149 - pr, c = 149, di = 2
+      return
+    }
+    if (pr \ 50 = 3) {
+      set r = 149, c = pr - 100, di = 3
+      return
+    }
+  }
+  if (pdi = 1) {
+    if (pc \ 50 = 0) {
+      set r = 0, c = pc + 100, di = 1
+      return
+    }
+    if (pc \ 50 = 1) {
+      set r = 100 + pc, c = 49, di = 2
+      return
+    }
+    if (pc \ 50 = 2) {
+      set r = pc - 50, c = 99, di = 2
+      return
+    }
+  }
+  if (pdi = 2) {
+    if (pr \ 50 = 0) {
+      set r = 149 - pr, c = 0, di = 0
+      return
+    }
+    if (pr \ 50 = 1) {
+      set r = 100, c = pr - 50, di = 1
+      return
+    }
+    if (pr \ 50 = 2) {
+      set r = 149 - pr, c = 50, di = 0
+      return
+    }
+    if (pr \ 50 = 3) {
+      set r = 0, c = pr - 100, di = 1
+      return
+    }
+  }
+  if (pdi = 3) {
+    if (pc \ 50 = 0) {
+      set r = 50 + pc, c = 50, di = 0
+      return
+    }
+    if (pc \ 50 = 1) {
+      set r = 100 + pc, c = 0, di = 0
+      return
+    }
+    if (pc \ 50 = 2) {
+      set r = 199, c = pc - 100, di = 3
+      return
+    }
+  }
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	d ..Read("/irisdev/app/inputs/2022/22.in", .ls, 1)
+  do ..GetGrid(.grid, .ls)
+  do ..GetSteps(.steps, ls(2, 1))
+  set ds(0) = "0 1", ds(1) = "1 0", ds(2) = "0 -1", ds(3) = "-1 0"
+  set di = 0, r = 0, c = 0
+  while 1 {
+    if ($d(grid(r, c), targ) && (targ = ".")) quit
+    set c = c + 1
+  }
+  for s=1:1:steps {
+    set n = $p(steps(s), " ")
+    for z=1:1:n {
+      set nr = r + $p(ds(di), " "), nc = c + $p(ds(di), " ", 2), ndi = di
+      if ('$d(grid(nr, nc))) do ..CrossFace(.nr, .nc, .ndi)
+      if (grid(nr, nc) = ".") set r = nr, c = nc, di = ndi
+    }
+    set d = $p(steps(s), " ", 2)
+    if (d = "R") {
+      set di = (di + 1) # 4
+    } elseif (d = "L") {
+      set di = (di + 3) # 4
+    }
+  }
+
+  return (1000 * (r+1)) + (4 * (c+1)) + di
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.AoC2022.day23">
+<Super>dc.AoC2022.base</Super>
+<TimeChanged>66468,66855.551614</TimeChanged>
+<TimeCreated>66468,66855.551614</TimeCreated>
+
+<Method name="shouldMove">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[r,c,&elves]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  for nr=r-1:1:r+1 {
+    for nc=c-1:1:c+1 {
+      if ((nr = r) && (nc = c)) continue
+      if ($d(elves(nr_" "_nc))) return 1
+    }
+  }
+  return 0
+]]></Implementation>
+</Method>
+
+<Method name="move">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[d,r,c,&elves]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  if ('..shouldMove(r, c, .elves)) return r_" "_c
+  if ((d = "N") && '$d(elves((r-1)_" "_(c-1))) && '$d(elves((r-1)_" "_(c))) && '$d(elves((r-1)_" "_(c+1)))) {
+    return (r-1)_" "_c
+  }
+  if ((d = "S") && '$d(elves((r+1)_" "_(c-1))) && '$d(elves((r+1)_" "_(c))) && '$d(elves((r+1)_" "_(c+1)))) {
+    return (r+1)_" "_c
+  }
+  if ((d = "W") && '$d(elves((r-1)_" "_(c-1))) && '$d(elves((r)_" "_(c-1))) && '$d(elves((r+1)_" "_(c-1)))) {
+    return r_" "_(c-1)
+  }
+  if ((d = "E") && '$d(elves((r-1)_" "_(c+1))) && '$d(elves((r)_" "_(c+1))) && '$d(elves((r+1)_" "_(c+1)))) {
+    return r_" "_(c+1)
+  }
+  return r_" "_c
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  d ..Read("/irisdev/app/inputs/2022/23.in", .ls)
+  set elves = "", m = ls, n = $length(ls(1))
+  for r=1:1:m {
+    for c=1:1:n {
+      if ($e(ls(r), c) = "#") set elves(r_" "_c) = ""
+    }
+  }
+  set dirs = 3, dirs(0) = "N", dirs(1) = "S", dirs(2) = "W", dirs(3) = "E"
+  for t=0:1:9 {
+    kill newElves, proposal, proposalCount
+    set coords = ""
+    for {
+      set coords = $o(elves(coords))
+      if (coords = "") quit
+      set found = 0
+      for i=0:1:3 {
+        set d = dirs((t + i) # 4)
+        set r = $p(coords, " "), c = $p(coords, " ", 2)
+        set ncoords = ..move(d, r, c, .elves)
+        if (ncoords '= coords) {
+          set proposalCount(ncoords) = $g(proposalCount(ncoords), 0) + 1
+          set proposal(coords) = ncoords
+          set found = 1
+          quit
+        }
+      }
+      if ('found) {
+        set proposalCount(coords) = $g(proposalCount(coords), 0) + 1
+        set proposal(coords) = coords
+      }
+    }
+    set coords = ""
+    for {
+      set coords = $o(proposal(coords), 1, ncoords)
+      if (coords = "") quit
+
+      if (proposalCount(ncoords) = 1) {
+        set newElves(ncoords) = ""
+      } else {
+        set newElves(coords) = ""
+      }
+    }
+    kill elves
+    MERGE elves = newElves
+  }
+  set mr = 10000000, Mr = -10000000, mc = 10000000, Mc = -10000000
+  set coords = ""
+  for {
+    set coords = $order(elves(coords))
+    if (coords = "") quit
+    set r = $p(coords, " "), c = $p(coords, " ", 2)
+    set mr = ..Min(mr, r), Mr = ..Max(Mr, r), mc = ..Min(mc, c), Mc = ..Max(Mc, c)
+  }
+  set total = 0
+  for r=mr:1:Mr {
+    for c=mc:1:Mc {
+      if ('$d(elves(r_" "_c))) set total = total + 1
+    }
+  }
+  return total
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  zw "This might take awhile."
+  d ..Read("/irisdev/app/inputs/2022/23.in", .ls)
+  set elves = "", m = ls, n = $length(ls(1))
+  for r=1:1:m {
+    for c=1:1:n {
+      if ($e(ls(r), c) = "#") set elves(r_" "_c) = ""
+    }
+  }
+  set dirs = 3, dirs(0) = "N", dirs(1) = "S", dirs(2) = "W", dirs(3) = "E"
+  set t = 0
+  while 1 {
+    kill newElves, proposal, proposalCount
+    set coords = ""
+    for {
+      set coords = $o(elves(coords))
+      if (coords = "") quit
+      set found = 0
+      for i=0:1:3 {
+        set d = dirs((t + i) # 4)
+        set r = $p(coords, " "), c = $p(coords, " ", 2)
+        set ncoords = ..move(d, r, c, .elves)
+        if (ncoords '= coords) {
+          set proposalCount(ncoords) = $g(proposalCount(ncoords), 0) + 1
+          set proposal(coords) = ncoords
+          set found = 1
+          quit
+        }
+      }
+      if ('found) {
+        set proposalCount(coords) = $g(proposalCount(coords), 0) + 1
+        set proposal(coords) = coords
+      }
+    }
+    set coords = "", moved = 0
+    for {
+      set coords = $o(proposal(coords), 1, ncoords)
+      if (coords = "") quit
+
+      if (proposalCount(ncoords) = 1) {
+        if (ncoords '= coords) set moved = 1
+        set newElves(ncoords) = ""
+      } else {
+        set newElves(coords) = ""
+      }
+    }
+    if ('moved) return t+1
+    kill elves
+    MERGE elves = newElves
+    set t = t + 1
+  }
+  return -1
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.AoC2022.day24">
+<Super>dc.AoC2022.base</Super>
+<TimeChanged>66468,66855.612724</TimeChanged>
+<TimeCreated>66468,66855.612724</TimeCreated>
+
+<Method name="IsBoundary">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>m,n,x,y</FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  if (((x = 0) && (y = 1)) || ((m-1 = x) && (n-2 = y))) return 0
+  return ((x = 0) || (y = 0) || (m-1 = x) || (n-1 = y))
+]]></Implementation>
+</Method>
+
+<Method name="GetBoard">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&m,&n,&blizz,&T]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  d ..Read("/irisdev/app/inputs/2022/24.in", .ls)
+  set m = ls, n = $length(ls(1)), T = (m-2) * (n-2)
+  for i=1:1:m {
+    for j=1:1:n {
+      set c = $e(ls(i), j)
+      set d = $case(c, ">":0, "v":1, "<":2, "^":3, :-1)
+      if (d '= -1) set blizz((i-1)_" "_(j-1), d) = ""
+    }
+  }
+]]></Implementation>
+</Method>
+
+<Method name="MoveBlizz">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[m,n,&blizz]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  set p = ""
+  set ds(0) = "0 1", ds(1) = "1 0", ds(2) = "0 -1", ds(3) = "-1 0"
+  for {
+    set p = $o(blizz(p))
+    if (p = "") quit
+    set d = "", x = $p(p, " "), y = $p(p, " ", 2)
+    for {
+      set d = $o(blizz(p, d))
+      if (d = "") quit
+
+      set dx = $p(ds(d), " "), dy = $p(ds(d), " ", 2)
+      set nx = x + dx, ny = y + dy
+      if (..IsBoundary(m, n, nx, ny)) {
+        if (d = 0) {
+          set ny = 1
+        } elseif (d = 1) {
+          set nx = 1
+        } elseif (d = 2) {
+          set ny = n-2
+        } elseif (d = 3) {
+          set nx = m-2
+        }
+      }
+      set nblizz(nx_" "_ny, d) =  ""
+    }
+  }
+  kill blizz
+  MERGE blizz = nblizz
+]]></Implementation>
+</Method>
+
+<Method name="bfs">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[x,y,tx,ty,t,m,n,T,&blizz]]></FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<Implementation><![CDATA[
+  set q(x_" "_y) = "", cache(x, y, t) = ""
+  set ds(0) = "0 1", ds(1) = "1 0", ds(2) = "0 -1", ds(3) = "-1 0"
+  while ($d(q)) {
+    do ..MoveBlizz(m, n, .blizz)
+    kill nq
+    set coord = "", t = t + 1, tt = t # T, nq = ""
+    for {
+      set coord = $o(q(coord))
+      if (coord = "") quit
+      set x = $p(coord,  " "), y = $p(coord, " ", 2)
+      if ('$d(cache(x, y, t)) && '$d(blizz(x_" "_y))) {
+        set nq(x_" "_y) = ""
+        set cache(x, y, tt) = ""
+      }
+      for i=0:1:3 {
+        set dx = $p(ds(i), " "), dy = $p(ds(i), " ", 2)
+        set nx = x+dx, ny = y+dy
+        if ('$d(cache(nx, ny, tt)) && '$d(blizz(nx_" "_ny)) && (0<=nx) && (nx<m) && (0<=ny) && (ny<n) && '..IsBoundary(m, n, nx, ny)) {
+          if ((tx = nx) && (ty = ny)) return t
+          set nq(nx_" "_ny) = "", cache(nx, ny, tt) = ""
+        }
+      }
+    }
+
+    kill q
+    MERGE q = nq
+  }
+  return -1
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  do ..GetBoard(.m, .n, .blizz, .T)
+  return ..bfs(0, 1, m-1, n-2, 0, m, n, T, .blizz)
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  do ..GetBoard(.m, .n, .blizz, .T)
+  set t1 = ..bfs(0, 1, m-1, n-2, 0, m, n, T, .blizz)
+  set t2 = ..bfs(m-1, n-2, 0, 1, t1, m, n, T, .blizz)
+  return ..bfs(0, 1, m-1, n-2, t2, m, n, T, .blizz)
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.AoC2022.day25">
+<Super>dc.AoC2022.base</Super>
+<TimeChanged>66468,66855.671985</TimeChanged>
+<TimeCreated>66468,66855.671985</TimeCreated>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  d ..Read("/irisdev/app/inputs/2022/25.in", .ls)
+  set r = 0
+  for i=1:1:ls {
+    set t = 0, n = $LENGTH(ls(i))
+    for j=1:1:n {
+      set c = $e(ls(i), j)
+      if (c = "=") {
+        set t = t - (2 * $zpower(5, n-j))
+      } elseif (c = "-") {
+        set t = t - $zpower(5, n-j)
+      } elseif (c = "1") {
+        set t = t + $zpower(5, n-j)
+      } elseif (c = "2") {
+        set t = t + (2 * $zpower(5, n-j))
+      }
+    }
+    set r = r + t
+  }
+  set i = 1, ans = ""
+  while (r > 0) {
+    set rem = r # 5
+    set c = $e("=-012", (rem+2) # 5 + 1)
+    set $e(ans, i) = c
+    set i = i + 1, r = r - ((rem+2) # 5) + 2, r = r \ 5
+  }
+  return $reverse(ans)
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+  d ..Read("/irisdev/app/inputs/2022/25.in", .ls)
+  return "happy holidays!"
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.AoC2022.day3">
+<Super>dc.AoC2022.base</Super>
+<TimeChanged>66468,66854.328745</TimeChanged>
+<TimeCreated>66468,66854.328745</TimeCreated>
+
+<Method name="Helper">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>c</FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+  set x = $ascii(c)
+  if (($ascii("a") <= x) && (x <= $ascii("z"))) {
+    return x - $ascii("a") + 1
+  }
+  return x - $ascii("A") + 27
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	d ..Read("/irisdev/app/inputs/2022/3.in", .input)
+  set res = 0
+  for i=1:1:input {
+    set n = $length(input(i))
+    set m = n/2
+    set a = $extract(input(i), 1, n/2)
+    set b = $extract(input(i), n/2 + 1, n)
+    kill aSet
+    for j=1:1:m {
+      set aSet($extract(a, j)) = ""
+    }
+    for j=1:1:m {
+      if ($data(aSet($extract(b, j))) = 1) {
+        set res = res + ..Helper($extract(b, j))
+        quit
+      }
+    }
+  }
+  return res
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	d ..Read("/irisdev/app/inputs/2022/3.in", .input)
+  set res = 0
+  for i=1:3:input {
+    set a = input(i), b = input(i+1), c = input(i+2)
+    kill aSet, bSet
+    for j=1:1:$length(a) {
+      set aSet($extract(a, j)) = ""
+    }
+    for j=1:1:$length(b) {
+      if ($data(aSet($extract(b, j))) = 1) {
+        set bSet($extract(b, j)) = ""
+      }
+    }
+    for j=1:1:$length(c) {
+      if ($data(bSet($extract(c, j))) = 1) {
+        set res = res + ..Helper($extract(c, j))
+        quit
+      }
+    }
+  }
+  return res
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.AoC2022.day4">
+<Super>dc.AoC2022.base</Super>
+<TimeChanged>66468,66854.386398</TimeChanged>
+<TimeCreated>66468,66854.386398</TimeCreated>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	d ..Read("/irisdev/app/inputs/2022/4.in", .input)
+  set res = 0
+  for i=1:1:input {
+    set l = input(i)
+    set a = $p(l, ","), b = $p(l, ",", 2)
+    set s1 = $p(a, "-"), e1 = $p(a, "-", 2), s2 = $p(b, "-"), e2 = $p(b, "-", 2)
+    if (((s1 <= s2) && (e2 <= e1)) || ((s2 <= s1) && (e1 <= e2))) {
+      set res = res + 1
+    }
+  }
+  return res
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	d ..Read("/irisdev/app/inputs/2022/4.in", .input)
+  set res = 0
+  for i=1:1:input {
+    set l = input(i)
+    set a = $p(l, ","), b = $p(l, ",", 2)
+    set s1 = $p(a, "-"), e1 = $p(a, "-", 2), s2 = $p(b, "-"), e2 = $p(b, "-", 2)
+    if ((..Max(s1, s2) <= ..Min(e1, e2))) {
+      set res = res + 1
+    }
+  }
+  return res
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.AoC2022.day5">
+<Super>dc.AoC2022.base</Super>
+<TimeChanged>66468,66854.447378</TimeChanged>
+<TimeCreated>66468,66854.447378</TimeCreated>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	d ..Read("/irisdev/app/inputs/2022/5.in", .input, 1)
+  set n = $extract(input(1, input(1)), *-1)
+  set stacks = n
+  for i=1:1:n {
+    set stacks(i) = ""
+  }
+  for i=1:1:input(1)-1 {
+    for j=1:1:n {
+      set c = $extract(input(1, i), 4*j - 2)
+      set stacks(j) = stacks(j)_($case(c, " ":"", : c))
+    }
+  }
+  for i=1:1:n {
+    set stacks(i) = ..Reverse(stacks(i))
+  }
+  for i=1:1:input(2) {
+    set c = $p(input(2, i), " ", 2)-1, f = $p(input(2, i), " ", 4), t = $p(input(2, i), " ", 6)
+    set stacks(t) = stacks(t)_..Reverse($e(stacks(f), *-c, *))
+    set $e(stacks(f), *-c, *) = ""
+  }
+  set res = ""
+  for i=1:1:n {
+    set res = res_$e(stacks(i), *)
+  }
+  return res
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	d ..Read("/irisdev/app/inputs/2022/5.in", .input, 1)
+  set n = $extract(input(1, input(1)), *-1)
+  set stacks = n
+  for i=1:1:n {
+    set stacks(i) = ""
+  }
+  for i=1:1:input(1)-1 {
+    for j=1:1:n {
+      set c = $extract(input(1, i), 4*j - 2)
+      set stacks(j) = stacks(j)_($case(c, " ":"", : c))
+    }
+  }
+  for i=1:1:n {
+    set stacks(i) = ..Reverse(stacks(i))
+  }
+  for i=1:1:input(2) {
+    set c = $p(input(2, i), " ", 2)-1, f = $p(input(2, i), " ", 4), t = $p(input(2, i), " ", 6)
+    set stacks(t) = stacks(t)_$e(stacks(f), *-c, *)
+    set $e(stacks(f), *-c, *) = ""
+  }
+  set res = ""
+  for i=1:1:n {
+    set res = res_$e(stacks(i), *)
+  }
+  return res
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.AoC2022.day6">
+<Super>dc.AoC2022.base</Super>
+<TimeChanged>66468,66854.507228</TimeChanged>
+<TimeCreated>66468,66854.507228</TimeCreated>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	d ..Read("/irisdev/app/inputs/2022/6.in", .input)
+  set w = input(1)
+  set n = $length(w)
+  for i=1:1:n-4 {
+    kill fm
+    set good = 1
+    for j=0:1:3 {
+      if ($d(fm($e(w, i+j)))) {
+        set good = 0
+        continue
+      }
+      set fm($e(w, i+j)) = ""
+    }
+    if (good) return i+j
+  }
+  return -1
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	d ..Read("/irisdev/app/inputs/2022/6.in", .input)
+  set w = input(1)
+  set n = $length(w)
+  for i=1:1:n-14 {
+    kill fm
+    set good = 1
+    for j=0:1:13 {
+      if ($d(fm($e(w, i+j)))) {
+        set good = 0
+        continue
+      }
+      set fm($e(w, i+j)) = ""
+    }
+    if (good) return i+j
+  }
+  return -1
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.AoC2022.day7">
+<Super>dc.AoC2022.base</Super>
+<TimeChanged>66468,66854.567138</TimeChanged>
+<TimeCreated>66468,66854.567138</TimeCreated>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	d ..Read("/irisdev/app/inputs/2022/7.in", .input)
+  set res = 0, path = $lb()
+  for i=1:1:input {
+    set l = input(i)
+    if ($p(l, " ", 1) = "$") {
+      if ($p(l, " ", 2) = "cd") {
+        if ($p(l, " ", 3) = "..") {
+          set path = $list(path, 1, *-1)
+        } else {
+          set $list(path, *+1) = $p(l, " ", 3)
+        }
+      }
+    } elseif ($p(l, " ", 1) '= "dir") {
+      for j=1:1:$LISTLENGTH(path) {
+        set mem($list(path, 1, j)) = $g(mem($list(path, 1, j)), 0) + $p(l, " ", 1)
+      }
+    }
+  }
+  set res = 0, x = ""
+  for {
+    set x = $o(mem(x), 1, t)
+    if (x = "") quit
+    if (t <= 100000) set res = res + t
+  }
+  return res
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	d ..Read("/irisdev/app/inputs/2022/7.in", .input)
+  set res = 0, path = $lb()
+  for i=1:1:input {
+    set l = input(i)
+    if ($p(l, " ", 1) = "$") {
+      if ($p(l, " ", 2) = "cd") {
+        if ($p(l, " ", 3) = "..") {
+          set path = $list(path, 1, *-1)
+        } else {
+          set $list(path, *+1) = $p(l, " ", 3)
+        }
+      }
+    } elseif ($p(l, " ", 1) '= "dir") {
+      for j=1:1:$LISTLENGTH(path) {
+        set mem($list(path, 1, j)) = $g(mem($list(path, 1, j)), 0) + $p(l, " ", 1)
+      }
+    }
+  }
+  set res = 999999999999, x = "", v = mem($lb(,"/")) - 40000000
+  for {
+    set x = $o(mem(x), 1, t)
+    if (x = "") quit
+    if (t >= v) set res = ..Min(res, t)
+  }
+  return res
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.AoC2022.day8">
+<Super>dc.AoC2022.base</Super>
+<TimeChanged>66468,66854.626617</TimeChanged>
+<TimeCreated>66468,66854.626617</TimeCreated>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	d ..Read("/irisdev/app/inputs/2022/8.in", .input, 2)
+  set dir(1) = 1, dir(2) = 0, dir(3) = -1, dir(4) = 0, dir(5) = 1
+  set res = 0, m = input, n = input(1)
+  for r=1:1:m {
+    for c=1:1:n {
+      set ok = 1
+      for i=1:1:4 {        
+        set ok = 1
+        set nr = r+dir(i), nc = c+dir(i+1)
+        while ((1 <= nr) && (nr <= m) && (1 <= nc) && (nc <= n)) {
+          if (input(nr, nc) >= input(r, c)) {
+            set ok = 0
+            quit
+          }
+          set nr = nr+dir(i), nc = nc+dir(i+1)
+        }
+        if (ok) quit
+      }
+      set res = res + ok
+    }
+  }
+  return res
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	d ..Read("/irisdev/app/inputs/2022/8.in", .input, 2)
+  set dir(1) = 1, dir(2) = 0, dir(3) = -1, dir(4) = 0, dir(5) = 1
+  set msf = 0, m = input, n = input(1)
+  for r=1:1:m {
+    for c=1:1:n {
+      set curr = 1
+      for i=1:1:4 {
+        set nr = r+dir(i), nc = c+dir(i+1), v = 0
+        while ((1 <= nr) && (nr <= m) && (1 <= nc) && (nc <= n)) {
+          set v = v+1
+          if (input(nr, nc) >= input(r, c)) quit
+          set nr = nr+dir(i), nc = nc+dir(i+1)
+        }
+        set curr = curr * v
+      }
+      set msf = ..Max(msf, curr)
+    }
+  }
+  return msf
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.AoC2022.day9">
+<Super>dc.AoC2022.base</Super>
+<TimeChanged>66468,66854.687569</TimeChanged>
+<TimeCreated>66468,66854.687569</TimeCreated>
+
+<Method name="Helper">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>sl</FormalSpec>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+  d ..Read("/irisdev/app/inputs/2022/9.in", .input)
+  set mp("R") = 1, mp("D") = 2, mp("L") = 3, mp("U") = 4
+  set dir(1) = 1, dir(2) = 0, dir(3) = -1, dir(4) = 0, dir(5) = 1
+  set seen = 1
+  set seen("0^0") = ""
+  for s=1:1:sl {
+    set snake(s, "r") = 0, snake(s, "c") = 0
+  }
+  
+  for i=1:1:input {
+    set l = input(i)
+    set d = mp($p(l, " ")), x = $p(l, " ", 2)
+    set dr = dir(d), dc = dir(d+1)
+    for z=1:1:x {
+      set snake(1, "r") = snake(1, "r") + dr
+      set snake(1, "c") = snake(1, "c") + dc
+      for s=2:1:sl {
+        set rx = snake(s-1, "r")-snake(s, "r") 
+        set cx = snake(s-1, "c")-snake(s, "c")
+        if (($zabs(rx) > 1) || ($zabs(cx) > 1)) {
+          if ($zabs(rx) > 0) set snake(s, "r") = snake(s, "r") + (rx/$zabs(rx))
+          if ($zabs(cx) > 0) set snake(s, "c") = snake(s, "c") + (cx/$zabs(cx))
+        }
+      }
+      if ($d(seen(snake(sl, "r")_"^"_snake(sl, "c"))) = 0) {
+        set seen(snake(sl, "r")_"^"_snake(sl, "c")) = i
+        set seen = seen + 1
+      }
+    }
+  }
+  return seen
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[  return ..Helper(2)
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>1</ProcedureBlock>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[  return ..Helper(10)
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="dc.aoc">
+<TimeChanged>66468,70909.041561</TimeChanged>
+<TimeCreated>66467,83356.442976</TimeCreated>
+
+<Method name="run">
+<Description><![CDATA[
+>f %d=1:1:24 k (%d)  do ##class(dc.aoc).run(%d,1)  r !?5,"????",y]]></Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>day=1,set="1"</FormalSpec>
+<Implementation><![CDATA[
+  set ^zTEST=set
+  set dir="C:\GitHub\set"_set_"\"_day_"\"
+  set file=dir_$s(set=1:"data",1:"input")_".txt"
+  set res=dir_"result.txt"
+  set cls="dc.AoC2022.Day"_day
+  do ..res(res)
+  set sc=$classmethod(cls,"Run",file)
+  if 'sc b  do $system.OBJ.DisplayError(sc) zw  b
+]]></Implementation>
+</Method>
+
+<Method name="res">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>dir</FormalSpec>
+<Implementation><![CDATA[
+  if $g(%res) quit $$$OK
+  set res=dir_"result.txt"
+  w "****************** ",dir,!
+  open res:"R":0 else  zw  b
+  for l=1,2  use res read line use 0 write ?15,line,!
+ups  
+  close res
+  set $ZT=""
+  read !,"OK",ok,!
+  quit (ok="")
+]]></Implementation>
+</Method>
+</Class>
+</Export>

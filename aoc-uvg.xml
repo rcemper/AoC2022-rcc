@@ -1,0 +1,2018 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2018.1.7 (Build 721U)" ts="2022-12-27 11:35:41">
+<Class name="AOC2022.Base">
+<TimeChanged>66469,68191.759374</TimeChanged>
+<TimeCreated>66469,66889.143401</TimeCreated>
+
+<Parameter name="Folder">
+<Default>C:\devl\work\Cache\AOC\Files\2022\</Default>
+</Parameter>
+
+<UDLText name="T">
+<Content><![CDATA[
+// Parameter Folder = "/irisrun/repo/Files/";
+
+]]></Content>
+</UDLText>
+
+<Method name="GetInputToArray">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[fn:%String,&recordsArr]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    set stream = ..GetInput(fn)
+    kill recordsArr
+    set Line=0
+  while 'stream.AtEnd {
+    set Record=$zstrip(stream.ReadLine(),"*C")
+    set Line=Line+1
+    set recordsArr(Line)=Record
+  }
+  quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="GetInput">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fn</FormalSpec>
+<ReturnType>%Stream</ReturnType>
+<Implementation><![CDATA[
+#;    set fn=..#Folder_fn
+  set set=^zTEST
+  set day=+$e(fn,2,*)
+  set dir="C:\GitHub\set"_set_"\"_day_"\"
+  set fn=dir_$s(set=1:"data",1:"input")_".txt"
+  do ##class(dc.aoc).res(dir)
+    set stream = ##Class(%Stream.FileCharacter).%New()
+    do stream.LinkToFile(fn)
+    set stream.LineTerminator=$char(13,10)
+    return stream
+]]></Implementation>
+</Method>
+
+<UDLText name="T">
+<Content><![CDATA[
+// d ##class(AOC2022.Day{D}).Run()
+
+]]></Content>
+</UDLText>
+
+<Method name="Run">
+<Final>1</Final>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0,part=0</FormalSpec>
+<Implementation><![CDATA[
+ 
+  set %res=0
+  if (part=0)||(part=1) set answer=..Part1(verbose) write !,"Part1: " zwrite answer
+  set:'%res %res=2
+  if (part=0)||(part=2) set answer=..Part2(verbose) write !,"Part2: " zwrite answer
+]]></Implementation>
+</Method>
+
+<Method name="Part1">
+<Abstract>1</Abstract>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+  set stream=..GetInput(..#InputFile)
+    set line=0
+  while 'stream.AtEnd {
+    set line=line+1
+    set record=stream.ReadLine()
+    set recordsArr(line)=record
+  }
+  set Answer="Part1"
+  quit Answer
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<Abstract>1</Abstract>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+  set stream=..GetInput(..#InputFile)
+    set line=0
+  while 'stream.AtEnd {
+    set line=line+1
+    set record=stream.ReadLine()
+    set recordsArr(line)=record
+  }
+  set Answer="Part2"
+  quit Answer
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="AOC2022.Day00">
+<Super>AOC2022.Base</Super>
+<TimeChanged>66469,66889.21572</TimeChanged>
+<TimeCreated>66469,66889.21572</TimeCreated>
+
+<UDLText name="T">
+<Content><![CDATA[
+// d ##class(AOC2022.Day00).Run()
+
+]]></Content>
+</UDLText>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	write !,"Welcome to Yuvals AOC2022 examples Part 1",!
+	quit 0
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	write !,"Welcome to Yuvals AOC2022 examples Part 2",!
+	quit 0
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="AOC2022.Day01">
+<Super>AOC2022.Base</Super>
+<TimeChanged>66469,66889.290049</TimeChanged>
+<TimeCreated>66469,66889.290049</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>d01.txt</Default>
+</Parameter>
+
+<UDLText name="T">
+<Content><![CDATA[
+// d ##class(AOC2022.Day01).Run()
+
+]]></Content>
+</UDLText>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+	//
+	set answer="",line="",sum=0,max=0
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		if '$length(record) {
+			set:sum>max max=sum
+			set sum=0
+			if verbose write !,line,"=",sum,",",max
+			continue
+		}
+		set sum=sum+record
+	}
+	set:sum>max max=sum //Last elf
+	if verbose write !,line,"=",sum,",",max
+	set answer=max
+	quit answer
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+	//
+	kill sumArr
+	set answer="",line="",sum=0
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		if '$length(record) {
+			set sumArr(sum)=""
+			set sum=0
+			continue
+		}
+		set sum=sum+record
+	}
+	set sumArr(sum)=""  //Last elf
+	if verbose zwrite sumArr
+	set sum="",total=0,counter=0
+	for  {
+		set sum=$order(sumArr(sum),-1)
+		quit:sum=""
+		set counter=counter+1,total=total+sum
+		if verbose write !,counter,"=",sum,",",total
+		quit:counter=3
+	}
+	set answer=total
+	quit answer
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="AOC2022.Day02">
+<Super>AOC2022.Base</Super>
+<TimeChanged>66469,66889.366356</TimeChanged>
+<TimeCreated>66469,66889.366356</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>d02.txt</Default>
+</Parameter>
+
+<UDLText name="T">
+<Content><![CDATA[
+// d ##class(AOC2022.Day02).Run()
+
+]]></Content>
+</UDLText>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+	//
+	//A,X - Rock      - 1
+	//B,Y - Paper     - 2
+	//C,Z - Scissors  - 3
+	//0 - Lose, 3 - Draw, 6 - Win
+	set answer="",line="",total=0
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		set opp=$piece(record," " ,1),me=$piece(record," ",2)
+		set points=$select(me="X":1,me="Y":2,1:3)
+		if me="X" set points=points+$select(opp="A":3,opp="B":0,1:6)
+		if me="Y" set points=points+$select(opp="A":6,opp="B":3,1:0)
+		if me="Z" set points=points+$select(opp="A":0,opp="B":6,1:3)
+		set total=total+points
+		if verbose write !,record,";",points,";",total
+	}
+	set answer=total
+	quit answer
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+	//
+	//A - Rock      - 1
+	//B - Paper     - 2
+	//C - Scissors  - 3
+	//0 - X - Lose, 3 - Y - Draw, 6 - Z - Win
+	set answer="",line="",total=0
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		set opp=$piece(record," " ,1),me=$piece(record," ",2)
+		if me="X" set points=0+$select(opp="A":3,opp="B":1,1:2)
+		if me="Y" set points=3+$select(opp="A":1,opp="B":2,1:3)
+		if me="Z" set points=6+$select(opp="A":2,opp="B":3,1:1)
+		set total=total+points
+		if verbose write !,record,";",points,";",total
+	}
+	set answer=total
+	quit answer
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="AOC2022.Day03">
+<Super>AOC2022.Base</Super>
+<TimeChanged>66469,66889.441223</TimeChanged>
+<TimeCreated>66469,66889.441223</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>d03.txt</Default>
+</Parameter>
+
+<UDLText name="T">
+<Content><![CDATA[
+// d ##class(AOC2022.Day03).Run()
+
+]]></Content>
+</UDLText>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+	//
+	set answer="",line="",total=0
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		set part1=$extract(record,1,$length(record)/2),part2=$extract(record,$length(record)/2+1,*)
+		set same=$zstrip(part1,"*E",,part2)
+		set prio=$ascii(same)-97+1
+		set:prio<0 prio=prio+32+26
+		if verbose write ! zwrite part1,part2,same,prio
+		set total=total+prio
+	}
+	set answer=total
+	quit answer
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+	//
+	set answer="",line="",total=0,elf=0
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		set elf=elf+1
+		set ltrsArr(elf)=record
+		if elf=3 {
+			set elf=0
+			set same=$zstrip(ltrsArr(1),"*E",,ltrsArr(2))
+			set same=$zstrip(same,"*E",,ltrsArr(3))
+			set prio=$ascii(same)-97+1
+			set:prio<0 prio=prio+32+26
+			if verbose write ! zwrite ltrsArr,same,prio
+			set total=total+prio
+			kill ltrsArr
+		}
+	}
+	set answer=total
+	quit answer
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="AOC2022.Day04">
+<Super>AOC2022.Base</Super>
+<TimeChanged>66469,66889.515733</TimeChanged>
+<TimeCreated>66469,66889.515733</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>d04.txt</Default>
+</Parameter>
+
+<UDLText name="T">
+<Content><![CDATA[
+// d ##class(AOC2022.Day04).Run()
+
+]]></Content>
+</UDLText>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+	//
+	set answer="",line="",counter=0
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		set from1=+$piece(record,"-",1),to1=+$piece(record,"-",2)
+		set from2=+$piece(record,",",2),to2=+$piece(record,"-",3)
+		if from1>=from2,to1<=to2 {
+			set counter=counter+1
+			if verbose write !,from1,",",to1,",",from2,",",to2,">>>",counter
+			continue
+		}
+		if from2>=from1,to2<=to1 {
+			set counter=counter+1
+			if verbose write !,from1,",",to1,",",from2,",",to2,">>>",counter
+		}
+	}
+	set answer=counter
+	quit answer
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+	//
+	set answer="",line="",counter=0
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		set from1=+$piece(record,"-",1),to1=+$piece(record,"-",2)
+		set from2=+$piece(record,",",2),to2=+$piece(record,"-",3)
+		if from1<=to2,to1>=from2 {
+			set counter=counter+1
+			if verbose write !,from1,",",to1,",",from2,",",to2,">>>",counter
+			continue
+		}
+		if from2<=to1,to2>=from1 {
+			set counter=counter+1
+			if verbose write !,from1,",",to1,",",from2,",",to2,">>>",counter
+		}
+	}
+	set answer=counter
+	quit answer
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="AOC2022.Day05">
+<Super>AOC2022.Base</Super>
+<TimeChanged>66469,66889.591126</TimeChanged>
+<TimeCreated>66469,66889.591126</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>d05.txt</Default>
+</Parameter>
+
+<UDLText name="T">
+<Content><![CDATA[
+// d ##class(AOC2022.Day05).Run()
+
+]]></Content>
+</UDLText>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+	//
+	set answer="",line="",state=0
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		if state=0,record'["[" {
+			set state=1
+			continue
+		}
+		if '$length(record),state=1 {
+			set state=2
+			if verbose zwrite arr
+			continue
+		}
+		if state=0 {
+			set loc=0
+			for i=2:4:$length(record) {
+				set loc=loc+1
+				set char=$zstrip($extract(record,i),"*W")
+				if $length(char) {
+					set arr(loc,$increment(arr(loc)))=char
+				}
+			}
+		}
+		if state=2 {
+			set cnt=$piece(record," ",2)
+			set from=$piece(record," ",4)
+			set to=$piece(record," ",6)
+			set pos=""
+			for i=1:1:cnt {
+				set pos=$order(arr(from,pos)) quit:pos=""
+				set arr(to,$order(arr(to,""))-1)=arr(from,pos)
+				kill arr(from,pos)
+			}
+			if verbose write !!!,line,"=",cnt,",",from,",",to,!
+			if verbose zwrite arr
+		}
+	}
+	set loc="" for  {
+		set loc=$order(arr(loc)) quit:loc=""
+		set answer=answer_arr(loc,$order(arr(loc,"")))
+	}
+	quit answer
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+	//
+	set answer="",line="",state=0
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		if state=0,record'["[" {
+			set state=1
+			continue
+		}
+		if '$length(record),state=1 {
+			set state=2
+			if verbose zwrite arr
+			continue
+		}
+		if state=0 {
+			set loc=0
+			for i=2:4:$length(record) {
+				set loc=loc+1
+				set char=$zstrip($extract(record,i),"*W")
+				if $length(char) {
+					set arr(loc,$increment(arr(loc)))=char
+				}
+			}
+		}
+		if state=2 {
+			set cnt=$piece(record," ",2)
+			set from=$piece(record," ",4)
+			set to=$piece(record," ",6)
+			set pos="",temp=""
+			for i=1:1:cnt {
+				set pos=$order(arr(from,pos)) quit:pos=""
+				set temp=arr(from,pos)_temp
+				kill arr(from,pos)
+			}
+			for i=1:1:cnt {
+				set arr(to,$order(arr(to,""))-1)=$extract(temp,i)
+			}
+			if verbose write !!!,line,"=",cnt,",",from,",",to,!
+			if verbose zwrite arr
+		}
+	}
+	set loc="" for  {
+		set loc=$order(arr(loc)) quit:loc=""
+		set answer=answer_arr(loc,$order(arr(loc,"")))
+	}
+	quit answer
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="AOC2022.Day06">
+<Super>AOC2022.Base</Super>
+<TimeChanged>66469,66889.667477</TimeChanged>
+<TimeCreated>66469,66889.667477</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>d06.txt</Default>
+</Parameter>
+
+<UDLText name="T">
+<Content><![CDATA[
+// d ##class(AOC2022.Day06).Run()
+
+]]></Content>
+</UDLText>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+	//
+	set answer="",record=recordsArr(1)
+	if verbose write !,record
+	for i=1:1:$length(record)-3 {
+		set char=$extract(record,i)
+		if (char=$extract(record,i+1))||(char=$extract(record,i+2))||(char=$extract(record,i+3)) continue
+		set char=$extract(record,i+1)
+		if (char=$extract(record,i+2))||(char=$extract(record,i+3)) continue
+		set char=$extract(record,i+2)
+		if (char=$extract(record,i+3)) continue
+		quit
+	}
+	if verbose write !,$extract(record,i,i+3)
+	set answer=i+3
+	quit answer
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+	//
+	set answer="",record=recordsArr(1)
+	if verbose write !,record
+	for i=1:1:$length(record)-13 {
+		set sw=0
+		for j=i:1:i+12 {
+			set char=$extract(record,j)
+			for k=j+1:1:i+13 {
+				if char=$extract(record,k) set sw=1 quit
+			}
+			quit:sw
+		}
+		quit:'sw
+	}
+	if verbose write !,$extract(record,i,i+13)
+	set answer=i+13
+	quit answer
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="AOC2022.Day07">
+<Super>AOC2022.Base</Super>
+<TimeChanged>66469,66889.74493</TimeChanged>
+<TimeCreated>66469,66889.74493</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>d07.txt</Default>
+</Parameter>
+
+<UDLText name="T">
+<Content><![CDATA[
+// d ##class(AOC2022.Day07).Run()
+
+]]></Content>
+</UDLText>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+	//Compute the sum of all dirs <=100000
+	set answer="",line="",state=0,currDir=""
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		if $extract(record,1,4)="$ cd" {
+			set state=1,nextDir=$piece(record," ",3)
+			if nextDir=".." {
+				set nextDir=$list(filesArr(currDir),1)
+			} else {
+				set nextDir=..GetUniqueDirName(.filesArr,.idArr,nextDir,currDir)
+			}
+			set currDir=nextDir
+			continue
+		}
+		if $extract(record,1,4)="$ ls" {
+			set state=2
+			continue
+		}
+		set fileSize=$piece(record," ",1),fileName=$piece(record," ",2)
+		if fileSize="dir" set fileName=..GetUniqueDirName(.filesArr,.idArr,fileName,currDir)
+		set filesArr(currDir,fileName)=fileSize
+		if fileSize="dir" set filesArr(fileName)=$listbuild(currDir)
+	}
+	if verbose write !!,"before",! zwrite filesArr
+	do ..ComputeDirSize(.filesArr)
+	if verbose write !!,"after",! zwrite filesArr
+	set total=0,dir="" for  {
+		set dir=$order(filesArr(dir)) quit:dir=""
+		set size=$list(filesArr(dir),2)
+		continue:size>100000
+		set total=total+size
+	}
+	set answer=total
+	quit answer
+]]></Implementation>
+</Method>
+
+<Method name="GetUniqueDirName">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&filesArr,&idArr,dirName:%String,parent:%String]]></FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	while $length(parent) {
+		set dirName=parent_"/"_dirName
+		set parent=$listget($get(filesArr(parent)),1)
+	}
+	quit ..GetDirId(.idArr,dirName)
+]]></Implementation>
+</Method>
+
+<Method name="GetDirId">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&idArr,dirName:%String]]></FormalSpec>
+<Private>1</Private>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set id=""
+	for  {
+		set id=$order(idArr(id)) quit:id=""
+		if idArr(id)=dirName {
+			return id
+		}
+	}
+	set id=$increment(idArr)
+	set idArr(id)=dirName
+	quit id
+]]></Implementation>
+</Method>
+
+<Method name="ComputeDirSize">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&filesArr]]></FormalSpec>
+<Private>1</Private>
+<Implementation><![CDATA[
+	set dirId="" for  {
+		set dirId=$order(filesArr(dirId)) quit:dirId=""
+		set $list(filesArr(dirId),2)=..GetDirSize(.filesArr,dirId)
+	}
+]]></Implementation>
+</Method>
+
+<Method name="GetDirSize">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&filesArr,dirId:%Integer]]></FormalSpec>
+<Private>1</Private>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	set total=0,file=""
+	for  {
+		set file=$order(filesArr(dirId,file)) quit:file=""
+		set size=filesArr(dirId,file)
+		if size="dir" set size=..GetDirSize(.filesArr,file)
+		set total=total+size
+	}
+	quit total
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+	//
+	set answer="",line="",state=0,currDir=""
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		if $extract(record,1,4)="$ cd" {
+			set state=1,nextDir=$piece(record," ",3)
+			if nextDir=".." {
+				set nextDir=$list(filesArr(currDir),1)
+			} else {
+				set nextDir=..GetUniqueDirName(.filesArr,.idArr,nextDir,currDir)
+			}
+			set currDir=nextDir
+			continue
+		}
+		if $extract(record,1,4)="$ ls" {
+			set state=2
+			continue
+		}
+		set fileSize=$piece(record," ",1),fileName=$piece(record," ",2)
+		if fileSize="dir" set fileName=..GetUniqueDirName(.filesArr,.idArr,fileName,currDir)
+		set filesArr(currDir,fileName)=fileSize
+		if fileSize="dir" set filesArr(fileName)=$listbuild(currDir)
+	}
+	if verbose write !!,"before",! zwrite filesArr
+	do ..ComputeDirSize(.filesArr)
+	if verbose write !!,"after",! zwrite filesArr
+	set currSize=$list(filesArr(1),2)
+	set unusedSize=70000000-currSize
+	set neededSize=30000000-unusedSize
+	if verbose write !,currSize,",",unusedSize,",",neededSize
+	set min=currSize
+	set dir="" for  {
+		set dir=$order(filesArr(dir)) quit:dir=""
+		set size=$list(filesArr(dir),2)
+		if verbose write !,dir,",",size,",",min
+		if size>=neededSize,size<min set min=size
+	}
+	set answer=min
+	quit answer
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="AOC2022.Day08">
+<Super>AOC2022.Base</Super>
+<TimeChanged>66469,66889.823947</TimeChanged>
+<TimeCreated>66469,66889.823947</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>d08.txt</Default>
+</Parameter>
+
+<UDLText name="T">
+<Content><![CDATA[
+// d ##class(AOC2022.Day08).Run()
+
+]]></Content>
+</UDLText>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+	set answer="",line="",width=$length(recordsArr(1)),height=$order(recordsArr(""),-1),counter=0
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		if (line=1)||(line=height) {
+			set counter=counter+width
+			continue
+		}
+		set counter=counter+2
+		for x=2:1:(width-1) set counter=counter+..IsVisible(.recordsArr,x,line,width,height,verbose)
+	}
+	set answer=counter
+	quit answer
+]]></Implementation>
+</Method>
+
+<Method name="IsVisible">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&treesArr,posX:%Integer,posY:%Integer,width:%Integer,height:%Integer,verbose:%Boolean]]></FormalSpec>
+<Private>1</Private>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	set size=$extract(treesArr(posY),posX)
+	if verbose write !,posX,",",posY,"=",size
+	set isVisible=1
+	for x=1:1:(posX-1) {
+		if $extract(treesArr(posY),x)>=size {
+			set isVisible=0
+			quit
+		}
+	}
+	quit:isVisible 1
+	set isVisible=1
+	for x=posX+1:1:width {
+		if $extract(treesArr(posY),x)>=size {
+			set isVisible=0
+			quit
+		}
+	}
+	quit:isVisible 1
+	set isVisible=1
+	for y=1:1:(posY-1) {
+		if $extract(treesArr(y),posX)>=size {
+			set isVisible=0
+			quit
+		}
+	}
+	quit:isVisible 1
+	set isVisible=1
+	for y=posY+1:1:height {
+		if $extract(treesArr(y),posX)>=size {
+			set isVisible=0
+			quit
+		}
+	}
+	quit:isVisible 1
+	quit 0
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+	//
+	set answer="",line="",width=$length(recordsArr(1)),height=$order(recordsArr(""),-1),maxScenicScore=0
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		if (line=1)||(line=height) {
+			continue
+		}
+		set record=recordsArr(line)
+		for x=2:1:width-1 {
+			set scenicScore=..GetScenicScore(.recordsArr,x,line,width,height,verbose)
+			set:scenicScore>maxScenicScore maxScenicScore=scenicScore
+		}
+	}
+	set answer=maxScenicScore
+	quit answer
+]]></Implementation>
+</Method>
+
+<Method name="GetScenicScore">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&treesArr,posX:%Integer,posY:%Integer,width:%Integer,height:%Integer,verbose:%Boolean]]></FormalSpec>
+<Private>1</Private>
+<Implementation><![CDATA[
+	set size=$extract(treesArr(posY),posX)
+	if verbose write !,posX,",",posY,"=",size
+	set scenicScore=1
+	set tempScenicScore=0
+	for x=posX-1:-1:1 {
+		set tempScenicScore=tempScenicScore+1
+		if $extract(treesArr(posY),x)>=size {
+			quit
+		}
+	}
+	set scenicScore=scenicScore*tempScenicScore
+	set tempScenicScore=0
+	for x=posX+1:1:width {
+		set tempScenicScore=tempScenicScore+1
+		if $extract(treesArr(posY),x)>=size {
+			quit
+		}
+	}
+	set scenicScore=scenicScore*tempScenicScore
+	set tempScenicScore=0
+	for y=posY-1:-1:1 {
+		set tempScenicScore=tempScenicScore+1
+		if $extract(treesArr(y),posX)>=size {
+			quit
+		}
+	}
+	set scenicScore=scenicScore*tempScenicScore
+	set tempScenicScore=0
+	for y=posY+1:1:height {
+		set tempScenicScore=tempScenicScore+1
+		if $extract(treesArr(y),posX)>=size {
+			quit
+		}
+	}
+	set scenicScore=scenicScore*tempScenicScore
+	quit scenicScore
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="AOC2022.Day09">
+<Super>AOC2022.Base</Super>
+<TimeChanged>66469,66889.902664</TimeChanged>
+<TimeCreated>66469,66889.902664</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>d09.txt</Default>
+</Parameter>
+
+<UDLText name="T">
+<Content><![CDATA[
+// d ##class(AOC2022.Day09).Run()
+
+]]></Content>
+</UDLText>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+	set answer="",line="",(hX,hY,tX,tY)=0,posT(tX,tY)=""
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		set dir=$extract(record,1),size=$piece(record," ",2)
+		if verbose write !,line,"=",dir,",",size
+		for i=1:1:size {
+			set hX=$select(dir="L":hX-1,dir="R":hX+1,1:hX)
+			set hY=$select(dir="U":hY-1,dir="D":hY+1,1:hY)
+			if ($zabs(hX-tX)>1)||($zabs(hY-tY)>1) {
+				if hX=tX {
+					set tY=$select(dir="U":tY-1,dir="D":tY+1,1:tY)
+				} elseif hY=tY {
+					set tX=$select(dir="L":tX-1,dir="R":tX+1,1:tX)
+				} else {
+					if ($zabs(hX-tX-1)<=1),($zabs(hY-tY-1)<=1) {
+						set tX=tX+1,tY=tY+1
+					} elseif ($zabs(hX-tX+1)<=1),($zabs(hY-tY+1)<=1) {
+						set tX=tX-1,tY=tY-1
+					}
+					 elseif ($zabs(hX-tX+1)<=1),($zabs(hY-tY-1)<=1) {
+						 set tX=tX-1,tY=tY+1
+					} else {
+						set tX=tX+1,tY=tY-1
+					}
+				}
+				set posT(tX,tY)=""
+			}
+		}
+	}
+	if verbose write ! zwrite posT
+	set counter=0
+	set tX="" for  {
+		set tX=$order(posT(tX)) quit:tX=""
+		set tY="" for  {
+			set tY=$order(posT(tX,tY)) quit:tY=""
+			set counter=counter+1
+		}
+	}
+	set answer=counter
+	quit answer
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+	//
+	set answer="",line=""
+	for type=0:1:9 {
+		set pos(type)=$listbuild(0,0)
+	}
+	set pos(9,0,0)=""
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		set dir=$extract(record,1),size=$piece(record," ",2)
+		if verbose write !,line,"=",dir,",",size
+		for i=1:1:size {
+			set type=0,hX=$list(pos(type),1),hY=$list(pos(type),2)
+			set hX=$select(dir="L":hX-1,dir="R":hX+1,1:hX)
+			set hY=$select(dir="U":hY-1,dir="D":hY+1,1:hY)
+			set pos(type)=$listbuild(hX,hY)
+			for type=1:1:9 {
+				set hX=$list(pos(type-1),1),hY=$list(pos(type-1),2)
+				set tX=$list(pos(type),1),tY=$list(pos(type),2)
+				if ($zabs(hX-tX)>1)||($zabs(hY-tY)>1) {
+					if hX=tX {
+						set tY=$select(hY>tY:tY+1,1:tY-1)
+					} elseif hY=tY {
+						set tX=$select(hX>tX:tX+1,1:tX-1)
+					} else {
+						if ($zabs(hX-tX-1)<=1),($zabs(hY-tY-1)<=1) {
+							set tX=tX+1,tY=tY+1
+						} elseif ($zabs(hX-tX+1)<=1),($zabs(hY-tY+1)<=1) {
+							set tX=tX-1,tY=tY-1
+						}
+						 elseif ($zabs(hX-tX+1)<=1),($zabs(hY-tY-1)<=1) {
+							 set tX=tX-1,tY=tY+1
+						} else {
+							set tX=tX+1,tY=tY-1
+						}
+					}
+					set pos(type)=$listbuild(tX,tY)
+					set:type=9 pos(type,tX,tY)=""
+				}
+			}
+		}
+	}
+	if verbose write ! zwrite pos
+	set counter=0
+	set tX="" for  {
+		set tX=$order(pos(9,tX)) quit:tX=""
+		set tY="" for  {
+			set tY=$order(pos(9,tX,tY)) quit:tY=""
+			set counter=counter+1
+		}
+	}
+	set answer=counter
+	quit answer
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="AOC2022.Day10">
+<Super>AOC2022.Base</Super>
+<TimeChanged>66469,66889.980638</TimeChanged>
+<TimeCreated>66469,66889.980638</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>d10.txt</Default>
+</Parameter>
+
+<UDLText name="T">
+<Content><![CDATA[
+// d ##class(AOC2022.Day10).Run()
+
+]]></Content>
+</UDLText>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+
+	set answer="",line="",cycle=1,x=1
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		set cmd=$piece(record," ",1)
+		set opps(cycle)=""
+		if cmd="noop" {
+			set cycle=cycle+1
+			continue
+		}
+		else {
+			set value=$piece(record," ",2)
+			set opps(cycle+1)=value
+			set cycle=cycle+2
+		}
+	}
+	if verbose zwrite opps
+	set cycle="",strength=0
+	for  {
+		set cycle=$order(opps(cycle)) quit:cycle=""
+		if cycle#40=20 {
+			set strength=x*cycle+strength
+		}
+		set x=x+opps(cycle)
+		if verbose write !,cycle,",",x,",",strength
+	}
+	set answer=strength
+	quit answer
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+	//
+	set answer="",line="",cycle=1,x=1
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		set cmd=$piece(record," ",1)
+		set opps(cycle)=""
+		if cmd="noop" {
+			set cycle=cycle+1
+			continue
+		}
+		else {
+			set value=$piece(record," ",2)
+			set opps(cycle+1)=value
+			set cycle=cycle+2
+		}
+	}
+	if verbose zwrite opps
+	set cycle="",pos=0
+	for  {
+		set cycle=$order(opps(cycle)) quit:cycle=""
+		if cycle#40=1 write !
+		if $zabs(pos-x)<2 {
+			write "#"
+		} else {
+			write " "
+		}
+		set pos=pos+1
+		if pos#40=0 set pos=0
+		set x=x+opps(cycle)
+	}
+	quit answer
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="AOC2022.Day11">
+<Super>AOC2022.Base</Super>
+<TimeChanged>66469,66890.059016</TimeChanged>
+<TimeCreated>66469,66890.059016</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>d11.txt</Default>
+</Parameter>
+
+<UDLText name="T">
+<Content><![CDATA[
+// d ##class(AOC2022.Day11).Run()
+
+]]></Content>
+</UDLText>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<PublicList>new,old</PublicList>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+	//After 20 rounds the answer is the multiply of two most active monkeys' number of actions 
+	//
+	new new,old
+	set answer="",line=""
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		if $piece(record," ",1)="Monkey" {
+			set monkey=+$piece(record," ",2)
+			continue
+		}
+		if record["Starting " {
+			set itemsStr=$piece(record,"items: ",2)
+			set items=""
+			if verbose write !,monkey,"=",itemsStr
+			for index=1:1:$length(itemsStr,", ") {
+				set item=+$piece(itemsStr,", ",index)
+				set items=items_$listbuild(item)
+			}
+			set $list(monkeysArr(monkey),6)=items
+			continue
+		}
+		if record["Operation: " {
+			set opp=$piece(record,"Operation: ",2)
+			set $list(monkeysArr(monkey),1)=opp
+			continue
+		}
+		if record["Test: " {
+			set div=+$piece(record,"by ",2)
+			set $list(monkeysArr(monkey),2)=div
+			continue
+		}
+		if record["If true: " {
+			set reciever=+$piece(record,"monkey ",2)
+			set $list(monkeysArr(monkey),3)=reciever
+			continue
+		}
+		if record["If false: " {
+			set reciever=+$piece(record,"monkey ",2)
+			set $list(monkeysArr(monkey),4)=reciever
+			set $list(monkeysArr(monkey),5)=0
+			continue
+		}
+	}
+	if verbose write ! zwrite monkeysArr
+	for round=1:1:20 {
+		set monkey="" for  {
+			set monkey=$order(monkeysArr(monkey)) quit:monkey=""
+			set attr=monkeysArr(monkey)
+			set opp=$list(attr,1),div=$list(attr,2),monkeyT=$list(attr,3),monkeyF=$list(attr,4),counter=$list(attr,5),items=$list(attr,6)
+			if $length(items),$listlength(items) {
+				for itemIndex=1:1:$listlength(items) {
+					set item=$list(items,itemIndex)
+					set counter=counter+1
+					set old=item
+					xecute "s "_opp
+					set new=new\3
+					if (new#div=0) {
+						set monkeyTItems=$list(monkeysArr(monkeyT),6)
+						set monkeyTItems=monkeyTItems_$listbuild(new)
+						set $list(monkeysArr(monkeyT),6)=monkeyTItems
+					}
+					else {
+						set monkeyFItems=$list(monkeysArr(monkeyF),6)
+						set monkeyFItems=monkeyFItems_$listbuild(new)
+						set $list(monkeysArr(monkeyF),6)=monkeyFItems
+					}
+				}
+			}
+			set $list(monkeysArr(monkey),5)=counter,$list(monkeysArr(monkey),6)=""
+		}
+		if verbose {
+			write !!!,"After round ",round
+			write ! zwrite monkeysArr
+		}
+	}
+	set monkey="" for  {
+		set monkey=$order(monkeysArr(monkey)) quit:monkey=""
+		set counter=$list(monkeysArr(monkey),5)
+		set counterArr(counter)=""
+	}
+	set answer=$order(counterArr(""),-1)
+	set answer=answer*$order(counterArr(answer),-1)
+	quit answer
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<PublicList>new,old</PublicList>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+	//
+	new new,old
+	set answer="",line=""
+	//All dividors are primes
+	set primesProduct=1
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		if $piece(record," ",1)="Monkey" {
+			set monkey=+$piece(record," ",2)
+			continue
+		}
+		if record["Starting " {
+			set itemsStr=$piece(record,"items: ",2)
+			set items=""
+			if verbose write !,monkey,"=",itemsStr
+			for index=1:1:$length(itemsStr,", ") {
+				set item=+$piece(itemsStr,", ",index)
+				set items=items_$listbuild(item)
+			}
+			set $list(monkeysArr(monkey),6)=items
+			continue
+		}
+		if record["Operation: " {
+			set opp=$piece(record,"Operation: ",2)
+			set $list(monkeysArr(monkey),1)=opp
+			continue
+		}
+		if record["Test: " {
+			set div=+$piece(record,"by ",2)
+			set $list(monkeysArr(monkey),2)=div
+			set primesProduct=primesProduct*div
+			continue
+		}
+		if record["If true: " {
+			set reciever=+$piece(record,"monkey ",2)
+			set $list(monkeysArr(monkey),3)=reciever
+			continue
+		}
+		if record["If false: " {
+			set reciever=+$piece(record,"monkey ",2)
+			set $list(monkeysArr(monkey),4)=reciever
+			set $list(monkeysArr(monkey),5)=0
+			continue
+		}
+	}
+	if verbose write ! zwrite monkeysArr,primesProduct
+	for round=1:1:10000 {
+		//write !,"round=",round
+		set monkey="" for  {
+			set monkey=$order(monkeysArr(monkey)) quit:monkey=""
+			set attr=monkeysArr(monkey)
+			set opp=$list(attr,1),div=$list(attr,2),monkeyT=$list(attr,3),monkeyF=$list(attr,4),counter=$list(attr,5),items=$list(attr,6)
+			if $length(items),$listlength(items) {
+				for itemIndex=1:1:$listlength(items) {
+					set item=$list(items,itemIndex)
+					set counter=counter+1
+					set old=item
+					xecute "s "_opp
+					set new=new#primesProduct
+					if (new#div=0) {
+						set monkeyNewAttr=monkeysArr(monkeyT)
+						set monkeyNewItems=$list(monkeyNewAttr,6)
+						set monkeyNewDiv=$list(monkeyNewAttr,2)
+						set monkeyNewItems=monkeyNewItems_$listbuild(new)
+						set $list(monkeysArr(monkeyT),6)=monkeyNewItems
+					}
+					else {
+						set monkeyNewAttr=monkeysArr(monkeyF)
+						set monkeyNewItems=$list(monkeyNewAttr,6)
+						set monkeyNewItems=monkeyNewItems_$listbuild(new)
+						set $list(monkeysArr(monkeyF),6)=monkeyNewItems
+					}
+				}
+			}
+			set $list(monkeysArr(monkey),5)=counter,$list(monkeysArr(monkey),6)=""
+		}
+		if verbose,(round=1)||(round=20)||(round#1000=0) {
+			write !!!,"After round ",round
+			write ! zwrite monkeysArr
+		}
+	}
+	set monkey="" for  {
+		set monkey=$order(monkeysArr(monkey)) quit:monkey=""
+		set counter=$list(monkeysArr(monkey),5)
+		set counterArr(counter)=""
+	}
+	set answer=$order(counterArr(""),-1)
+	set answer=answer*$order(counterArr(answer),-1)
+	quit answer
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="AOC2022.Day12">
+<Super>AOC2022.Base</Super>
+<TimeChanged>66469,66890.139085</TimeChanged>
+<TimeCreated>66469,66890.139085</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>d12.txt</Default>
+</Parameter>
+
+<UDLText name="T">
+<Content><![CDATA[
+// d ##class(AOC2022.Day12).Run()
+
+]]></Content>
+</UDLText>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+	set answer="",line="",(startX,endX,startY,endY)=0
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		if record["S" set startX=$find(record,"S")-1,startY=line,$extract(recordsArr(line),startX)="a"
+		if record["E" set endX=$find(record,"E")-1,endY=line,$extract(recordsArr(line),endX)="z"
+	}
+	if verbose zwrite startX,startY,endX,endY //,recordsArr
+	set answer=..FindShortestPathPriorityQueue(.recordsArr,startX,startY,endX,endY,,.visited,.path)
+	//if verbose zwrite visited
+	if verbose zwrite path
+	quit answer
+]]></Implementation>
+</Method>
+
+<Method name="FindShortestPathPriorityQueue">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&grid,fromX:%Integer,fromY:%Integer,toX:%Integer,toY:%Integer,steps:%Integer=0,&visited,&path:%String="",maxsteps:%Integer=0,&noVisitPlaces]]></FormalSpec>
+<Implementation><![CDATA[
+	//grid(y)=data
+	//There should be no holes in the grid so if y=5..10 then there should be grid(5),grid(6),grid(7),,,grid(10)
+	//
+	set minSteps=999999
+	if maxsteps,steps>maxsteps quit 999999
+	quit:$data(noVisitPlaces(fromX,fromY)) 999999
+	if fromX=toX,fromY=toY quit steps
+	set Queue(steps,$listbuild(fromX,fromY))=path
+	for  {
+		set steps=$order(Queue("")) quit:'$length(steps)
+		set value=$order(Queue(steps,"")),path=Queue(steps,value) kill Queue(steps,value)
+		set fromX=$list(value,1),fromY=$list(value,2)
+		if maxsteps,steps>maxsteps continue
+		continue:$data(noVisitPlaces(fromX,fromY))
+		set type=$extract($get(grid(fromY)),fromX)
+		if '$length(type) continue
+		if $data(visited(fromX,fromY)),visited(fromX,fromY)<=steps {
+			continue
+		}
+		set visited(fromX,fromY)=steps
+		set visited(fromX,fromY,"path")=path
+		if fromX=toX,fromY=toY {
+			set:steps<minSteps minSteps=steps
+			quit
+		}
+		set typeCode=$ascii(type)
+		set nextPosCode=$ascii($extract($get(grid(fromY)),fromX+1)) if ..IsValidMove(typeCode,nextPosCode) set Queue(steps+1,$listbuild(fromX+1,fromY))=path_$listbuild($listbuild(fromX+1,fromY))
+		set nextPosCode=$ascii($extract($get(grid(fromY)),fromX-1)) if ..IsValidMove(typeCode,nextPosCode) set Queue(steps+1,$listbuild(fromX-1,fromY))=path_$listbuild($listbuild(fromX-1,fromY))
+		set nextPosCode=$ascii($extract($get(grid(fromY+1)),fromX)) if ..IsValidMove(typeCode,nextPosCode) set Queue(steps+1,$listbuild(fromX,fromY+1))=path_$listbuild($listbuild(fromX,fromY+1))
+		set nextPosCode=$ascii($extract($get(grid(fromY-1)),fromX)) if ..IsValidMove(typeCode,nextPosCode) set Queue(steps+1,$listbuild(fromX,fromY-1))=path_$listbuild($listbuild(fromX,fromY-1))
+	}
+	//w !,fromX,";",fromY,";",steps
+	quit minSteps
+]]></Implementation>
+</Method>
+
+<Method name="IsValidMove">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>fromCode:%Integer,toCode:%Integer</FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	if toCode<0 quit 0
+	if toCode-fromCode>1 quit 0
+	quit 1
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+	
+	set answer="",line="",(startX,endX,startY,endY)=0
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		if record["S" set startX=$find(record,"S")-1,startY=line,$extract(recordsArr(line),startX)="a"
+		if record["E" set endX=$find(record,"E")-1,endY=line,$extract(recordsArr(line),endX)="z"
+	}
+	if verbose zwrite endX,endY //startX,startY,recordsArr
+	set line="",minSteps=999999,minPath=""
+	for  {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		for startX=1:1:$length(record) {
+			if $extract(record,startX)="a" {
+				if verbose write !,"Starting from ",startX,",",line
+				set path=""
+				set steps=..FindShortestPathPriorityQueue(.recordsArr,startX,line,endX,endY,,,.path,minSteps)
+				set:steps<minSteps minSteps=steps,minPath=path
+				if verbose write "=",steps,",",minSteps
+			}
+		}
+	}
+	set answer=minSteps
+	//if verbose zwrite visited
+	if verbose write ! zwrite minPath
+	quit answer
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="AOC2022.Day13">
+<Super>AOC2022.Base</Super>
+<TimeChanged>66469,66890.218658</TimeChanged>
+<TimeCreated>66469,66890.218658</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>d13.txt</Default>
+</Parameter>
+
+<UDLText name="T">
+<Content><![CDATA[
+// d ##class(AOC2022.Day13).Run()
+
+]]></Content>
+</UDLText>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+
+	set answer="",line="",left="",right="",counter=1,sum=0
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		if '$length(record) {
+			set (left,right)=""
+			set counter=counter+1
+			continue
+		}
+		if '$length(left) {
+			set left=record
+			continue
+		}
+		if '$length(right) {
+			set right=record
+			set order=..IsInOrder(left,right)
+			set:order'<0 sum=sum+counter
+			if verbose write !,"left=",left,", right=",right,", order=",order
+		}
+	}
+	set answer=sum
+	quit answer
+]]></Implementation>
+</Method>
+
+<Method name="IsInOrder">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>left:%String,right:%String</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	if '$length(right) quit 1
+	if '$length(left) quit -1
+	//W !!,"left=",left,",right=",right
+	set isLeftList=..IsList(left)
+	set isRightList=..IsList(right)
+	if 'isLeftList,'isRightList {
+		quit $select(left<right:1,left=right:0,1:-1)
+	}
+	set:'isLeftList left="["_left_"]"
+	set:'isRightList right="["_right_"]"
+	set leftListSize=..GetListSize(left)
+	set rightListSize=..GetListSize(right)
+	for pos=1:1:leftListSize {
+		if pos>rightListSize return -1
+		set leftElement=..GetElement(left,pos)
+		set rightElement=..GetElement(right,pos)
+		set ans=..IsInOrder(leftElement,rightElement)
+		continue:'ans
+		return ans
+	}
+	quit leftListSize<rightListSize
+]]></Implementation>
+</Method>
+
+<Method name="IsList">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>string</FormalSpec>
+<Implementation><![CDATA[	quit $extract(string)="["
+]]></Implementation>
+</Method>
+
+<Method name="GetListSize">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>string:%String</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	if '$length(string) quit 0
+	set size=0,squares=0,manip=$extract(string,2,*-1),pos=1
+	for {
+		quit:pos>$length(manip)
+		if $extract(manip,pos)'="[" {
+			set size=size+1,foundNext=0
+			for i=pos+1:1:$length(manip) {
+				if $extract(manip,i)="," {
+					set pos=i+1,foundNext=1
+					quit
+				}
+			}
+			quit:'foundNext
+			continue
+		} else {
+			set counter=0
+			for i=pos:1:$length(manip) {
+				if $extract(manip,i)="[" {
+					set counter=counter+1
+					continue
+				}
+				if $extract(manip,i)="]" {
+					set counter=counter-1
+					continue:counter'=0
+					set size=size+1,pos=i+1
+					set:$extract(manip,pos)="," pos=pos+1
+					quit
+				}
+			}
+		}
+	}
+	quit size
+]]></Implementation>
+</Method>
+
+<Method name="GetElement">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>string:%String,elemId:%Integer</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	if '$length(string) quit ""
+	set size=0,squares=0,manip=$extract(string,2,*-1),pos=1
+	for {
+		quit:pos>$length(manip)
+		if $extract(manip,pos)'="[" {
+			set size=size+1,foundNext=0
+			for i=pos+1:1:$length(manip) {
+				if $extract(manip,i)="," {
+					if size=elemId {
+						return $extract(manip,pos,i-1)
+					}
+					set pos=i+1,foundNext=1
+					quit
+				}
+			}
+			if 'foundNext,size=elemId {
+				return $extract(manip,pos,*)
+			}
+			quit:'foundNext
+			continue
+		} else {
+			set counter=0
+			for i=pos:1:$length(manip) {
+				if $extract(manip,i)="[" {
+					set counter=counter+1
+					continue
+				}
+				if $extract(manip,i)="]" {
+					set counter=counter-1
+					continue:counter'=0
+					set size=size+1
+					if size=elemId {
+						return $extract(manip,pos,i)
+					}
+					set pos=i+1
+					set:$extract(manip,pos)="," pos=pos+1
+					quit
+				}
+			}
+		}
+	}
+	quit ""
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+	
+	set answer="",line=""
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		continue:'$length(record)
+		set packetsArr($increment(packetsArr))=record
+	}
+	set packetsArr($increment(packetsArr))="[[2]]"
+	set packetsArr($increment(packetsArr))="[[6]]"
+	if verbose write !!,"before: ",! zwrite packetsArr
+	for i=1:1:packetsArr-1 {
+		for j=i+1:1:packetsArr {
+			set left=packetsArr(i),right=packetsArr(j)
+			set order=..IsInOrder(left,right)
+			if order=-1 {
+				set packetsArr(i)=right,packetsArr(j)=left
+			}
+		}
+	}
+	if verbose write !!,"after: ",! zwrite packetsArr
+	set idx2=0,idx6=0
+	for i=1:1:packetsArr {
+		set:packetsArr(i)="[[2]]" idx2=i
+		set:packetsArr(i)="[[6]]" idx6=i
+	}
+	set answer=idx2*idx6
+	quit answer
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="AOC2022.Day14">
+<Super>AOC2022.Base</Super>
+<TimeChanged>66469,66890.300284</TimeChanged>
+<TimeCreated>66469,66890.300284</TimeCreated>
+
+<Parameter name="InputFile">
+<Default>d14.txt</Default>
+</Parameter>
+
+<UDLText name="T">
+<Content><![CDATA[
+// d ##class(AOC2022.Day14).Run()
+
+]]></Content>
+</UDLText>
+
+<Method name="Part1">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+
+	set answer="",line="",(minX,maxX)=500,(minY,maxY)=0,grid(0,500)="+"
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		set start=$piece(record," -> ",1)
+		for pos=2:1:$length(record," -> ") {
+			set startX=$piece(start,",",1),startY=$piece(start,",",2)
+			set end=$piece(record," -> ",pos)
+			set endX=$piece(end,",",1),endY=$piece(end,",",2)
+			//w !,startX,",",startY,"-",endX,",",endY
+			if startX=endX {
+				//vertical
+				set x=startX,dir=1
+				set:endY<startY dir=-1
+				set:startY<minY minY=startY
+				set:startY>maxY maxY=startY
+				set:endY<minY minY=endY
+				set:endY>maxY maxY=endY
+				for y=startY:dir:endY {
+					set grid(y,x)="#"
+				}
+			} else {
+				//horizontal
+				set y=startY,dir=1
+				set:endX<startX dir=-1
+				set:startX<minX minX=startX
+				set:startX>maxX maxX=startX
+				set:endX<minX minX=endX
+				set:endX>maxX maxX=endX
+				for x=startX:dir:endX {
+					set grid(y,x)="#"
+				}
+			}
+			set start=end
+		}
+	}
+	if verbose write ! zwrite minX,maxX,minY,maxY //,grid
+	for y=minY:1:maxY {
+		for x=minX:1:maxX {
+			set:'$data(grid(y,x)) grid(y,x)="."
+		}
+	}
+	if verbose write ! do ..GridDisplay(.grid)
+	//OFF BY 1!!!! I did from 1 instead from 0, nahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh....took me more than 1.5 hour to figure it out
+	for counter=0:1 {
+		quit:'..PourSand(.grid,500,0,minX,maxX)
+	}
+	if verbose write !!! do ..GridDisplay(.grid)
+	set answer=counter
+	quit answer
+]]></Implementation>
+</Method>
+
+<Method name="PourSand">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&grid,x:%Integer,y:%Integer,minX:%Integer,maxX:%Integer]]></FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	for  {
+		return:grid(0,500)'="+" 0  //DAMN RTFM
+		return:'$data(grid(y+1)) 0
+		if (x-1<minX)||(x+1>maxX) return 0
+		if grid(y+1,x)="." {
+			set y=y+1
+			continue
+		}
+		if grid(y+1,x-1)="." {
+			set y=y+1
+			set x=x-1
+			continue
+		}
+		if grid(y+1,x+1)="." {
+			set y=y+1
+			set x=x+1
+			continue
+		}
+		set grid(y,x)="o"
+		quit
+	}
+	quit 1
+]]></Implementation>
+</Method>
+
+<Method name="GridDisplay">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&grid]]></FormalSpec>
+<Implementation><![CDATA[
+	//grid(y,x)=data
+	set y=""
+	for  {
+		set y=$order(grid(y)) quit:y=""
+		write !
+		set x=""
+		for  {
+			set x=$order(grid(y,x)) quit:x=""
+			write grid(y,x)
+		}
+	}
+]]></Implementation>
+</Method>
+
+<Method name="Part2">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>verbose=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	do ..GetInputToArray(..#InputFile,.recordsArr)
+	
+	set answer="",line="",(minX,maxX)=500,(minY,maxY)=0,grid(0,500)="+"
+	for {
+		set line=$order(recordsArr(line)) quit:line=""
+		set record=recordsArr(line)
+		set start=$piece(record," -> ",1)
+		for pos=2:1:$length(record," -> ") {
+			set startX=$piece(start,",",1),startY=$piece(start,",",2)
+			set end=$piece(record," -> ",pos)
+			set endX=$piece(end,",",1),endY=$piece(end,",",2)
+			//w !,startX,",",startY,"-",endX,",",endY
+			if startX=endX {
+				//vertical
+				set x=startX,dir=1
+				set:endY<startY dir=-1
+				set:startY<minY minY=startY
+				set:startY>maxY maxY=startY
+				set:endY<minY minY=endY
+				set:endY>maxY maxY=endY
+				for y=startY:dir:endY {
+					set grid(y,x)="#"
+				}
+			} else {
+				//horizontal
+				set y=startY,dir=1
+				set:endX<startX dir=-1
+				set:startX<minX minX=startX
+				set:startX>maxX maxX=startX
+				set:endX<minX minX=endX
+				set:endX>maxX maxX=endX
+				for x=startX:dir:endX {
+					set grid(y,x)="#"
+				}
+			}
+			set start=end
+		}
+	}
+	if verbose write ! zwrite minX,maxX,minY,maxY //,grid
+	set maxY=maxY+2,minX=minX\2,maxX=maxX*2
+	if verbose zwrite minX,maxX
+	for y=minY:1:maxY {
+		set type="."
+		set:y=maxY type="#"
+		for x=minX:1:maxX {
+			set:'$data(grid(y,x)) grid(y,x)=type
+		}
+	}
+	if verbose write ! do ..GridDisplay(.grid)
+	for counter=0:1 {
+		quit:'..PourSand(.grid,500,0,minX,maxX)
+		//i verbose w !!,counter do GridDisplay(.grid)
+	}
+	if verbose write !!! do ..GridDisplay(.grid)
+	set answer=counter
+	quit answer
+]]></Implementation>
+</Method>
+</Class>
+
+
+
+
+<Project name="aoc-uvg" LastModified="2022-12-26 18:58:57.858851">
+  <Items>
+    <ProjectItem name="AOC2022" type="PKG"></ProjectItem>
+    <ProjectItem name="dc.aoc" type="CLS"></ProjectItem>
+  </Items>
+</Project>
+
+
+<Class name="dc.aoc">
+<TimeChanged>66470,41741.480231</TimeChanged>
+<TimeCreated>66467,83356.442976</TimeCreated>
+<ClassDefinitionError>1</ClassDefinitionError>
+
+<Method name="run">
+<Description><![CDATA[
+>k (%d) f %d=1:1:24  do ##class(dc.aoc).run(%d,1)  r !?5,"????",y]]></Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>day=1,set="1"</FormalSpec>
+<Implementation><![CDATA[
+  set ^zTEST=set
+  set dir="C:\GitHub\set"_set_"\"_day_"\"
+  set file=dir_$s(set=1:"data",1:"input")_".txt"
+  set res=dir_"result.txt"
+  set cls="dc.AoC2022.Day"_day
+  do ..res(res)
+  set sc=$classmethod(cls,"Run",file)
+  if 'sc b  do $system.OBJ.DisplayError(sc) zw  b
+]]></Implementation>
+</Method>
+
+<Method name="all">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>start=1,set=1</FormalSpec>
+<Implementation><![CDATA[
+  f %d=start:1:24 {
+    set ^zTEST=set
+#;    do ##class(dc.aoc).run(%d,1)  
+    do $classmethod("dc.aoc2022.Day"_$e(100*%d,2,3),"Run(%d,1)  
+    read !?5,"OK ????",y
+    quit:y=""
+  }
+
+ClassMethod res(dir)
+{
+  if $g(%res) quit $$$OK
+  set res=dir_"result.txt"
+  w "****************** ",dir,!
+  open res:"R":0 else  zw  b
+  for l=1,2  use res read line use 0 write ?15,line,!
+ups  
+  close res
+  set $ZT=""
+  read !,"OK",ok,!
+  quit (ok="")
+}
+]]></Implementation>
+</Method>
+</Class>
+</Export>
